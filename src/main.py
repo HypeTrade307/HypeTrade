@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from database import engine, Base
-from routes import users, posts
+from src.db.database import engine, Base
+from src.api.routes.users import router as users_router
 
 app = FastAPI()
 
@@ -8,8 +8,7 @@ app = FastAPI()
 Base.metadata.create_all(bind=engine)
 
 # Include routers
-app.include_router(users.router)
-app.include_router(posts.router)
+app.include_router(users_router)
 
 @app.get("/")
 def root():
