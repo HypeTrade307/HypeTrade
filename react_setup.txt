@@ -1,0 +1,11 @@
+first make sure you have node and npm install 
+https://nodejs.org/en/download
+once installed 
+check node -v works if not pray
+cd into the Hypertrade app
+run "npm install"
+run "npm run dev" 
+click the link
+the main page of react is app.tsx
+
+turn off and on again if need help
