@@ -1,10 +1,22 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field
+from typing import Optional
 from datetime import datetime
 
-class UserCreate(BaseModel):
+
+# ------------------
+#  USER SCHEMAS
+# ------------------
+class UserBase(BaseModel):
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+
+class UserCreate(UserBase):
     name: str
-    email: str
+    email: EmailStr
     password: str
+
+class UserUpdate(UserBase):
+    password: Optional[str] = None  # optional if only updating name/email
 
 class UserResponse(BaseModel):
     user_id: int
@@ -15,19 +27,31 @@ class UserResponse(BaseModel):
     class Config:
         from_attributes = True
 
-class PostCreate(BaseModel):
+
+# ------------------
+#  POST SCHEMAS
+# ------------------
+class PostBase(BaseModel):
+    title: Optional[str] = None
+    post_url: Optional[str] = None
+    content: Optional[str] = None
+
+class PostCreate(PostBase):
     title: str
     post_url: str
     content: str
     author_id: int
+
+class PostUpdate(PostBase):
+    pass  # For partial updates
 
 class PostResponse(BaseModel):
     post_id: int
     title: str
     post_url: str
     content: str
-    created_at: datetime
     author_id: int
+    created_at: datetime
 
     class Config:
         from_attributes = True
