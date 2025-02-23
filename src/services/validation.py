@@ -5,18 +5,22 @@ from sqlalchemy.orm import Session
 import re
 
 class Errors(Enum):
+    OK = 0
     PASSWORD = 1
     EMAIL = 2
-    USERNAME = 3
+    EMAIL_TAKEN = 3
+    USERNAME = 4
 
 def validate_create(db: Session, user_data : schemas.UserCreate):
-    if not re.search(r"[a-zA-Z0-9]", user_data.password):
+    if not (re.search(r'[a-z]', user_data.password) or re.search(r'[A-Z]', user_data.password) or re.search(r'[0-9]', user_data.password)) or len(user_data.password) < 10:
         return Errors.PASSWORD
     if crud.get_user_by_email(db, email=user_data.email):
-        return Errors.EMAIL
+        return Errors.EMAIL_TAKEN
+    if not user_data.email.endswith("@gmail.com"):
+            return Errors.EMAIL
     if crud.get_user_by_name(db, name=user_data.name):
         return Errors.USERNAME
-    return 0
+    return Errors.OK
 
 def validate_update(db : Session, user_data : schemas.UserUpdate):
     if not re.search(r"[a-zA-Z0-9]", user_data.password):
@@ -25,4 +29,4 @@ def validate_update(db : Session, user_data : schemas.UserUpdate):
         return Errors.EMAIL
     if crud.get_user_by_name(db, name=user_data.name):
         return Errors.USERNAME
-    return 0
+    return Errors.OK
