@@ -1,6 +1,6 @@
-import React from "react";
 
-const Page_Not_found: React.FC = () => {
+
+function Page_Not_found(){
   return (
     <div>
       <h1>PageNotfound</h1>

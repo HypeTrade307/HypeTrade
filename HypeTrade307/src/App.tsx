@@ -1,4 +1,4 @@
-import Links from './router.tsx';
+import Links from './components/router.tsx';
 import './App.css'
 
 export const App = () => {
