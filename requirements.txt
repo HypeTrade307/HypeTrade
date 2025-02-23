@@ -32,7 +32,7 @@ scikit-learn  # FinBERT utilities
 sentencepiece  # Tokenizer dependency for FinBERT
 
 # Notifications (Email, Push, etc.)
-smtplib  # For sending emails
+# smtplib  # For sending emails
 twilio  # Optional: For SMS notifications
 
 # Testing
