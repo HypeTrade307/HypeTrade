@@ -1,17 +1,15 @@
-# use official python image
-FROM python:3.9
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
 
-# set the working directory
+# set working directory
 WORKDIR /app
 
-# copy files to container
-COPY requirements.txt ./
-RUN pip install -r requirements.txt
+# copy backend files
+COPY . /app
 
-COPY . .
+# install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# expose the required port
-EXPOSE 8080
+# copy react build to serve
+COPY dist /app/dist
 
-# start the app with gunicorn
-CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8080"]
