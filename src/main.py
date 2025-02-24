@@ -7,11 +7,13 @@ import os
 
 app = FastAPI()
 
-# # Create tables
-# Base.metadata.create_all(bind=engine)
+# Create tables
+Base.metadata.create_all(bind=engine)
 
-# # Include routers
-# app.include_router(users_router)
+# Include routers
+app.include_router(users_router)
+
+app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="static")
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8080))  # cloud run requires PORT env var
