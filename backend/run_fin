@@ -1,0 +1,4 @@
+run gcloud auth application-default login
+if gcloud not found do pip install gcloud (or google how to install the gcloud cli)
+modify or add prompts to a new string variable, add them to the prompts list object (not instances) in the get_financial_sentiment function
+run the file
