@@ -16,9 +16,9 @@ def get_financial_sentiment(text):
     instance = {
         "instances": [text]
     }
-    
+    prompts = [text]
     # Make prediction
-    prediction = endpoint.predict(instances=[text])
+    prediction = endpoint.predict(instances=prompts)
     return prediction
 
 # Example usage
