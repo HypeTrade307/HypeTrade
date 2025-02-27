@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import '../index.css'
 
 function Example() {
   const [show, setShow] = useState(false);
@@ -24,7 +25,7 @@ function Example() {
           </Modal.Header>
           <Modal.Body></Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={() => {handleClose(); buttonOpen()}}>
+            <Button variant="secondary" onClick={() => {handleClose(); buttonOpen(); window.location.href = "./login"}}>
               Cancel
             </Button>
             <Button variant="primary" onClick={() => {handleClose(); buttonOpen()}}>
