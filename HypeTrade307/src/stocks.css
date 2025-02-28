@@ -2,7 +2,7 @@
     display: block;
     position: absolute;
     left: 600px;
-    top: 0px;
+    top: 0;
     padding: 0;
     margin: 0;
 }
@@ -38,8 +38,20 @@
 }
 
 .hud-box {
-    background-color: black;
+    background-color: slategrey;
     padding: 20px;
     border-radius: 10px;
-    width: 400px;
+    width: 800px;
+    height: 500px;
+}
+
+.cancel {
+    display: block;
+    position: absolute;
+    right: 380px;
+    margin: 0;
+}
+
+.time-buttons {
+
 }

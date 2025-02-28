@@ -2,13 +2,13 @@
 
 import {useState} from "react";
 
-const FriendRemove = () => {
+function FriendRemove() {
     const [friends, setFriends] = useState(['James', 'Fred', 'Peter']);
-    const [verify, setVerify] = useState(null);
+    const [verify, setVerify] = useState({});
 
-    const verifyDelete = (friend) => {
+    const verifyDelete = ({friend}: { friend: any }) => {
         setFriends(friends.filter((f) => f !== friend)); // remove 'friend'
-        setVerify(null);
+        setVerify({});
     };
 
     return (
@@ -25,14 +25,10 @@ const FriendRemove = () => {
                         <li>
                             {friend}{" "}
                             <a href="#">View Profile</a>
-                            {verify === friend ? (
-                                <>
-                                    <button onClick={() => verifyDelete(friend)}>Confirm</button>
-                                    <button onClick={() => setVerify(null)}>Cancel</button>
-                                </>
-                            ) : (
-                                <button onClick={() => setVerify(friend)}>Remove</button>
-                            )}
+                            {verify === friend ? <>
+                                    <button onClick={() => verifyDelete({friend: friend})}>Confirm</button>
+                                    <button onClick={() => setVerify({})}>Cancel</button>
+                                </> : <button onClick={() => setVerify(friend)}>Remove</button>}
                         </li>
                     ))}
                 </ul>

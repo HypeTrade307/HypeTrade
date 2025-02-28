@@ -8,8 +8,11 @@ interface Stock {
     sentiment: number;
 }
 
+type TimePeriod = "Day" | "Week" | "Month";
+
 function  ViewStock() {
     const [pickStock, setPickStock] = useState<Stock | null>(null); // Way to know if a stock was selected
+    const [timeButton, setTimeButton] = useState<TimePeriod>("Day"); // Day is the default value
 
     const stockList: Stock[] = [
         { name: "Apple", abbreviation: "AAPL", value: 180, sentiment: 5.12 },
@@ -17,6 +20,15 @@ function  ViewStock() {
         { name: "Nvidia", abbreviation: "NVDA", value: 450, sentiment: 9.85 }
     ];
 
+    const getGraph = (): string => {
+        if (!pickStock) {
+            return "No stock selected";
+        }
+
+        // Right now, it just displays the time period, but later we can populate the graph here too
+
+        return `${pickStock.name}'s performance over the last ${timeButton}`;
+    }
 
     return (
         <div>
@@ -48,18 +60,45 @@ function  ViewStock() {
                         className="hud-box"
                         onClick={(e) => e.stopPropagation()} // Prevent click from closing modal
                     >
-                        <button onClick={() => setPickStock(null)}
+                        <button
+                            className="cancel"
+                            onClick={() => {setPickStock(null) ; setTimeButton("Day")}}
                         >
                             x
                         </button>
                         <h2>
                             {pickStock.name} ({pickStock.abbreviation})
                         </h2>
-                        <p className="text-lg mt-2">Stock Value: ${pickStock.value}</p>
-                        <p className="text-lg">Sentiment: {pickStock.sentiment}</p>
+                        <p className="add something here">Stock Value: ${pickStock.value}</p>
+                        <p className="add something here">Sentiment: {pickStock.sentiment}</p>
+
+                        <ul className="button-list">
+                            <button
+                                className="time-buttons"
+                                onClick={() => setTimeButton("Month")}
+                            >
+                                Month
+                            </button>
+
+                            <button
+                                className="time-buttons"
+                                onClick={() => setTimeButton("Week")}
+                            >
+                                Week
+                            </button>
+
+                            <button
+                                className="time-buttons"
+                                onClick={() => setTimeButton("Day")}
+                            >
+                                Day
+                            </button>
+                        </ul>
+
                         <div>
-                            <p>Graph Placeholder</p>
+                            <p>{getGraph()}</p>
                         </div>
+
                     </div>
                 </div>
             )}
