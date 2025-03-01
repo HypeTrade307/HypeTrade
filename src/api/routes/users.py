@@ -15,34 +15,14 @@ ERROR_MESSAGES = {
 }
 
 
-@router.post("/", response_model=schemas.UserResponse)
-def create_user(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
-    # db_user = crud.get_user_by_email(db, user_data.email)  # or get by email
-    # if db_user:
-    #     raise HTTPException(status_code=400, detail="Email is already registered.")
+# @router.post("/", response_model=schemas.UserResponse)
+# def create_user(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
+#     error = validate_create(db = db, user_data=user_data)
+#     if error != Errors.OK:
+#         raise HTTPException(status_code=400, detail=ERROR_MESSAGES[error])
     
-    # db_user = crud.get_user_by_name(db, user_data.name)
-
-    # if db_user: # If we had a function get_user_by_email
-    #     raise HTTPException(status_code=400, detail="Username is taken.")
-
-    # password = user_data.password
-
-    # if len(password) < 10:
-    #     raise HTTPException(status_code=400, detail="Password length should be greater than 10.")
-    # if not re.search(r"[A-Z]", password):
-    #     raise HTTPException(status_code=400, detail="Password should contain at least 1 uppercase letter.")
-    # if not re.search(r"[a-z]", password):
-    #     raise HTTPException(status_code=400, detail="Password should contain at least 1 lowercase letter.")
-    # if not re.search(r"[0-9]", password):
-    #     raise HTTPException(status_code=400, detail="Password should contain at least 1 number.")
-
-    error = validate_create(db = db, user_data=user_data)
-    if error != Errors.OK:
-        raise HTTPException(status_code=400, detail=ERROR_MESSAGES[error])
-    
-    new_user = crud.create_user(db, user_data)
-    return new_user
+#     new_user = crud.create_user(db, user_data)
+#     return new_user
 
 
 @router.get("/{user_id}", response_model=schemas.UserResponse)
