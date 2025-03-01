@@ -33,6 +33,12 @@ DB_NAME = os.getenv("DB_NAME", "test")
 db_url = f"mysql+mysqlconnector://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
 config.set_main_option("sqlalchemy.url", db_url)
 
+# other values from the config, defined by the needs of env.py,
+# can be acquired:
+# my_important_option = config.get_main_option("my_important_option")
+# ... etc.
+
+
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 

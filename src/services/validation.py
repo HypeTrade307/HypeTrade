@@ -30,3 +30,4 @@ def validate_update(db : Session, user_data : schemas.UserUpdate):
     if crud.get_user_by_name(db, name=user_data.name):
         return Errors.USERNAME
     return Errors.OK
+

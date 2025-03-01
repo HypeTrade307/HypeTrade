@@ -99,6 +99,7 @@ class Stock(Base):
     stock_id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
     ticker = Column(String(20), unique=True, nullable=False)
+    analysis_mode = Column(Enum("auto", "on_demand", name="analysis_mode_enum"), default="on_demand")
     weight_data = Column(Float, default=0.0)
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
     updated_at = Column(TIMESTAMP, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
