@@ -24,7 +24,8 @@ def signup(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
         )
 
     hashed_pw = hash_password(user_data.password)
-    new_user = create_user(db, email=user_data.email, password=hashed_pw, name=user_data.name)
+    user_data.password = hashed_pw
+    new_user = create_user(db, user_data)
     return {"msg": "User created successfully", "user_id": new_user.user_id}
 
 @router.post("/login", response_model=schemas.TokenResponse)

@@ -1,5 +1,5 @@
 # security.py
-from passlib.context import CryptContext
+from passlib.hash import bcrypt as hashing
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException, status
@@ -16,18 +16,17 @@ from src.db.models import User      # your SQLAlchemy user model
 from src.db.crud import get_user_by_id  # or however you fetch a user by ID
 
 # passlib context for hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # The OAuth2 scheme for extracting the token from the `Authorization: Bearer <token>` header
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 def hash_password(password: str) -> str:
     """Hash a plain text password using bcrypt."""
-    return pwd_context.hash(password)
+    return hashing.hash(f"{password}")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a plain text password against the hashed password stored in DB."""
-    return pwd_context.verify(plain_password, hashed_password)
+    return hashing.verify(f"{plain_password}", hashed_password)
 
 def create_access_token(data: dict, expires_delta: int = ACCESS_TOKEN_EXPIRE_MINUTES) -> str:
     """

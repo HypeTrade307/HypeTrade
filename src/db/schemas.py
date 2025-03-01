@@ -6,11 +6,15 @@ from pydantic import BaseModel, EmailStr
 #  USER SCHEMAS
 # ------------------
 class UserBase(BaseModel):
-    name: Optional[str] = None
+    username: Optional[str] = None
     email: Optional[EmailStr] = None
-    
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
 class UserCreate(UserBase):
-    name: str
+    username: str
     email: EmailStr
     password: str
 
@@ -19,7 +23,7 @@ class UserUpdate(UserBase):
 
 class UserResponse(BaseModel):
     user_id: int
-    name: str
+    username: str
     email: str
     created_at: datetime
 
@@ -59,18 +63,18 @@ class PostResponse(BaseModel):
 # ------------------
 class StockCreate(BaseModel):
     ticker: str
-    name: str
+    stock_name: str
     analysis_mode: Optional[str] = "on_demand"  # e.g., "auto" or "on_demand"
 
 class StockUpdate(BaseModel):
     ticker: Optional[str] = None
-    name: Optional[str] = None
+    stock_name: Optional[str] = None
     analysis_mode: Optional[str] = None
 
 class StockResponse(BaseModel):
     stock_id: int
     ticker: str
-    name: str
+    stock_name: str
     analysis_mode: str
 
     class Config:
@@ -81,20 +85,20 @@ class StockResponse(BaseModel):
 # ----------------------------
 
 class PortfolioBase(BaseModel):
-    name: Optional[str] = None
+    portfolio_name: Optional[str] = None
     stocks: Optional[List[int]] = None  # Consider using stock IDs instead of StockResponse
 
 class PortfolioCreate(BaseModel):
-    name: str
+    portfolio_name: str
     stocks: Optional[List[int]] = []  # List of stock IDs
 
 class PortfolioUpdate(BaseModel):
-    name: Optional[str] = None
+    portfolio_name: Optional[str] = None
     stocks: Optional[List[int]] = None
 
 class PortfolioResponse(BaseModel):
     portfolio_id: int
-    name: str
+    portfolio_name: str
     stocks: List['StockResponse']  # Assuming StockResponse is defined elsewhere
 
     class Config:

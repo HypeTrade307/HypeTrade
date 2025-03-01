@@ -45,9 +45,9 @@ def get_stock_lists_from_sp500() -> tuple[list[dict], list[dict]]:
         company_name = row["Security"]
 
         if ticker in TOP_20_TICKERS:
-            top_20_stocks.append({"ticker": ticker, "name": company_name, "analysis_mode": "auto"})
+            top_20_stocks.append({"ticker": ticker, "stock_name": company_name, "analysis_mode": "auto"})
         else:
-            remaining_stocks.append({"ticker": ticker, "name": company_name, "analysis_mode": "on_demand"})
+            remaining_stocks.append({"ticker": ticker, "stock_name": company_name, "analysis_mode": "on_demand"})
 
     return top_20_stocks, remaining_stocks
 
@@ -62,7 +62,7 @@ def seed_stocks(db: Session):
         else:
             new_stock = models.Stock(
                 ticker=stock_dict["ticker"],
-                name=stock_dict["name"],
+                stock_name=stock_dict["stock_name"],
                 analysis_mode=stock_dict["analysis_mode"]
             )
             db.add(new_stock)
@@ -75,7 +75,7 @@ def seed_stocks(db: Session):
         else:
             new_stock = models.Stock(
                 ticker=stock_dict["ticker"],
-                name=stock_dict["name"],
+                stock_name=stock_dict["stock_name"],
                 analysis_mode=stock_dict["analysis_mode"]
             )
             db.add(new_stock)

@@ -1,12 +1,13 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from . import models, schemas
+from passlib.hash import bcrypt as hashing
 # ----------------------------
 #  USER CRUD
 # ----------------------------
 def create_user(db: Session, user_data: schemas.UserCreate):
     db_user = models.User(
-        name=user_data.name,
+        username=user_data.username,
         email=user_data.email,
         password=user_data.password
     )
@@ -19,7 +20,7 @@ def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
 def get_user_by_name(db: Session, name: str):
-    return db.query(models.User).filter(models.User.name.like(f'%{name}%')).all()
+    return db.query(models.User).filter(models.User.username.like(f'%{name}%')).all()
 
 def get_user_by_id(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.user_id == user_id).first()
@@ -33,8 +34,8 @@ def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate):
     if not db_user:
         return None
 
-    if user_update.name is not None:
-        db_user.name = user_update.name
+    if user_update.username is not None:
+        db_user.username = user_update.username
     if user_update.email is not None:
         db_user.email = user_update.email
     if user_update.password is not None:
@@ -112,7 +113,7 @@ def create_stock(db: Session, stock_data: schemas.StockCreate) -> models.Stock:
         )
     new_stock = models.Stock(
         ticker=stock_data.ticker,
-        name=stock_data.name,
+        stock_name=stock_data.stock_name,
         analysis_mode=stock_data.analysis_mode
     )
     db.add(new_stock)
@@ -157,8 +158,8 @@ def update_stock(db: Session, stock_id: int, stock_data: schemas.StockUpdate) ->
             )
         stock.ticker = stock_data.ticker
 
-    if stock_data.name is not None:
-        stock.name = stock_data.name
+    if stock_data.stock_name is not None:
+        stock.stock_name = stock_data.stock_name
 
     if stock_data.analysis_mode is not None:
         stock.analysis_mode = stock_data.analysis_mode
@@ -188,7 +189,7 @@ def create_portfolio(db: Session, user_id: int, portfolio_name: str) -> models.P
     existing_portfolio = db.query(models.Portfolio).filter(models.Portfolio.user_id == user_id, models.Portfolio.name == portfolio_name).first()
     if (existing_portfolio):
         raise HTTPException(status_code=400, detail="Portfolio with this name already exists.")
-    new_portfolio = models.Portfolio(user_id = user_id, name = portfolio_name)
+    new_portfolio = models.Portfolio(user_id = user_id, portfolio_name = portfolio_name)
     db.add(new_portfolio)
     db.commit()
     db.refresh(new_portfolio)
@@ -213,7 +214,7 @@ def update_portfolio(db: Session, portfolio_id: int, new_name: str) -> models.Po
     portfolio = db.query(models.Portfolio).filter(models.Portfolio.portfolio_id == portfolio_id).first()
     if not portfolio:
         raise HTTPException(status_code=404, detail="Portfolio not found.")
-    portfolio.name = new_name
+    portfolio.portfolio_name = new_name
     db.commit()
     db.refresh(portfolio)
     return portfolio

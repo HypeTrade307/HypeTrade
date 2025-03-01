@@ -57,7 +57,7 @@ class User(Base):
     __tablename__ = "users"
 
     user_id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(100), nullable=False)
+    username = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, nullable=False)
     password = Column(String(255), nullable=False)  # hashed password
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
@@ -97,7 +97,7 @@ class Stock(Base):
     __tablename__ = "stocks"
 
     stock_id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(100), nullable=False)
+    stock_name = Column(String(100), nullable=False)
     ticker = Column(String(20), unique=True, nullable=False)
     analysis_mode = Column(Enum("auto", "on_demand", name="analysis_mode_enum"), default="on_demand")
     weight_data = Column(Float, default=0.0)
@@ -128,7 +128,7 @@ class Portfolio(Base):
 
     portfolio_id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False)
-    name = Column(String(100), nullable=False)
+    portfolio_name = Column(String(100), nullable=False)
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
     updated_at = Column(TIMESTAMP, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
@@ -149,7 +149,7 @@ class Forum(Base):
     __tablename__ = "forums"
 
     forum_id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(100), nullable=False)
+    forum_name = Column(String(100), nullable=False)
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
 
     # --- Relationships ---
