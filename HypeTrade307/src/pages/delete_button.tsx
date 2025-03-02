@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-
+import './popup.css'
 function Example() {
   const [show, setShow] = useState(false);
   const [isVisible, setIsVis] = useState(true);
@@ -18,7 +18,7 @@ function Example() {
           Delete profile
         </Button>}
 
-        <Modal show={show} onHide={handleClose}  >
+        <Modal className="popup-overlay" show={show} onHide={handleClose}  >
           <Modal.Header>
             <Modal.Title>This action cannot not be changed </Modal.Title>
           </Modal.Header>
