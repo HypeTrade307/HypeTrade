@@ -24,7 +24,7 @@ function Example() {
           </Modal.Header>
           <Modal.Body></Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={() => {handleClose(); buttonOpen()}}>
+            <Button variant="secondary" onClick={() => {handleClose(); buttonOpen();window.location.href = "/login";}}>
               Cancel
             </Button>
             <Button variant="primary" onClick={() => {handleClose(); buttonOpen()}}>
