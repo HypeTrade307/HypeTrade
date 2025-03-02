@@ -5,6 +5,7 @@ import Main_page from "./Main_page.tsx";
 import Profile_page from "./Profile_Page.tsx";
 import Search_other_users from "./Search_Other_Users.tsx"
 import LoginForm from "./LoginForm.tsx";
+import FriendRemove from "./FriendRemove.tsx";
 
 const Links: React.FC = () => {
     return (
@@ -15,6 +16,7 @@ const Links: React.FC = () => {
                 <Route path="/login" element={<LoginForm />} />
                 <Route path="/Search" element={<Search_other_users />} />
                 <Route path="*" element={<Page_Not_found />} />
+                <Route path="/FriendList" element={<FriendRemove />} />
             </Routes>
         </Router>
     );
