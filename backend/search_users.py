@@ -1,15 +1,18 @@
-from typing import Deque
-def search(username: str) -> Deque[str]:
+from collections import deque
+from typing import List
+
+def search(username: str) -> List[str]:  # Returns a list for JSON serialization
     users = ['user2', 'user3', 'user1user2repeat', 'user1']
-    # This is a placeholder function
-    # needs to return:    
-    # return [{"word": su.search(word), "length": len(word)+25} for word in data.text.split()]
-    matches = Deque([])
-    print(username)
+    
+    matches = deque()
+    
     for i in users:
-        print(i)
         if username == i:
-            matches.appendleft(i)
+            matches.appendleft(i)  # Exact match goes to the front
         elif username in i:
-            matches.append(i)
-    return matches
+            matches.append(i)  # Partial match goes to the back
+
+    if not matches:
+        matches.append("No matches found")
+    
+    return list(matches)  # Convert deque to list before returning
