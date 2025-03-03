@@ -64,7 +64,7 @@ export default function FriendCheck() {
         <div className="mt-2 p-2 bg-white rounded">
           {friends.length > 0 ? (
             <div>
-              <p>Friends: {friends.join(", ")}</p>
+              <p>Yes, friends. List of friends for current user: {friends.join(", ")}</p>
               <button
                 onClick={handleRemoveFriend}
                 className="mt-2 w-full bg-red-500 text-white p-2 rounded hover:bg-red-600"

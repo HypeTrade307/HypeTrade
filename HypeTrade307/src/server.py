@@ -1,9 +1,19 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List, Dict, Optional
-from ...backend import check_if_friends as cf  # import your existing logic
-
+import sys
+sys.path.append("../")
+from backend import check_if_friends as cf
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # allow all origins (change this in production)
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],  # explicitly allow OPTIONS
+    allow_headers=["*"],
+)
 
 class FriendCheckRequest(BaseModel):
     current_user: str
