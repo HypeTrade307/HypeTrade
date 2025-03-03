@@ -51,10 +51,14 @@ export default function BasicPage() {
 
             {responseData && (
                 <div className="mt-4 border p-2">
-                    <h3 className="font-bold">Response:</h3>
-                    <ul>
+                    <h3 className="font-bold">Results ({responseData.length} found):</h3>
+                    <ul className="list-disc list-inside">
                         {responseData.map((item, index) => (
-                            <li key={index}> {item}</li>
+                            <li key={index}>
+                                <a href={`https://hypetrade.com/${item}`} target="_blank" className="text-blue-500 underline">
+                                    {item}
+                                </a>
+                            </li>
                         ))}
                     </ul>
                 </div>

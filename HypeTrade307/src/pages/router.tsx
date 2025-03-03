@@ -15,8 +15,8 @@ const Links: React.FC = () => {
                 <Route path="/Profile" element={<Profile_page />} />
                 <Route path="/login" element={<LoginForm />} />
                 <Route path="/Search" element={<Search_other_users />} />
-                <Route path="/FriendList" element={<FriendRemove />} />
                 <Route path="*" element={<Page_Not_found />} />
+                <Route path="/FriendList" element={<FriendRemove />} />
             </Routes>
         </Router>
     );
