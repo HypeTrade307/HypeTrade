@@ -14,8 +14,18 @@ app = FastAPI()
 # app.include_router(users_router)
 
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8080))  # cloud run requires PORT env var
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    uvicorn.run(app, host="0.0.0.0", port=8080)
+
+from flask import Flask, jsonify
+
+flask_app = Flask(__name__)
+
+@flask_app.route('/')
+def home():
+    return jsonify({"message": "Hello from Google Cloud Run!"})
+
+if __name__ == '__main__':
+    flask_app.run(host='0.0.0.0', port=8080)
 
 @app.get("/api/health")
 def health_check():
