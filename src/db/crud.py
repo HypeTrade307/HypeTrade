@@ -182,11 +182,11 @@ def delete_stock(db: Session, stock_id: int) -> None:
     db.commit()
 
 # ----------------------------
-#  STOCK CRUD
+#  PORTFOLIO CRUD
 # ----------------------------
 
 def create_portfolio(db: Session, user_id: int, portfolio_name: str) -> models.Portfolio:
-    existing_portfolio = db.query(models.Portfolio).filter(models.Portfolio.user_id == user_id, models.Portfolio.name == portfolio_name).first()
+    existing_portfolio = db.query(models.Portfolio).filter(models.Portfolio.user_id == user_id, models.Portfolio.portfolio_name == portfolio_name).first()
     if (existing_portfolio):
         raise HTTPException(status_code=400, detail="Portfolio with this name already exists.")
     new_portfolio = models.Portfolio(user_id = user_id, portfolio_name = portfolio_name)

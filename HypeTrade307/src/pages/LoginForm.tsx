@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface User {
     email: string;
@@ -9,6 +10,7 @@ interface User {
 
 const LoginForm = () => {
     const [signUp, setSignUp] = useState<boolean>(false);
+    const navigate = useNavigate();
     const [loginUser, setLoginUser] = useState<Omit<User, 'username'>>({
         email: "",
         password: ""
@@ -39,7 +41,7 @@ const LoginForm = () => {
             const response = await axios.post("http://127.0.0.1:8000/auth/login", loginUser);
             localStorage.setItem("token", response.data.access_token);
             setErrorMessage("");  // Clear errors if login is successful
-            alert("Login successful!");
+            navigate("/Portfolios");
         } catch (error) {
             setErrorMessage("Invalid credentials");
         }

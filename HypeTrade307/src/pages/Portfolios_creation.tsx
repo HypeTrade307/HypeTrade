@@ -1,33 +1,50 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
-interface Portfolios {
-    id: number;
-    name: string;
+interface Portfolio {
+    portfolio_id: number;
+    portfolio_name: string;
 }
 
 export default function Portfolios_creation() {
-    const [PortfoliosName, setPortfoliosName] = useState<string>("");
-    const [Portfolios, setPortfolios] = useState<Portfolios[]>([]);
+    const [portfolioName, setPortfolioName] = useState<string>("");
+    const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
 
-    // Load saved Portfolios from localStorage
+    // Optionally load portfolios from backend in useEffect
     useEffect(() => {
-        const storedPortfolios = localStorage.getItem("Portfolios");
-        if (storedPortfolios) {
-            setPortfolios(JSON.parse(storedPortfolios));
+        async function fetchPortfolios() {
+            try {
+                const token = localStorage.getItem("token");
+                const response = await axios.get("http://127.0.0.1:8000/portfolios", {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setPortfolios(response.data);
+            } catch (error) {
+                console.error("Failed to fetch portfolios", error);
+            }
         }
+        fetchPortfolios();
     }, []);
 
-    // Save Portfolios to localStorage profile
-    useEffect(() => {
-        localStorage.setItem("Portfolios", JSON.stringify(Portfolios));
-    }, [Portfolios]);
-
-    const createPortfolios = () => {
-        if (PortfoliosName.trim()) {
-            const newPortfolios: Portfolios = { id: Date.now(), name: PortfoliosName };
-            setPortfolios([...Portfolios, newPortfolios]);
-            setPortfoliosName("");
+    const createPortfolio = async () => {
+        if (portfolioName.trim()) {
+            try {
+                const token = localStorage.getItem("token");
+                const response = await axios.post(
+                    "http://127.0.0.1:8000/portfolios",
+                    { portfolio_name: portfolioName },
+                    {
+                        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
+                    }
+                );
+                // Assuming response returns the new portfolio:
+                setPortfolios([...portfolios, response.data]);
+                setPortfolioName("");
+            } catch (error) {
+                console.error("Error creating portfolio", error);
+                alert("Failed to create portfolio");
+            }
         }
     };
 
@@ -36,26 +53,20 @@ export default function Portfolios_creation() {
             <h1>Welcome to your Portfolios</h1>
             <h2>Create a Portfolio</h2>
             <input
-                placeholder="Enter Portfolios Name"
-                value={PortfoliosName}
-                onChange={(e) => setPortfoliosName(e.target.value)}
+                placeholder="Enter Portfolio Name"
+                value={portfolioName}
+                onChange={(e) => setPortfolioName(e.target.value)}
             />
-            <button onClick={createPortfolios}>
-                Create Portfolios
-            </button>
+            <button onClick={createPortfolio}>Create Portfolio</button>
 
             <h3>Portfolios</h3>
             <ul>
-                {Portfolios.length === 0 ? (
+                {portfolios.length === 0 ? (
                     <p>No Portfolios created.</p>
                 ) : (
-                    Portfolios.map((Portfolios) => (
-                        <li key={Portfolios.id} >
-                            <Link
-                                to={`/Portfolios/${Portfolios.id}`}
-                            >
-                                {Portfolios.name}
-                            </Link>
+                    portfolios.map((portfolio) => (
+                        <li key={portfolio.portfolio_id}>
+                            <Link to={`/Portfolios/${portfolio.portfolio_id}`}>{portfolio.portfolio_name}</Link>
                         </li>
                     ))
                 )}
