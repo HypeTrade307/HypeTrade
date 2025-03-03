@@ -1,32 +1,32 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List, Dict
-import sys, os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../backend"))) # increasing visibility!
-import search_users as su
-from fastapi import FastAPI
-from pydantic import BaseModel
-from typing import List, Dict, Union
-from fastapi.middleware.cors import CORSMiddleware
-
+from typing import List, Dict, Optional
+from ...backend import check_if_friends as cf  # import your existing logic
 
 app = FastAPI()
 
-class InputData(BaseModel):
-    text: str
+class FriendCheckRequest(BaseModel):
+    current_user: str
+    requested_user: str
 
+class FriendModifyRequest(BaseModel):
+    current_user: str
+    add_user: Optional[str] = None
+    remove_user: Optional[str] = None
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # allow all origins (change this in production)
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+@app.post("/check_friends")
+def check_friends(request: FriendCheckRequest):
+    friend_list = cf.check_friends(request.current_user, request.requested_user)
+    return {"friends": friend_list if friend_list else []}
 
-class InputData(BaseModel):
-    text: str
+@app.post("/add_friend")
+def add_friend(request: FriendModifyRequest):
+    if request.add_user:
+        cf.add_to_friendlist(request.current_user, request.add_user)
+    return {"message": "Friend request sent"}
 
-@app.post("/process")
-def process_text(data: InputData) -> List[str]:  # allow int values
-    return su.search(data.text)
+@app.post("/remove_friend")
+def remove_friend(request: FriendModifyRequest):
+    if request.remove_user:
+        cf.remove_from_friendlist(request.current_user, request.remove_user)
+    return {"message": "Friend removed"}
