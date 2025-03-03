@@ -59,6 +59,8 @@ const Navbar = () => {
             window.location.href = `/friends`;
         } else if (pageName === "ViewStock") {
             window.location.href = `/stock`;
+        } else if (pageName === "Portfolio") {
+            window.location.href = `/portfolio/:friendID`;
         } else {
             try {
                 // TODO: Update once we have login working with database

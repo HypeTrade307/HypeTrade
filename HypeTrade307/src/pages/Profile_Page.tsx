@@ -11,7 +11,7 @@ function Profile_page(){
                 <Home_page_button />
                 <h1>Profile_page</h1>
                 <Example />
-                <p>stocks.</p>
+                <p>Stocks.</p>
             </div>
         </>
     );

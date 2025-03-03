@@ -17,6 +17,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 // import FAQ from './components/FAQ';
 // import Footer from './components/Footer';
 
+import ButtonToPortfolio from "./button_to_Portfolio_Creation.tsx";
 
 function Home() {
     const [count, setCount] = useState(0)
@@ -54,6 +55,7 @@ function Home() {
             </div>
             <h1>Vite + React</h1>
             <div className="card">
+                <ButtonToPortfolio></ButtonToPortfolio>
                 <button onClick={() => setCount((count) => count + 1)}>
                     count is {count}
                 </button>
