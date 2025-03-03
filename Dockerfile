@@ -6,4 +6,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 8080
 ENV HOST=0.0.0.0
 
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8080"]
+ADD start.sh /
+RUN chmod +x /start.sh
+CMD ["./start.sh"]
