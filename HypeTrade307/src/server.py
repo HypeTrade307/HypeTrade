@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List, Dict, Optional
+from typing import List, Optional
 import sys
 sys.path.append("../")
+from backend import search_users as su
 from backend import check_if_friends as cf
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
@@ -24,6 +25,9 @@ class FriendModifyRequest(BaseModel):
     add_user: Optional[str] = None
     remove_user: Optional[str] = None
 
+class InputData(BaseModel):
+    text: str
+
 @app.post("/check_friends")
 def check_friends(request: FriendCheckRequest):
     friend_list = cf.check_friends(request.current_user, request.requested_user)
@@ -40,3 +44,10 @@ def remove_friend(request: FriendModifyRequest):
     if request.remove_user:
         cf.remove_from_friendlist(request.current_user, request.remove_user)
     return {"message": "Friend removed"}
+
+@app.post("/process")
+ 
+ 
+@app.post("/process")
+def process_text(data: InputData) -> List[str]:  # allow int values
+    return su.search(data.text)
