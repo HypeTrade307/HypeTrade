@@ -1,36 +1,45 @@
-// POPULATE A (SCROLLABLE?) LIST WITH FRIENDS (USING DUMMY DATA) + ADD BUTTON TO DELETE FROM LIST
-import styles from './FriendRemove.module.css'
-import {useState} from "react";
-import Portfolio_button from "./portfolio_button.tsx"
-function FriendRemove() {
-  const [friends, setFriends] = useState(['James', 'Fred', 'Peter', 'John', 'Alice', 'Bob']);
-  const [verify, setVerify] = useState<any>({});
+import { useState } from "react";
+import styles from "./FriendRemove.module.css"; // Assuming you are using CSS modules
+import Portfolio_button from "./portfolio_button.tsx"; // Ensure this import is correct
 
-  const verifyDelete = ({ friend }: { friend: string }) => {
-    setFriends(friends.filter((f) => f !== friend)); // remove 'friend'
-    setVerify({});
+function FriendRemove() {
+  const [friends, setFriends] = useState([
+    { id: 123456, name: "James" },
+    { id: 234567, name: "Fred" },
+    { id: 345678, name: "Peter" },
+    { id: 456789, name: "John" },
+    { id: 567890, name: "Alice" },
+    { id: 678901, name: "Bob" }
+  ]);
+
+  const [verify, setVerify] = useState<number | null>(null);
+
+  const verifyDelete = (friendId: number) => {
+    setFriends(friends.filter((f) => f.id !== friendId)); // Remove friend by ID
+    setVerify(null);
   };
 
   return (
-    <div className={styles.friendList}>  {/* Apply the scoped class from the CSS module */}
-      <form action="">
+    <div className={styles.friendList}>
+      <form>
         <h1>Friend List</h1>
-
-        <ul className={styles.friendList}>  {/* Apply the scoped class from the CSS module */}
+        <ul className={styles.friendList}>
           {friends.map((friend) => (
-            <li key={friend}>
-              {friend}{" "}
-              <a href="#">View Profile</a>
+            <li key={friend.id}>
+              {friend.name} <a href="#">View Profile</a>
 
-              <Portfolio_button friendName={friend} />
+              {/* Portfolio button added back */}
 
-              {verify === friend ? (
+
+              <Portfolio_button friendID={friend.id} />
+
+              {verify === friend.id ? (
                 <>
-                  <button onClick={() => verifyDelete({ friend: friend })}>Confirm</button>
-                  <button onClick={() => setVerify({})}>Cancel</button>
+                  <button onClick={() => verifyDelete(friend.id)}>Confirm</button>
+                  <button onClick={() => setVerify(null)}>Cancel</button>
                 </>
               ) : (
-                <button onClick={() => setVerify(friend)}>Remove</button>
+                <button onClick={() => setVerify(friend.id)}>Remove</button>
               )}
             </li>
           ))}

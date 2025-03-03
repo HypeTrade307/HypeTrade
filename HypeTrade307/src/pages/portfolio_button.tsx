@@ -1,10 +1,10 @@
 import '../index.css';
 import { useNavigate } from 'react-router-dom';
-function Portfolio_button({ friendName }: { friendName: string }) {
+function Portfolio_button({ friendID }: { friendID: number }) {
     const navigate = useNavigate()
 
     return (
-      <button onClick={() => navigate(`/portfolio/${friendName}`)}>
+      <button onClick={() => navigate(`/PortView/${friendID}`)}>
       Portfolio
     </button>
   );

@@ -6,6 +6,7 @@ import Profile_page from "./Profile_Page.tsx";
 import Search_other_users from "./Search_Other_Users.tsx"
 import LoginForm from "./LoginForm.tsx";
 import FriendRemove from "./FriendRemove.tsx";
+import PortView from "./Portfolio_friend_view.tsx";
 
 const Links: React.FC = () => {
     return (
@@ -17,6 +18,7 @@ const Links: React.FC = () => {
                 <Route path="/Search" element={<Search_other_users />} />
                 <Route path="*" element={<Page_Not_found />} />
                 <Route path="/FriendList" element={<FriendRemove />} />
+                <Route path="/PortView/:friendID" element={<PortView />} />
             </Routes>
         </Router>
     );
