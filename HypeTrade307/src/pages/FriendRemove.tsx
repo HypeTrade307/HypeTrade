@@ -1,44 +1,40 @@
 // POPULATE A (SCROLLABLE?) LIST WITH FRIENDS (USING DUMMY DATA) + ADD BUTTON TO DELETE FROM LIST
-
+import styles from './FriendRemove.module.css'
 import {useState} from "react";
 
-const FriendRemove = () => {
-    const [friends, setFriends] = useState(['James', 'Fred', 'Peter']);
-    const [verify, setVerify] = useState(null);
+function FriendRemove() {
+  const [friends, setFriends] = useState(['James', 'Fred', 'Peter', 'John', 'Alice', 'Bob']);
+  const [verify, setVerify] = useState<any>({});
 
-    const verifyDelete = (friend) => {
-        setFriends(friends.filter((f) => f !== friend)); // remove 'friend'
-        setVerify(null);
-    };
+  const verifyDelete = ({ friend }: { friend: string }) => {
+    setFriends(friends.filter((f) => f !== friend)); // remove 'friend'
+    setVerify({});
+  };
 
-    return (
-        // Below lists the lists of friends, with an option to view their profile
-        // and the ability to remove them
+  return (
+    <div className={styles.friendList}>  {/* Apply the scoped class from the CSS module */}
+      <form action="">
+        <h1>FriendList</h1>
 
-        // TODO give view user profile functionality
-        <div className={'FriendList'}>
-            <form action="">
-                <h1>FriendList</h1>
-
-                <ul>
-                    {friends.map((friend) => (
-                        <li>
-                            {friend}{" "}
-                            <a href="#">View Profile</a>
-                            {verify === friend ? (
-                                <>
-                                    <button onClick={() => verifyDelete(friend)}>Confirm</button>
-                                    <button onClick={() => setVerify(null)}>Cancel</button>
-                                </>
-                            ) : (
-                                <button onClick={() => setVerify(friend)}>Remove</button>
-                            )}
-                        </li>
-                    ))}
-                </ul>
-            </form>
-        </div>
-    )
+        <ul className={styles.friendList}>  {/* Apply the scoped class from the CSS module */}
+          {friends.map((friend) => (
+            <li key={friend}>
+              {friend}{" "}
+              <a href="#">View Profile</a>
+              {verify === friend ? (
+                <>
+                  <button onClick={() => verifyDelete({ friend: friend })}>Confirm</button>
+                  <button onClick={() => setVerify({})}>Cancel</button>
+                </>
+              ) : (
+                <button onClick={() => setVerify(friend)}>Remove</button>
+              )}
+            </li>
+          ))}
+        </ul>
+      </form>
+    </div>
+  );
 }
 
-export default FriendRemove
+export default FriendRemove;

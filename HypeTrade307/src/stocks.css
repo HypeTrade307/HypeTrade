@@ -1,0 +1,57 @@
+.title {
+    display: block;
+    position: absolute;
+    left: 600px;
+    top: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.stock-list {
+    display: block;
+    position: absolute;
+    left: 100px;
+    top: 150px;
+    padding: 0;
+    margin: 0;
+}
+
+.stock-button {
+    background-color: lawngreen;
+    color: black;
+    padding: 10px;
+    border-radius: 15px;
+    width: 100px;
+    height: 75px;
+}
+
+.hud-container {
+    background-color: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hud-box {
+    background-color: slategrey;
+    padding: 20px;
+    border-radius: 10px;
+    width: 800px;
+    height: 500px;
+}
+
+.cancel {
+    display: block;
+    position: absolute;
+    right: 380px;
+    margin: 0;
+}
+
+.time-buttons {
+
+}

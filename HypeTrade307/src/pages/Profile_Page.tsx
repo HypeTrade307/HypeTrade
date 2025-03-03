@@ -1,15 +1,15 @@
 import Example from "./delete_button.tsx";
+import Home_page_button from "./Home_page_button.tsx";
 
-function ProfilePage() {
-
-
+function Profile_page(){
     return (
-        <div className="text-center">
-            <h1>Profile Page</h1>
+        <div>
+            <Home_page_button />
+            <h1>Profile_page</h1>
             <Example />
             <p>Stocks.</p>
         </div>
     );
 }
 
-export default ProfilePage;
+export default Profile_page;

@@ -6,6 +6,9 @@ import Profile_page from "./Profile_Page.tsx";
 import LoginForm from "./LoginForm.tsx";
 import Portfolios_creation from "./Portfolios_creation.tsx";
 import PortfolioPage from "./Portfoilos_viewer.tsx";
+import Search_other_users from "./Search_Other_Users.tsx"
+import FriendRemove from "./FriendRemove.tsx";
+import Check_if_friends from "./check_if_friends.jsx";
 
 const Links: React.FC = () => {
     return (
@@ -16,6 +19,9 @@ const Links: React.FC = () => {
                 <Route path="/Portfolios" element={<Portfolios_creation />} />
                 <Route path="/profile" element={<Profile_page />} />
                 <Route path="/login" element={<LoginForm />} />
+                <Route path="/Search" element={<Search_other_users />} />
+                <Route path="/FriendList" element={<FriendRemove />} />
+                <Route path="/Check_if_friends" element={<Check_if_friends />} />
                 <Route path="*" element={<Page_Not_found />} />
             </Routes>
         </Router>

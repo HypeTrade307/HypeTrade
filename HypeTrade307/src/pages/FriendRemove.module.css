@@ -1,0 +1,16 @@
+.friendList {
+  width: 370px;
+  margin: 0 auto;
+}
+
+.friendList ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.friendList li {
+  margin: 10px 0;
+}
