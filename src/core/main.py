@@ -2,12 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
-import os
+import os, sys
 import uvicorn
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'services')))
 # import backend functions
-from backend import search_users as su
-from backend import check_if_friends as cf
+import search_users as su
+import check_if_friends as cf
 
 # import database setup
 from src.db.database import engine, Base
