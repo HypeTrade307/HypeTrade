@@ -11,7 +11,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import ColorModeIconDropdown from '../ColorModeIconDropdown';
+import ColorModeIconDropdown from '../shared-theme/ColorModeIconDropdown.tsx';
 import Sitemark from '../SitemarkIcon';
 
 const pages = ['Home', 'ViewStock', 'Portfolio', 'Profile', 'Login', 'Search', 'Friends'];
@@ -24,14 +24,14 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
     borderRadius: `calc(${theme.shape.borderRadius}px + 8px)`,
     backdropFilter: 'blur(24px)',
     border: '1px solid',
-    borderColor: theme.palette.divider,
-    backgroundColor: alpha(theme.palette.background.default, 0.4),
-    boxShadow: theme.shadows[1],
-    // borderColor: (theme.vars || theme).palette.divider,
-    // backgroundColor: theme.vars
-    //     ? `rgba(${theme.vars.palette.background.defaultChannel} / 0.4)`
-    //     : alpha(theme.palette.background.default, 0.4),
-    // boxShadow: (theme.vars || theme).shadows[1],
+    // borderColor: theme.palette.divider,
+    // backgroundColor: alpha(theme.palette.background.default, 0.4),
+    // boxShadow: theme.shadows[1],
+    borderColor: (theme.vars || theme).palette.divider,
+    backgroundColor: theme.vars
+        ? `rgba(${theme.vars.palette.background.defaultChannel} / 0.4)`
+        : alpha(theme.palette.background.default, 0.4),
+    boxShadow: (theme.vars || theme).shadows[1],
     padding: '8px 12px',
 }));
 
@@ -42,9 +42,8 @@ const Navbar = () => {
         setOpen(newOpen);
     };
 
-
     // Navigation for menu items
-    async function handleMenuClick(pageName) {
+    async function handleMenuClick(pageName: string) {
         if (pageName === "Home") {
             window.location.href = `/`;
         } else if (pageName === "Portfolio") {
@@ -86,7 +85,6 @@ const Navbar = () => {
                     <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0 }}>
                         <Sitemark />
                         <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-
                             {pages.map((page) => (
                                 <Button
                                     variant="text" color="info" size="small"
@@ -95,7 +93,6 @@ const Navbar = () => {
                                 >
                                     {page}
                                 </Button>
-
                             ))}
                         </Box>
                     </Box>

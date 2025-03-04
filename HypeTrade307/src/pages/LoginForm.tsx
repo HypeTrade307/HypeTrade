@@ -1,5 +1,7 @@
 import { useState } from "react";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
+import CssBaseline from "@mui/material/CssBaseline";
+import AppTheme from "../components/shared-theme/AppTheme.tsx";
 
 interface User {
     email: string;
@@ -7,7 +9,7 @@ interface User {
     password: string;
 }
 
-const LoginForm = () => {
+const LoginForm = (props: {disableCustomTheme?: boolean }) => {
     const [signUp, setSignUp] = useState<boolean>(false);
 
     // State for login form
@@ -60,103 +62,105 @@ const LoginForm = () => {
     return (
 
         <>
-            <Navbar />
-
-            <div className="login-container">
-                <form onSubmit={handleLogin}>
-                    <h2>Welcome to</h2>
-                    <h1>HypeTrade</h1>
-                    <div className="form-group">
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="Email"
-                            required
-                            value={loginUser.email}
-                            onChange={handleLoginChange}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="Password"
-                            required
-                            value={loginUser.password}
-                            onChange={handleLoginChange}
-                        />
-                    </div>
-                    <button type="submit" className="login-button">
-                        Login
-                    </button>
-                </form>
-
-                <div className="signup-section">
-                    <p>Don't have an account?</p>
-                    <button
-                        className="signup-button"
-                        onClick={() => setSignUp(true)}
-                    >
-                        Sign Up
-                    </button>
-                </div>
-
-                {signUp && (
-                    <div
-                        className="hud-container"
-                        onClick={() => setSignUp(false)}
-                    >
-                        <div
-                            className="hud-box"
-                            onClick={(e) => e.stopPropagation()} // Prevent click from closing modal
-                        >
-                            <button
-                                className="cancel"
-                                onClick={() => setSignUp(false)}
-                            >
-                                x
-                            </button>
-
-                            <h1>Sign Up</h1>
-                            <form onSubmit={handleSignup}>
-                                <div className="form-group">
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        placeholder="Email"
-                                        required
-                                        value={newUser.email}
-                                        onChange={handleSignupChange}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <input
-                                        type="text"
-                                        name="username"
-                                        placeholder="Username"
-                                        required
-                                        value={newUser.username}
-                                        onChange={handleSignupChange}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <input
-                                        type="password"
-                                        name="password"
-                                        placeholder="Password"
-                                        required
-                                        value={newUser.password}
-                                        onChange={handleSignupChange}
-                                    />
-                                </div>
-                                <button type="submit" className="submit-button">
-                                    Create Account
-                                </button>
-                            </form>
+            <AppTheme {...props}>
+                <CssBaseline enableColorScheme />
+                <Navbar />
+                <div className="login-container">
+                    <form onSubmit={handleLogin}>
+                        <h2>Welcome to</h2>
+                        <h1>HypeTrade</h1>
+                        <div className="form-group">
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="Email"
+                                required
+                                value={loginUser.email}
+                                onChange={handleLoginChange}
+                            />
                         </div>
+                        <div className="form-group">
+                            <input
+                                type="password"
+                                name="password"
+                                placeholder="Password"
+                                required
+                                value={loginUser.password}
+                                onChange={handleLoginChange}
+                            />
+                        </div>
+                        <button type="submit" className="login-button">
+                            Login
+                        </button>
+                    </form>
+
+                    <div className="signup-section">
+                        <p>Don't have an account?</p>
+                        <button
+                            className="signup-button"
+                            onClick={() => setSignUp(true)}
+                        >
+                            Sign Up
+                        </button>
                     </div>
-                )}
-            </div>
+
+                    {signUp && (
+                        <div
+                            className="hud-container"
+                            onClick={() => setSignUp(false)}
+                        >
+                            <div
+                                className="hud-box"
+                                onClick={(e) => e.stopPropagation()} // Prevent click from closing modal
+                            >
+                                <button
+                                    className="cancel"
+                                    onClick={() => setSignUp(false)}
+                                >
+                                    x
+                                </button>
+
+                                <h1>Sign Up</h1>
+                                <form onSubmit={handleSignup}>
+                                    <div className="form-group">
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            placeholder="Email"
+                                            required
+                                            value={newUser.email}
+                                            onChange={handleSignupChange}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <input
+                                            type="text"
+                                            name="username"
+                                            placeholder="Username"
+                                            required
+                                            value={newUser.username}
+                                            onChange={handleSignupChange}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <input
+                                            type="password"
+                                            name="password"
+                                            placeholder="Password"
+                                            required
+                                            value={newUser.password}
+                                            onChange={handleSignupChange}
+                                        />
+                                    </div>
+                                    <button type="submit" className="submit-button">
+                                        Create Account
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </AppTheme>
         </>
     );
 }
