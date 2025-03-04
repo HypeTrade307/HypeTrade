@@ -1,0 +1,19 @@
+first make sure you have node and npm install 
+https://nodejs.org/en/download
+once installed 
+check node -v works if not pray
+cd into the Hypertrade app
+run "npm install"
+run "npm run dev" 
+click the link
+the main page of react is app.tsx
+
+turn off and on again if need help
+
+Material UI and other icons that would make things easier (Because I can't style and need help):
+
+npm install @mui/material @emotion/react @emotion/styled
+npm install @mui/icons-material
+
+See this site for more details/templates/ideas:
+https://mui.com/material-ui/

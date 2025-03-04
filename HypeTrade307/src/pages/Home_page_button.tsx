@@ -1,7 +1,8 @@
+import './homepage.css'
 function Home_page_button(){
     return (
         <div>
-            <button onClick={() => window.location.href = "./"}>
+            <button className='button_top_left' onClick={() => window.location.href = "./"}>
                 Main Page
             </button>
         </div>

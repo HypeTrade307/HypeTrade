@@ -1,40 +1,63 @@
+import { useState } from "react";
+import styles from "./FriendRemove.module.css"; // Assuming you are using CSS modules
+import Portfolio_button from "./portfolio_button.tsx"; // Ensure this import is correct
 // POPULATE A (SCROLLABLE?) LIST WITH FRIENDS (USING DUMMY DATA) + ADD BUTTON TO DELETE FROM LIST
+import Navbar from "../components/NavbarSection/Navbar.tsx";
+import CssBaseline from "@mui/material/CssBaseline";
+import AppTheme from "../components/shared-theme/AppTheme.tsx";
 
-import {useState} from "react";
+function FriendRemove(props: {disableCustomTheme?: boolean }) {
+  const [friends, setFriends] = useState([
+    { id: 123456, name: "James" },
+    { id: 234567, name: "Fred" },
+    { id: 345678, name: "Peter" },
+    { id: 456789, name: "John" },
+    { id: 567890, name: "Alice" },
+    { id: 678901, name: "Bob" }
+  ]);
 
-function FriendRemove() {
-    const [friends, setFriends] = useState(['James', 'Fred', 'Peter']);
-    const [verify, setVerify] = useState({});
+  const [verify, setVerify] = useState<number | null>(null);
 
-    const verifyDelete = ({friend}: { friend: any }) => {
-        setFriends(friends.filter((f) => f !== friend)); // remove 'friend'
-        setVerify({});
-    };
+  const verifyDelete = (friendId: number) => {
+    setFriends(friends.filter((f) => f.id !== friendId)); // Remove friend by ID
+    setVerify(null);
+  };
 
-    return (
-        // Below lists the lists of friends, with an option to view their profile
-        // and the ability to remove them
+  return (
+      <>
+          <AppTheme {...props}>
+              <CssBaseline enableColorScheme />
+              <Navbar />
 
-        // TODO give view user profile functionality
-        <div className={'FriendList'}>
-            <form action="">
-                <h1>FriendList</h1>
+              <div className={styles.friendList}>
+                  <form>
+                      <h1>Friend List</h1>
+                      <ul className={styles.friendList}>
+                          {friends.map((friend) => (
+                              <li key={friend.id}>
+                                  {friend.name} <a href="#">View Profile</a>
 
-                <ul>
-                    {friends.map((friend) => (
-                        <li>
-                            {friend}{" "}
-                            <a href="#">View Profile</a>
-                            {verify === friend ? <>
-                                    <button onClick={() => verifyDelete({friend: friend})}>Confirm</button>
-                                    <button onClick={() => setVerify({})}>Cancel</button>
-                                </> : <button onClick={() => setVerify(friend)}>Remove</button>}
-                        </li>
-                    ))}
-                </ul>
-            </form>
-        </div>
-    )
+                                  {/* Portfolio button added back */}
+
+
+                                  <Portfolio_button friendID={friend.id} />
+
+                                  {verify === friend.id ? (
+                                      <>
+                                          <button onClick={() => verifyDelete(friend.id)}>Confirm</button>
+                                          <button onClick={() => setVerify(null)}>Cancel</button>
+                                      </>
+                                  ) : (
+                                      <button onClick={() => setVerify(friend.id)}>Remove</button>
+                                  )}
+                              </li>
+                          ))}
+                      </ul>
+                  </form>
+              </div>
+          </AppTheme>
+      </>
+  );
 }
 
-export default FriendRemove
+export default FriendRemove;
