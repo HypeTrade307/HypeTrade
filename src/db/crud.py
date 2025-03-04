@@ -201,14 +201,13 @@ def get_portfolio(db: Session, portfolio_id: int) -> models.Portfolio:
         raise HTTPException(status_code=404, detail="Portfolio not found.")
     return portfolio
 
-def get_portfolios_by_user(db: Session, user_id: int, skip: int = 0, limit: int = 100) -> list[models.Portfolio]:
+def get_portfolios_by_user(db: Session, user_id: int) -> list[models.Portfolio]:
     return (
         db.query(models.Portfolio)
         .filter(models.Portfolio.user_id == user_id)
-        .offset(skip)
-        .limit(limit)
         .all()
     )
+
 
 def update_portfolio(db: Session, portfolio_id: int, new_name: str) -> models.Portfolio:
     portfolio = db.query(models.Portfolio).filter(models.Portfolio.portfolio_id == portfolio_id).first()

@@ -18,7 +18,7 @@ Base.metadata.create_all(bind=engine)
 #         seed_stocks(db)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Change this to your frontend URL for security (e.g., "http://localhost:3000")
+    allow_origins=["*"],  # Change this to your frontend URL for security (e.g., "http://localhost:3000")
     allow_credentials=True,
     allow_methods=["*"],  # Allows GET, POST, OPTIONS, etc.
     allow_headers=["*"],  # Allows all headers

@@ -27,7 +27,7 @@ def get_portfolio(portfolio_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Portfolio not found.")
     return portfolio
 
-@router.get("/me", response_model=List[schemas.PortfolioResponse])
+@router.get("/", response_model=List[schemas.PortfolioResponse])
 def get_my_portfolios(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
