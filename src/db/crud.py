@@ -133,9 +133,9 @@ def get_stock(db: Session, stock_id: int) -> models.Stock:
     return stock
 
 
-def get_stocks(db: Session, skip: int = 0, limit: int = 100) -> list[models.Stock]:
+def get_stocks(db: Session) -> list[models.Stock]:
     """Retrieve a list of stocks, with pagination."""
-    return db.query(models.Stock).offset(skip).limit(limit).all()
+    return db.query(models.Stock).all()
 
 
 def update_stock(db: Session, stock_id: int, stock_data: schemas.StockUpdate) -> models.Stock:

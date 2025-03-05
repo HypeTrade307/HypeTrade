@@ -95,7 +95,7 @@ def remove_stock_from_portfolio(
     updated = crud.remove_stock_from_portfolio(db, portfolio_id, stock_id)
     return updated
 
-@router.get("/{portfolio_id}/stocks", response_model=List[schemas.StockResponse])
+@router.get("/{portfolio_id}/stocks", response_model=List[schemas.StockBase])
 def get_portfolio_stocks(portfolio_id: int, db: Session = Depends(get_db)):
     stocks = crud.get_portfolio_stocks(db, portfolio_id)
     return stocks

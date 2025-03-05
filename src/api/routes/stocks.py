@@ -19,8 +19,8 @@ def create_new_stock(stock_data: StockCreate, db: Session = Depends(get_db)):
     return create_stock(db, stock_data)
 
 @router.get("/", response_model=List[StockResponse])
-def read_all_stocks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return get_stocks(db, skip=skip, limit=limit)
+def read_all_stocks(db: Session = Depends(get_db)):
+    return get_stocks(db)
 
 @router.get("/{stock_id}", response_model=StockResponse)
 def read_stock(stock_id: int, db: Session = Depends(get_db)):

@@ -2,6 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from src.services.validation import Errors, validate_create
 from src.db.database import get_db
 from src.db import schemas
 from src.db.crud import get_user_by_email, create_user  # adapt to your code
@@ -22,11 +23,15 @@ def signup(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered",
         )
-
+    validation=validate_create(db=db, user_data=user_data)
+    msg = "User created successfully"
+    if validation != Errors.OK:
+        msg = "Validation error"
+        return {"msg": msg, "error": validation}
     hashed_pw = hash_password(user_data.password)
     user_data.password = hashed_pw
     new_user = create_user(db, user_data)
-    return {"msg": "User created successfully", "user_id": new_user.user_id}
+    return {"msg": msg, "user_id": new_user.user_id}
 
 @router.post("/login", response_model=schemas.TokenResponse)
 def login(login_data: schemas.UserLogin, db: Session = Depends(get_db)):

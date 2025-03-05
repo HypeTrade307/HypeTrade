@@ -47,6 +47,18 @@ export default function Portfolios_creation() {
             }
         }
     };
+    const removePortfolio = async (portfolioId: number) => {
+        try {
+            const token = localStorage.getItem("token");
+            await axios.delete(`http://127.0.0.1:8000/portfolios/${portfolioId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setPortfolios((prevPortfolios) => prevPortfolios.filter((p) => p.portfolio_id !== portfolioId));
+        } catch (error) {
+            console.error("Error deleting portfolio", error);
+            alert("Failed to delete portfolio");
+        }
+    };
 
     return (
         <div>
@@ -67,6 +79,14 @@ export default function Portfolios_creation() {
                     portfolios.map((portfolio) => (
                         <li key={portfolio.portfolio_id}>
                             <Link to={`/Portfolios/${portfolio.portfolio_id}`}>{portfolio.portfolio_name}</Link>
+                            <button 
+                                style={{marginLeft: "1rem"}}
+                                onClick={() => {
+                                    if (window.confirm("Are you sure you want to delete this portfolio?")) {
+                                        removePortfolio(portfolio.portfolio_id);
+                                    }
+                                }}
+                            >Remove</button>
                         </li>
                     ))
                 )}

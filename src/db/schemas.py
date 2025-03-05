@@ -61,6 +61,10 @@ class PostResponse(BaseModel):
 # ------------------
 #  STOCK SCHEMAS
 # ------------------
+class StockBase(BaseModel):
+    stock_id: Optional[int] = None
+    ticker: Optional[str] = None
+    stock_name: Optional[str] = None
 class StockCreate(BaseModel):
     ticker: str
     stock_name: str
