@@ -1,9 +1,9 @@
 from logging.config import fileConfig
-import os
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from src.db.models import Base
+import os
 from alembic import context
 
 # this is the Alembic Config object, which provides
@@ -30,13 +30,8 @@ DB_NAME = os.getenv("DB_NAME", "test")
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-db_url = f"mysql+mysqlconnector://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
+db_url = "mysql+mysqlconnector://root:my_db_pw_7892@localhost/test"
 config.set_main_option("sqlalchemy.url", db_url)
-
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
 
 
 def run_migrations_offline() -> None:

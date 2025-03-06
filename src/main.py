@@ -17,7 +17,7 @@ from src.api.routes.portfolios import router as portfolio_router
 from src.api.routes.auth import router as auth_router
 from src.processing.stock_processing import seed_stocks
 from fastapi.middleware.cors import CORSMiddleware
-
+Base.metadata.create_all(bind=engine)
 # create FastAPI app
 app = FastAPI()
 
