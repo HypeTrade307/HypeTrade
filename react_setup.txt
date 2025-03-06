@@ -2,7 +2,7 @@ first make sure you have node and npm install
 https://nodejs.org/en/download
 once installed 
 check node -v works if not pray
-cd into the Hypertrade app
+cd into the Hypertrade307 directory
 run "npm install"
 run "npm run dev" 
 click the link
