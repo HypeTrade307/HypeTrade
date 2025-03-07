@@ -14,7 +14,7 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ColorModeIconDropdown from '../shared-theme/ColorModeIconDropdown.tsx';
 import Sitemark from '../SitemarkIcon';
 
-const pages = ['Home', 'ViewStock', 'Portfolio', 'Profile', 'Login', 'Search', 'Friends'];
+const pages = ['Home', 'ViewStock', 'Portfolio', 'Profile', 'Login', 'Search', 'Friends', 'Chat'];
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
     display: 'flex',
@@ -60,6 +60,8 @@ const Navbar = () => {
             window.location.href = `/stock`;
         } else if (pageName === "Portfolio") {
             window.location.href = `/portfolio/:friendID`;
+        } else if (pageName === "Chat") {
+            window.location.href = `/chat`;
         } else {
             try {
                 // TODO: Update once we have login working with database
