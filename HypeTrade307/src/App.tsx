@@ -1,7 +1,7 @@
 // import Links from './pages/router.tsx';
 import './App.css'
 
-import React from "react";
+// import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Page_Not_found from "./pages/Page_Not_found.tsx";
 import Home from "./pages/home_page.tsx";
