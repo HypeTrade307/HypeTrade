@@ -80,6 +80,7 @@ def remove_friend(request: FriendModifyRequest):
 def process_text(data: InputData) -> List[str]:  
     return su.search(data.text)
 
+
 # include users router from main.py
 app.include_router(users_router)
 app.include_router(stocks_router)

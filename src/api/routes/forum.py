@@ -85,3 +85,9 @@ def delete_thread(
 
 # POSTS ENDPOINTS WOULD BE IN A SEPARATE ROUTER (posts.py)
 # Similar to portfolio_stocks relationship but with different structure
+
+
+@app.post("/api/threads", response_model=ThreadResponse)
+async def create_thread(thread: ThreadCreate, token: str = Depends(get_current_user)):
+    # Logic to create the thread using thread.title and thread.stock_id
+    return created_thread

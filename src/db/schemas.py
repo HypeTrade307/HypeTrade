@@ -135,3 +135,11 @@ class ThreadResponse(ThreadBase):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str
+
+
+class Thread(ThreadBase):
+    thread_id: int
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
