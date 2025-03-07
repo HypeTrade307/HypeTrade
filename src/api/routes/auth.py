@@ -28,7 +28,6 @@ def signup(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
     msg = "User created successfully"
     if validation != Errors.OK:
         msg = "Validation error"
-        print(f"WHAT HAPPENED {validation}")
         return {"msg": msg, "error": validation}
     hashed_pw = hash_password(user_data.password)
     user_data.password = hashed_pw
@@ -47,7 +46,7 @@ def login(login_data: schemas.UserLogin, db: Session = Depends(get_db)):
     """
     user = get_user_by_email(db, login_data.email)
     if not user:
-        print(get_users(db))
+        print("Incorrect email")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Incorrect email or password",

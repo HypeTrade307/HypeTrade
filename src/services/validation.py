@@ -12,7 +12,7 @@ class Errors(Enum):
     USERNAME = 4
 
 def validate_create(db: Session, user_data : schemas.UserCreate):
-    if not (re.search(r'[a-z]', user_data.password) or re.search(r'[A-Z]', user_data.password) or re.search(r'[0-9]', user_data.password)) or len(user_data.password) < 10:
+    if not (re.search(r'[a-z]', user_data.password) or re.search(r'[A-Z]', user_data.password) or re.search(r'[0-9]', user_data.password)) or len(user_data.password) < 8:
         return Errors.PASSWORD
     if crud.get_user_by_email(db, email=user_data.email):
         return Errors.EMAIL_TAKEN
