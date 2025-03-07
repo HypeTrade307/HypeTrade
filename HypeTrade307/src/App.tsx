@@ -13,6 +13,7 @@ import ViewStock from "./pages/ViewStock.tsx";
 import PortView from "./pages/Portfolio_friend_view.tsx";
 import Forum from "./pages/forum_page.tsx";
 import Chat from "./pages/chat.tsx";
+import FriendCheck from './pages/check_if_friends.tsx';
 
 // TODO: Update as new pages are added
 function App() {
@@ -29,6 +30,7 @@ function App() {
                 <Route path="/PortView/:friendID" element={<PortView />} />
                 <Route path="/forum" element={<Forum />} />
                 <Route path="/chat" element={<Chat />} />
+                <Route path="/check" element={<FriendCheck />} />
             </Routes>
         </Router>
     );
