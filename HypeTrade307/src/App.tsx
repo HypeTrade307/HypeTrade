@@ -24,7 +24,7 @@ function App() {
                 <Route path="*" element={<Page_Not_found />} />
                 <Route path="/friends" element={<FriendRemove />} />
                 <Route path="/stock" element={<ViewStock />} />
-                <Route path="/portfolio/:friendID" element={<PortView />} />
+                <Route path="/PortView/:friendID" element={<PortView />} />
             </Routes>
         </Router>
     );
