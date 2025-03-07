@@ -108,7 +108,30 @@ class PortfolioResponse(BaseModel):
     class Config:
         from_attributes = True  # If using Pydantic v1; use `from_attributes = True` in v
 
+# ----------------------------
+# thread schemas
+# ----------------------------
 
+class ThreadBase(BaseModel):
+    title: str
+    stock_id: int
+    forum_id: Optional[int] = None
+
+class ThreadCreate(ThreadBase):
+    pass
+
+class ThreadUpdate(ThreadBase):
+    pass
+
+class ThreadResponse(ThreadBase):
+    thread_id: int
+    creator_id: int
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        orm_mode = True
+        
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str
