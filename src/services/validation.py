@@ -18,7 +18,7 @@ def validate_create(db: Session, user_data : schemas.UserCreate):
         return Errors.EMAIL_TAKEN
     if not user_data.email.endswith("@gmail.com"):
             return Errors.EMAIL
-    if crud.get_user_by_name(db, name=user_data.name):
+    if crud.get_user_by_name(db, name=user_data.username):
         return Errors.USERNAME
     return Errors.OK
 
@@ -27,7 +27,7 @@ def validate_update(db : Session, user_data : schemas.UserUpdate):
         return Errors.PASSWORD
     if crud.get_user_by_email(db, email=user_data.email):
         return Errors.EMAIL
-    if crud.get_user_by_name(db, name=user_data.name):
+    if crud.get_user_by_name(db, name=user_data.username):
         return Errors.USERNAME
     return Errors.OK
 

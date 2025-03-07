@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from src.services.validation import Errors, validate_create
 from src.db.database import get_db
 from src.db import schemas
-from src.db.crud import get_user_by_email, create_user  # adapt to your code
+from src.db.crud import get_user_by_email, create_user, get_users # adapt to your code
 from src.security import verify_password, hash_password, create_access_token
 from src.db.models import User
 
@@ -19,6 +19,7 @@ def signup(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
     """
     existing_user = get_user_by_email(db, user_data.email)
     if existing_user:
+        print("Email already registered")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered",
@@ -27,10 +28,13 @@ def signup(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
     msg = "User created successfully"
     if validation != Errors.OK:
         msg = "Validation error"
+        print(f"WHAT HAPPENED {validation}")
         return {"msg": msg, "error": validation}
     hashed_pw = hash_password(user_data.password)
     user_data.password = hashed_pw
     new_user = create_user(db, user_data)
+    print(get_users(db))
+
     return {"msg": msg, "user_id": new_user.user_id}
 
 @router.post("/login", response_model=schemas.TokenResponse)
@@ -43,11 +47,13 @@ def login(login_data: schemas.UserLogin, db: Session = Depends(get_db)):
     """
     user = get_user_by_email(db, login_data.email)
     if not user:
+        print(get_users(db))
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Incorrect email or password",
         )
     if not verify_password(login_data.password, user.password):
+        print("Incorrect password")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Incorrect email or password",

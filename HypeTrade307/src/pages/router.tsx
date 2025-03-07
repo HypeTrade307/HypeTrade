@@ -7,6 +7,7 @@ import LoginForm from "./LoginForm.tsx";
 import Portfolios_creation from "./Portfolios_creation.tsx";
 import PortfolioPage from "./Portfoilos_viewer.tsx";
 import Search_other_users from "./Search_Other_Users.tsx"
+import Forum from "./Forum_Main.tsx";
 // import FriendRemove from "./FriendRemove.tsx";
 // import Check_if_friends from "./check_if_friends.jsx";
 
@@ -30,6 +31,7 @@ const Links: React.FC = () => {
                 <Route path="/login" element={<LoginForm />} />
                 <Route path="/Search" element={<Search_other_users />} />
                 <Route path="*" element={<Page_Not_found />} />
+                <Route path="/Forum" element={<Forum />} />
                 {/* Protect Profile Page */}
                 <Route path="/Profile" element={isAuthenticated ? <Profile_page /> : <Navigate to="/login" />} />
             </Routes>
