@@ -13,8 +13,9 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ColorModeIconDropdown from '../shared-theme/ColorModeIconDropdown.tsx';
 import Sitemark from '../SitemarkIcon';
+import Forum from "../../pages/forum_page.tsx";
 
-const pages = ['Home', 'ViewStock', 'Portfolio', 'Profile', 'Login', 'Search', 'Friends', 'Chat'];
+const pages = ['Home', 'ViewStock', 'Portfolio', 'Profile', 'Login', 'Search', 'Friends', 'Chat', 'Forum'];
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
     display: 'flex',
@@ -60,6 +61,8 @@ const Navbar = () => {
             window.location.href = `/stock`;
         } else if (pageName === "Portfolio") {
             window.location.href = `/portfolio/:friendID`;
+        } else if (pageName === "Forum") {
+            window.location.href = `/forum`;
         } else if (pageName === "Chat") {
             window.location.href = `/chat`;
         } else {
