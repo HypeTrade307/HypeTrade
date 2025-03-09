@@ -11,6 +11,7 @@ import LoginForm from "./pages/LoginForm.tsx";
 import FriendRemove from "./pages/FriendRemove.tsx";
 import ViewStock from "./pages/ViewStock.tsx";
 import PortView from "./pages/Portfolio_friend_view.tsx";
+import About from "./pages/about_pge.tsx";
 
 // TODO: Update as new pages are added
 function App() {
@@ -24,6 +25,7 @@ function App() {
                 <Route path="*" element={<Page_Not_found />} />
                 <Route path="/friends" element={<FriendRemove />} />
                 <Route path="/stock" element={<ViewStock />} />
+                <Route path="/about" element={<About />} />
                 <Route path="/PortView/:friendID" element={<PortView />} />
             </Routes>
         </Router>

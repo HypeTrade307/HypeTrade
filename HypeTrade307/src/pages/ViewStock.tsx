@@ -41,7 +41,8 @@ function  ViewStock(props: {disableCustomTheme?: boolean }) {
                 <Navbar />
 
                 <div>
-                    <h1 className="title">Top 20 Stox</h1>
+                    <h2 className="title">Top 20 Stox</h2>
+
                     <ul className="stock-list">
                         {stockList.map((stock) => (
                             // key is what will show, which will be a stock name in this case

@@ -1,7 +1,8 @@
 .title {
     display: block;
     position: absolute;
-    left: 600px;
+    text-align: center;
+    text-shadow: dodgerblue 2px 2px;
     top: 0;
     padding: 0;
     margin: 0;
@@ -17,7 +18,8 @@
 }
 
 .stock-button {
-    background-color: lawngreen;
+    background-color: dodgerblue;
+
     color: black;
     padding: 10px;
     border-radius: 15px;
@@ -47,11 +49,15 @@
 
 .cancel {
     display: block;
+    color: snow;
+    text-shadow: dodgerblue 2px 2px;
     position: absolute;
-    right: 380px;
-    margin: 0;
+    scale: 1.1;
+    margin: -2%;
 }
-
+.center_text {
+    text-align: center;
+}
 .time-buttons {
 
 }
