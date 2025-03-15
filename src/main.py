@@ -20,7 +20,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # create FastAPI app
 app = FastAPI()
-
+Base.metadata.create_all(bind=engine)
 # enable CORS
 app.add_middleware(
     CORSMiddleware,

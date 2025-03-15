@@ -27,7 +27,10 @@ def signup(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
     msg = "User created successfully"
     if validation != Errors.OK:
         msg = "Validation error"
-        return {"msg": msg, "error": validation}
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid sign-up data"
+        )
     hashed_pw = hash_password(user_data.password)
     user_data.password = hashed_pw
     new_user = create_user(db, user_data)

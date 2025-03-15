@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
-
+import random
 from src.db.database import get_db
 from src.db.schemas import StockCreate, StockUpdate, StockResponse
 from src.db.crud import (
@@ -34,3 +34,10 @@ def modify_stock(stock_id: int, stock_data: StockUpdate, db: Session = Depends(g
 def remove_stock(stock_id: int, db: Session = Depends(get_db)):
     delete_stock(db, stock_id)
     return
+
+@router.get("/sentiment/{stock_id}", response_model=List[int])
+def get_stock_sentiment(stock_id: int, db: Session = Depends(get_db), interval: int = 1):
+    # This is a placeholder function that returns random data, interval = 1 means 1 day
+    # In a real application, you would fetch data from a database or API
+    interval = interval * 24
+    return [random.randint(-10, 10) for _ in range(interval/12)]
