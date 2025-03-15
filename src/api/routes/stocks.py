@@ -35,9 +35,9 @@ def remove_stock(stock_id: int, db: Session = Depends(get_db)):
     delete_stock(db, stock_id)
     return
 
-@router.get("/sentiment/{stock_id}", response_model=List[int])
+@router.get("/sentiment/{stock_id}", response_model=List[float])
 def get_stock_sentiment(stock_id: int, db: Session = Depends(get_db), interval: int = 1):
     # This is a placeholder function that returns random data, interval = 1 means 1 day
     # In a real application, you would fetch data from a database or API
     interval = interval * 24
-    return [random.randint(-10, 10) for _ in range(interval/12)]
+    return [round(random.uniform(-10, 10), 3) for _ in range(int(interval / 12))]

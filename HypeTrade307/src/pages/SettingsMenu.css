@@ -1,0 +1,108 @@
+.settings-menu {
+    width: 100%;
+    background-color: black;
+    color: black;
+}
+
+.settings-menu h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.settings-tabs {
+    display: flex;
+    border-bottom: 1px solid slategrey;
+    margin-bottom: 20px;
+}
+
+.settings-tabs button {
+    background: none;
+    border: lightgreen;
+    padding: 10px 15px;
+    margin-right: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    position: relative;
+}
+
+.settings-tabs button.tab-active {
+    color: lightgreen;
+}
+
+.settings-tabs button.tab-active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: lightgreen;
+    border: 1px solid lightgreen;
+}
+
+.settings-section {
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    color: lightslategray;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: white;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid lightgreen;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.checkbox-group label {
+    margin-bottom: 0;
+    font-weight: normal;
+}
+
+.settings-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.save-button {
+    background-color: skyblue;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.save-button:hover {
+    background-color: skyblue;
+}
+
+.save-status {
+    color: lightgreen;
+}

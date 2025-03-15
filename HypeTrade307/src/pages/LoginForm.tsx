@@ -1,256 +1,183 @@
-// LoginForm.tsx
-import React, { useState } from "react";
-import axios from "axios";
+import { useState } from "react";
+import Navbar from "../components/NavbarSection/Navbar.tsx";
 import { useNavigate } from "react-router-dom";
+import CssBaseline from "@mui/material/CssBaseline";
+import AppTheme from "../components/shared-theme/AppTheme.tsx";
+import axios from "axios";
 import { toast } from "react-toastify";
 
 interface User {
-  email: string;
-  username: string;
-  password: string;
+    email: string;
+    username: string;
+    password: string;
 }
 
-const LoginForm: React.FC = () => {
-  const [signUp, setSignUp] = useState<boolean>(false);
-  const navigate = useNavigate();
+const LoginForm = (props: { disableCustomTheme?: boolean }) => {
+    const [signUp, setSignUp] = useState<boolean>(false);
+    const navigate = useNavigate();
 
-  const [loginUser, setLoginUser] = useState<Omit<User, "username">>({
-    email: "",
-    password: "",
-  });
+    // State for login form
+    const [loginUser, setLoginUser] = useState<Omit<User, "username">>({
+        email: "",
+        password: "",
+    });
 
-  const [newUser, setNewUser] = useState<User>({
-    email: "",
-    username: "",
-    password: "",
-  });
+    // State for signup form
+    const [newUser, setNewUser] = useState<User>({
+        email: "",
+        username: "",
+        password: "",
+    });
 
-  // Handle changes for login fields
-  const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLoginUser({ ...loginUser, [e.target.name]: e.target.value });
-  };
+    // Handles user trying to log in
+    const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setLoginUser({
+            ...loginUser, // creates copy of loginUser obj
+            [e.target.name]: e.target.value,
+        });
+    };
 
-  // Handle changes for signup fields
-  const handleSignupChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewUser({ ...newUser, [e.target.name]: e.target.value });
-  };
+    // Handles user wanting to sign up
+    const handleSignupChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNewUser({
+            ...newUser, // creates copy of newUser obj
+            [e.target.name]: e.target.value,
+        });
+    };
 
-  // Submit login
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post("http://127.0.0.1:8000/auth/login", loginUser);
-      localStorage.setItem("token", response.data.access_token);
-      toast.success("Login successful!");
-      navigate("/Portfolios");
-    } catch (err) {
-      console.error(err);
-      toast.error("Invalid credentials");
-    }
-  };
+    // Handles login submission (FIXED: Added `async`)
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post(
+                "http://127.0.0.1:8000/auth/login",
+                loginUser
+            );
+            localStorage.setItem("token", response.data.access_token);
+            toast.success("Login successful!");
+            navigate("/Portfolios");
+        } catch (err) {
+            console.error(err);
+            toast.error("Invalid credentials");
+        }
+    };
 
-  // Submit signup
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("http://127.0.0.1:8000/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newUser),
-      });
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.detail || "Signup failed");
-      }
-      toast.success("Account created successfully!");
-      setSignUp(false);
-    } catch (error) {
-      console.error(error);
-      toast.error("Error signing up. Maybe the email is taken.");
-    }
-  };
+    // Handle signup submission (FIXED: Used axios instead of fetch)
+    const handleSignup = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post(
+                "http://127.0.0.1:8000/auth/signup",
+                newUser
+            );
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        minHeight: "100vh",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#f5f5f5",
-      }}
-    >
-      <div
-        style={{
-          width: "360px",
-          padding: "20px",
-          backgroundColor: "#fff",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-          borderRadius: "8px",
-        }}
-      >
-        {!signUp ? (
-          // --- LOGIN FORM ---
-          <form onSubmit={handleLogin}>
-            <h2 style={{ marginBottom: "5px" }}>Welcome to</h2>
-            <h1 style={{ marginTop: "0", marginBottom: "20px" }}>HypeTrade</h1>
+            if (response.status === 201) {
+                toast.success("Account created successfully!");
+                setSignUp(false); // close signup window
+                navigate("/profile");
+            } else {
+                throw new Error(response.data.detail || "Signup failed");
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Error signing up. Maybe the email is taken.");
+        }
+    };
 
-            <div style={{ marginBottom: "15px" }}>
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                required
-                value={loginUser.email}
-                onChange={handleLoginChange}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  marginBottom: "5px",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                }}
-              />
-            </div>
-            <div style={{ marginBottom: "15px" }}>
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                required
-                value={loginUser.password}
-                onChange={handleLoginChange}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  marginBottom: "5px",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                }}
-              />
-            </div>
+    return (
+        <>
+            <AppTheme {...props}>
+                <CssBaseline enableColorScheme />
+                <Navbar />
+                <div className="login-container">
+                    <form onSubmit={handleLogin}>
+                        <h2>Welcome to</h2>
+                        <h1>HypeTrade</h1>
+                        <div className="form-group">
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="Email"
+                                required
+                                value={loginUser.email}
+                                onChange={handleLoginChange}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <input
+                                type="password"
+                                name="password"
+                                placeholder="Password"
+                                required
+                                value={loginUser.password}
+                                onChange={handleLoginChange}
+                            />
+                        </div>
+                        <button type="submit" className="login-button">
+                            Login
+                        </button>
+                    </form>
 
-            <button
-              type="submit"
-              style={{
-                width: "100%",
-                padding: "12px",
-                backgroundColor: "#007bff",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontSize: "16px",
-              }}
-            >
-              Login
-            </button>
+                    <div className="signup-section">
+                        <p>Don't have an account?</p>
+                        <button className="signup-button" onClick={() => setSignUp(true)}>
+                            Sign Up
+                        </button>
+                    </div>
 
-            <div style={{ marginTop: "10px", textAlign: "center" }}>
-              <p>Don't have an account?</p>
-              <button
-                type="button"
-                onClick={() => setSignUp(true)}
-                style={{
-                  backgroundColor: "#6c757d",
-                  border: "none",
-                  padding: "8px 16px",
-                  color: "#fff",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
-              >
-                Sign Up
-              </button>
-            </div>
-          </form>
-        ) : (
-          // --- SIGNUP FORM ---
-          <form onSubmit={handleSignup}>
-            <button
-              onClick={() => setSignUp(false)}
-              type="button"
-              style={{
-                float: "right",
-                background: "none",
-                border: "none",
-                fontSize: "18px",
-                cursor: "pointer",
-              }}
-            >
-              x
-            </button>
-            <h1 style={{ marginBottom: "20px" }}>Sign Up</h1>
+                    {signUp && (
+                        <div className="hud-container" onClick={() => setSignUp(false)}>
+                            <div
+                                className="hud-box"
+                                onClick={(e) => e.stopPropagation()} // Prevent click from closing modal
+                            >
+                                <button className="cancel" onClick={() => setSignUp(false)}>
+                                    x
+                                </button>
 
-            <div style={{ marginBottom: "15px" }}>
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                required
-                value={newUser.email}
-                onChange={handleSignupChange}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                }}
-              />
-            </div>
-            <div style={{ marginBottom: "15px" }}>
-              <input
-                type="text"
-                name="username"
-                placeholder="Username"
-                required
-                value={newUser.username}
-                onChange={handleSignupChange}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                }}
-              />
-            </div>
-            <div style={{ marginBottom: "15px" }}>
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                required
-                value={newUser.password}
-                onChange={handleSignupChange}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                }}
-              />
-            </div>
-
-            <button
-              type="submit"
-              style={{
-                width: "100%",
-                padding: "12px",
-                backgroundColor: "#28a745",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontSize: "16px",
-              }}
-            >
-              Create Account
-            </button>
-          </form>
-        )}
-      </div>
-    </div>
-  );
+                                <h1>Sign Up</h1>
+                                <form onSubmit={handleSignup}>
+                                    <div className="form-group">
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            placeholder="Email"
+                                            required
+                                            value={newUser.email}
+                                            onChange={handleSignupChange}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <input
+                                            type="text"
+                                            name="username"
+                                            placeholder="Username"
+                                            required
+                                            value={newUser.username}
+                                            onChange={handleSignupChange}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <input
+                                            type="password"
+                                            name="password"
+                                            placeholder="Password"
+                                            required
+                                            value={newUser.password}
+                                            onChange={handleSignupChange}
+                                        />
+                                    </div>
+                                    <button type="submit" className="submit-button">
+                                        Create Account
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </AppTheme>
+        </>
+    );
 };
 
 export default LoginForm;

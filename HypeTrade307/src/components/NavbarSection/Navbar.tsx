@@ -13,8 +13,9 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ColorModeIconDropdown from '../shared-theme/ColorModeIconDropdown.tsx';
 import Sitemark from '../SitemarkIcon';
+import type {} from '@mui/material/themeCssVarsAugmentation';
 
-const pages = ['Home', 'ViewStock', 'Portfolio', 'Profile', 'Login', 'Search', 'Friends'];
+const pages = ['Home', 'ViewStock', 'Portfolio', 'Profile', 'Search', 'Friends', 'Chat', 'Forum'];
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
     display: 'flex',
@@ -60,6 +61,10 @@ const Navbar = () => {
             window.location.href = `/stock`;
         } else if (pageName === "Portfolio") {
             window.location.href = `/portfolio/:friendID`;
+        } else if (pageName === "Forum") {
+            window.location.href = `/forum`;
+        } else if (pageName === "Chat") {
+            window.location.href = `/chat`;
         } else {
             try {
                 // TODO: Update once we have login working with database

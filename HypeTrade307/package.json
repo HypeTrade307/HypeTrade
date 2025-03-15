@@ -10,15 +10,25 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@types/react-bootstrap": "^0.32.37",
-    "@types/react-router-bootstrap": "^0.26.6",
-    "axios": "^1.8.1",
-    "react": "^19.0.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.4.7",
+    "@mui/material": "^6.4.7",
+    "@mui/x-charts": "^7.27.1",
+    "@mui/x-data-grid": "^7.27.3",
+    "@mui/x-data-grid-pro": "^7.27.3",
+    "@mui/x-date-pickers": "^7.27.3",
+    "@mui/x-tree-view": "^7.26.0",
+    "@react-spring/web": "^9.7.5",
+    "axios": "^1.8.3",
+    "dayjs": "^1.11.13",
+    "react": "^18.3.1",
     "react-bootstrap": "^2.10.9",
-    "react-dom": "^19.0.0",
-    "react-router-bootstrap": "^0.26.3",
+    "react-dom": "^18.3.1",
     "react-router-dom": "^7.2.0",
-    "react-toastify": "^11.0.5"
+    "react-toastify": "^11.0.5",
+    "styled-components": "^6.1.15",
+    "stylis-plugin-rtl": "^2.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
