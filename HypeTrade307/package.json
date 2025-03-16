@@ -18,6 +18,7 @@
     "react-bootstrap": "^2.10.9",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.2.0",
+    "recharts": "^2.15.1",
     "styled-components": "^6.1.15",
     "stylis-plugin-rtl": "^2.1.1"
   },

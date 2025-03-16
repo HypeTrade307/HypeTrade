@@ -14,6 +14,7 @@ Material UI and other icons that would make things easier (Because I can't style
 
 npm install @mui/material @emotion/react @emotion/styled
 npm install @mui/icons-material
+npm install recharts
 
 See this site for more details/templates/ideas:
 https://mui.com/material-ui/
