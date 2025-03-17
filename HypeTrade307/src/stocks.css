@@ -52,6 +52,111 @@
     margin: 0;
 }
 
-.time-buttons {
+.notification-container {
+    position: absolute;
+    top: 20px;
+    right: 100px;
+    z-index: 100px;
+    background-color: black;
+}
 
+.notification-button {
+    background-color: greenyellow;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    overflow: visible;
+    z-index: 1; 
+}
+
+.notification-badge {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background-color: red;
+    color: white;
+    border-radius: 100%;
+    width: 22px;
+    height: 22px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-dropdown {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    width: 350px;
+    background-color: black;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 101;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px black;
+}
+
+.notification-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.mark-read-button {
+    background: none;
+    border: none;
+    color: paleturquoise; 
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.notification-list {
+    padding: 0;
+}
+
+.notification-item {
+    padding: 15px;
+    border-bottom: 1px solid white;
+    cursor: pointer;
+    transition: background-color 0.05s;
+}
+
+.notification-item:hover {
+    background-color: darkslategrey;
+}
+
+.notification-item.unread {
+    background-color: skyblue;
+}
+
+.notification-message {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+}
+
+.notification-time {
+    color: white;
+    font-size: 12px;
+}
+
+.no-notifications {
+    padding: 20px;
+    text-align: center;
+    color: lightslategrey;
 }
