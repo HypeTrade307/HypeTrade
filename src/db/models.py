@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Float, Integer, String, Table, Text, ForeignKey, Enum, Boolean, TIMESTAMP, VARCHAR
+from sqlalchemy import Column, Float, Integer, String, Table, Text, ForeignKey, Enum, Boolean, TIMESTAMP, VARCHAR, func
 from sqlalchemy.orm import relationship, backref
 from .database import Base
 import datetime
@@ -40,6 +40,13 @@ comment_likes = Table(
     Column("comment_id", Integer, ForeignKey("comments.comment_id", ondelete="CASCADE"), primary_key=True),
     Column("user_id", Integer, ForeignKey("users.user_id", ondelete="CASCADE"), primary_key=True),
     Column("created_at", TIMESTAMP, default=datetime.datetime.utcnow)
+)
+
+scrapedentry_stocks = Table(
+    "scrapedentry_stocks",
+    Base.metadata,
+    Column("entry_id", Integer, ForeignKey("scraped_reddit_entries.entry_id", ondelete="CASCADE"), primary_key=True),
+    Column("stock_id", Integer, ForeignKey("stocks.stock_id", ondelete="CASCADE"), primary_key=True),
 )
 
 # ------------------------------------------------------------------
@@ -93,6 +100,7 @@ class Stock(Base):
       - Many threads can reference a given stock
       - Many portfolios can include this stock (through 'portfolio_stocks')
       - Many sentiment analysis entries
+      - Many scraped Reddit entries that mention this stock
     """
     __tablename__ = "stocks"
 
@@ -104,19 +112,21 @@ class Stock(Base):
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
     updated_at = Column(TIMESTAMP, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
-    # --- Relationships ---
-    # Threads referencing this stock
+    # Existing relationships
     threads = relationship("Thread", back_populates="stock_ref", cascade="all, delete-orphan")
-
-    # Many-to-many with portfolios
     in_portfolios = relationship(
         "Portfolio",
         secondary=portfolio_stocks,
         back_populates="stocks"
     )
-
-    # Sentiment analysis entries
     sentiments = relationship("SentimentAnalysis", back_populates="stock", cascade="all, delete-orphan")
+
+    # NEW relationship to scraped Reddit entries
+    scraped_entries = relationship(
+        "ScrapedRedditEntry",
+        secondary="scrapedentry_stocks",
+        back_populates="mentioned_stocks"
+    )
 
 
 class Portfolio(Base):
@@ -255,18 +265,46 @@ class Notification(Base):
 
 
 class SentimentAnalysis(Base):
-    """
-    The 'sentiment_analysis' table.
-    Tracks the sentiment about a particular stock at a given time.
-    """
     __tablename__ = "sentiment_analysis"
 
     sentiment_id = Column(Integer, primary_key=True, index=True)
     stock_id = Column(Integer, ForeignKey("stocks.stock_id", ondelete="CASCADE"), nullable=False)
+    entry_id = Column(Integer, ForeignKey("scraped_reddit_entries.entry_id", ondelete="CASCADE"), nullable=True)
     sentiment_value = Column(Float, nullable=False)
-    raw_string = Column(Text)  # e.g. raw social media text
-    weight_data = Column(Float) # optional weighting or confidence
-    created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
+    raw_string = Column(Text)
+    created_at = Column(TIMESTAMP, default=func.now())
 
-    # --- Relationships ---
+    # Stock relationship
     stock = relationship("Stock", back_populates="sentiments")
+
+    # OPTIONAL relationship to the entry
+    entry = relationship("ScrapedRedditEntry", backref="sentiment_entries")
+
+
+class ScrapedRedditEntry(Base):
+    """
+    The 'scraped_reddit_entries' table. 
+    Stores raw text from Reddit (posts or comments).
+    """
+    __tablename__ = "scraped_reddit_entries"
+
+    entry_id = Column(Integer, primary_key=True, index=True)
+    reddit_id = Column(String(50), unique=True, nullable=False)  # e.g. "t3_xxx" or "t1_xxx"
+    is_comment = Column(Boolean, default=False)
+    parent_reddit_id = Column(String(50), nullable=True)         # For comments
+    subreddit = Column(String(100), nullable=True)
+    author = Column(String(100), nullable=True)
+    title = Column(Text, nullable=True)                          # For post title
+    content = Column(Text, nullable=True)                        # selftext or comment body
+    score = Column(Integer, default=0)
+    url = Column(Text, nullable=True)
+    created_utc = Column(TIMESTAMP, nullable=True)               # Reddit's own time
+    created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow) # The time we inserted it
+    processed_at = Column(TIMESTAMP, nullable=True)              # When we last processed it for sentiment
+
+    # Many-to-many relationship to Stock
+    mentioned_stocks = relationship(
+        "Stock",
+        secondary="scrapedentry_stocks",
+        back_populates="scraped_entries"
+    )
