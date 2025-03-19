@@ -1,24 +1,24 @@
-flask
+flask~=3.1.0
 gunicorn
 # FastAPI and ASGI server
-fastapi
-uvicorn
+fastapi~=0.115.8
+uvicorn~=0.34.0
 
 # Database (MySQL + SQLAlchemy)
 mysql-connector-python
-sqlalchemy
-alembic
+sqlalchemy~=2.0.38
+alembic~=1.14.1
 
 # Pydantic for data validation
-pydantic
+pydantic~=2.10.6
 
 # Authentication and Security
-passlib[bcrypt]  # For password hashing
-python-jose[cryptography]  # For JWT authentication
+passlib[bcrypt]~=1.7.4
+python-jose[cryptography]~=3.4.0
 python-multipart  # For handling form data (e.g., file uploads)
 
 # Web Scraping (Reddit API)
-praw
+praw~=7.8.1
 
 # Stock Market Data APIs
 yfinance  # For getting stock price data
@@ -44,3 +44,7 @@ python-dotenv
 
 # CORS Middleware (For frontend integration)
 fastapi[all]
+
+requests~=2.32.3
+protobuf~=4.25.6
+pandas~=2.2.3
