@@ -1,8 +1,8 @@
 from enum import Enum
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from src.db.database import get_db
 from src.db import crud, schemas
+from src.db.database import get_db
 from src.services.validation import Errors, validate_update, validate_create
 
 router = APIRouter(prefix="/users", tags=["Users"])

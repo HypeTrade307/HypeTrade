@@ -1,8 +1,11 @@
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-
-DATABASE_URL = "mysql+mysqlconnector://root:my_db_pw_7892@localhost/test"
+from dotenv import load_dotenv
+load_dotenv()
+DATABASE_URL = f"mysql+mysqlconnector://root:{os.getenv('DB_PW')}@localhost/test"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

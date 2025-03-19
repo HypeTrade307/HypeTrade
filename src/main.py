@@ -16,8 +16,11 @@ from src.api.routes.portfolios import router as portfolio_router
 from src.api.routes.auth import router as auth_router
 from src.processing.stock_processing import seed_stocks
 from fastapi.middleware.cors import CORSMiddleware
+import sys
+import os
 
-# create FastAPI app
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))  # add src to path
+print(sys.path)
 app = FastAPI()
 Base.metadata.create_all(bind=engine)
 # enable CORS
