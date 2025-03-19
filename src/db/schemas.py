@@ -17,6 +17,7 @@ class UserCreate(UserBase):
     username: str
     email: EmailStr
     password: str
+    confirmation_code: int
 
 class UserUpdate(UserBase):
     password: Optional[str] = None  # optional if only updating name/email

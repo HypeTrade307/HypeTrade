@@ -29,10 +29,13 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
         password: "",
     });
 
+    const [confirmationCode, setConfirmationCode] = useState<string>("");
+    const [generatedCode, setGeneratedCode] = useState<number | null>(null);
+
     // Handles user trying to log in
     const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setLoginUser({
-            ...loginUser, // creates copy of loginUser obj
+            ...loginUser,
             [e.target.name]: e.target.value,
         });
     };
@@ -40,12 +43,81 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
     // Handles user wanting to sign up
     const handleSignupChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNewUser({
-            ...newUser, // creates copy of newUser obj
+            ...newUser,
             [e.target.name]: e.target.value,
         });
     };
 
-    // Handles login submission (FIXED: Added `async`)
+    // Handles confirmation code input
+    const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setConfirmationCode(e.target.value);
+    };
+
+    // Sends a confirmation code
+    const sendConfirmationCode = async () => {
+        if (!newUser.email) {
+            toast.error("Please enter your email first.");
+            return;
+        }
+
+        try {
+            const response = await axios.post(
+                "http://127.0.0.1:8000/auth/send_confirmation_code",
+                { email: newUser.email },
+                { headers: { "Content-Type": "application/json" } }
+            );
+
+            if (response.status === 200) {
+                setGeneratedCode(response.data.code);
+                toast.success("Confirmation code sent!");
+            } else {
+                toast.error("Error sending confirmation code.");
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to send confirmation code.");
+        }
+    };
+
+    // Handle signup submission
+    const handleSignup = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!generatedCode) {
+            toast.error("Please request a confirmation code first.");
+            return;
+        }
+
+        if (parseInt(confirmationCode) !== generatedCode) {
+            toast.error("Invalid confirmation code.");
+            return;
+        }
+
+        try {
+            const response = await axios.post(
+                "http://127.0.0.1:8000/auth/signup",
+                {
+                    email: newUser.email,
+                    username: newUser.username,
+                    password: newUser.password,
+                    confirmation_code: parseInt(confirmationCode), // ensure it's sent
+                }
+            );
+
+            if (response.status === 201) {
+                toast.success("Account created successfully!");
+                setSignUp(false);
+                navigate("/profile");
+            } else {
+                throw new Error(response.data.detail || "Signup failed");
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Error signing up. Maybe the email is taken.");
+        }
+    };
+
+    // Handles login submission (FIXED: Added async)
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
@@ -61,29 +133,6 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
             toast.error("Invalid credentials");
         }
     };
-
-    // Handle signup submission (FIXED: Used axios instead of fetch)
-    const handleSignup = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post(
-                "http://127.0.0.1:8000/auth/signup",
-                newUser
-            );
-
-            if (response.status === 201) {
-                toast.success("Account created successfully!");
-                setSignUp(false); // close signup window
-                navigate("/profile");
-            } else {
-                throw new Error(response.data.detail || "Signup failed");
-            }
-        } catch (error) {
-            console.error(error);
-            toast.error("Error signing up. Maybe the email is taken.");
-        }
-    };
-
     return (
         <>
             <AppTheme {...props}>
@@ -165,6 +214,23 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
                                             required
                                             value={newUser.password}
                                             onChange={handleSignupChange}
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="send-code-button"
+                                        onClick={sendConfirmationCode}
+                                    >
+                                        Send Confirmation Code
+                                    </button>
+                                    <div className="form-group">
+                                        <input
+                                            type="text"
+                                            name="confirmationCode"
+                                            placeholder="Enter confirmation code"
+                                            required
+                                            value={confirmationCode}
+                                            onChange={handleCodeChange}
                                         />
                                     </div>
                                     <button type="submit" className="submit-button">
