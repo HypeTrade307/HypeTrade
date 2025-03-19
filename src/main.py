@@ -6,8 +6,7 @@ import os
 import uvicorn
 
 # import backend functions
-from backend import search_users as su
-from backend import check_if_friends as cf
+from src import check_if_friends as cf, search_users as su
 
 # import database setup
 from src.db.database import SessionLocal, engine, Base
