@@ -20,7 +20,6 @@ import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))  # add src to path
-print(sys.path)
 app = FastAPI()
 Base.metadata.create_all(bind=engine)
 # enable CORS

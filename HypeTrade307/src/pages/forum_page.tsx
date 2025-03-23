@@ -1,6 +1,3 @@
-import { useState } from 'react'
-import reactLogo from '../assets/react.svg'
-import viteLogo from '/vite.svg'
 import '../App.css'
 
 
@@ -14,9 +11,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Navbar from "../components/NavbarSection/Navbar.tsx";
-import Header from '../components/Header';
 import MainGrid from '../components/MainGrid';
-import SideMenu from '../components/SideMenu';
 import AppTheme from '../components/shared-theme/AppTheme';
 import {
     chartsCustomizations,

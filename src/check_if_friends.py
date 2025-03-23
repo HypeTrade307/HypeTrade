@@ -11,14 +11,14 @@ requested_user = 'user3'
 
 def auto_setup_users(): # indices need to be synced
     user_fl_map=dict()
-    print("Auto setting up users")
+    #print("Auto setting up users")
     for user in users:
         user_fl_map[user] = {'fl': user_fls[users.index(user)]} # a list of friends associated with the attribute name fl, within a list wherein outer list is for all attributes
-    print(user_fl_map)
+    #print(user_fl_map)
     return user_fl_map
 
 user_fl_map = auto_setup_users()
-print(user_fl_map)
+#Oprint(user_fl_map)
 def check_friends(current_user, requested_user):
     print('Checking if current user {current_user} and requested user {requested_user} are friends')
     if (current_user in user_fl_map.get(requested_user).get('fl') and requested_user in user_fl_map.get(current_user).get('fl')):
