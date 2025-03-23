@@ -127,7 +127,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
             );
             localStorage.setItem("token", response.data.access_token);
             toast.success("Login successful!");
-            navigate("/Portfolios");
+            navigate("/Profile");
         } catch (err) {
             console.error(err);
             toast.error("Invalid credentials");

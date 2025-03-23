@@ -29,7 +29,7 @@ def get_user_by_id(db: Session, user_id: int):
 def get_users(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.User).offset(skip).limit(limit).all()
 
-def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate):
+def update_user(db: Session, user_id: int, user_update: schemas.UserBase):
     db_user = db.query(models.User).filter(models.User.user_id == user_id).first()
     if not db_user:
         return None
@@ -38,13 +38,25 @@ def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate):
         db_user.username = user_update.username
     if user_update.email is not None:
         db_user.email = user_update.email
-    if user_update.password is not None:
-        db_user.password = user_update.password
 
     db.commit()
     db.refresh(db_user)
     return db_user
 
+def get_password(db: Session, user_id: int):
+    db_user = db.query(models.User).filter(models.User.user_id == user_id).first()
+    if not db_user:
+        return None
+    return db_user.password
+
+def update_password(db: Session, user_id: int, new_password: str):
+    db_user = db.query(models.User).filter(models.User.user_id == user_id).first()
+    if not db_user:
+        return None
+    db_user.password = hashing.hash(new_password)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
 
 def delete_user(db: Session, user_id: int):
     db_user = db.query(models.User).filter(models.User.user_id == user_id).first()

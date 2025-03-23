@@ -31,3 +31,7 @@ def validate_update(db : Session, user_data : schemas.UserUpdate):
         return Errors.USERNAME
     return Errors.OK
 
+def validate_password(password : str):
+    if not (re.search(r'[a-z]', password) or re.search(r'[A-Z]', password) or re.search(r'[0-9]', password)) or len(password) < 10:
+        return Errors.PASSWORD
+    return Errors.OK

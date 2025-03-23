@@ -1,123 +1,206 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 import "./SettingsMenu.css";
 
-interface UserSettings {
-    username: string;
-    email: string;
-    emailNotifications: boolean;
+interface UserUpdate {
+  username: string;
+  email: string;
+  emailNotifications: boolean;
+}
+
+interface UserPassword {
+  old_password: string;
+  new_password: string;
+  confirmPassword: string;
 }
 
 export default function SettingsMenu() {
-    const [settings, setSettings] = useState<UserSettings>({
-        username: "", // TODO populate username and email
-        email: "",
-        emailNotifications: true,
+  const [activeTab, setActiveTab] = useState<string>("profile");
+
+  const [userUpdate, setUserUpdate] = useState<UserUpdate>({
+    username: "",
+    email: "",
+    emailNotifications: true,
+  });
+
+  const [passwordData, setPasswordData] = useState<UserPassword>({
+    old_password: "",
+    new_password: "",
+    confirmPassword: "",
+  });
+
+  const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, type, checked, value } = e.target;
+    setUserUpdate({
+      ...userUpdate,
+      [name]: type === "checkbox" ? checked : value,
     });
+  };
 
-    const [activeTab, setActiveTab] = useState<string>("profile");
-    const [saveStatus, setSaveStatus] = useState<string>("");
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPasswordData({
+      ...passwordData,
+      [name]: value,
+    });
+  };
 
-    // Load settings from localStorage
-    useEffect(() => {
-        const storedSettings = localStorage.getItem("userSettings");
-        if (storedSettings) {
-            setSettings(JSON.parse(storedSettings));
-        }
-    }, []);
+  const saveChanges = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("You are not authenticated. Please log in first.");
+      return;
+    }
 
-    // Save settings to localStorage
-    const saveSettings = () => {
-        localStorage.setItem("userSettings", JSON.stringify(settings));
-        setSaveStatus("Settings saved successfully!");
-
-        // save message displays for 1.5 secs
-        setTimeout(() => {
-            setSaveStatus("");
-        }, 1500);
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value, type, checked } = e.target;
-        setSettings({
-            ...settings,
-            [name]: type === "checkbox" ? checked : value,
+    try {
+      if (activeTab === "profile") {
+        const body = {
+          username: userUpdate.username,
+          email: userUpdate.email,
+        };
+        await axios.put("http://127.0.0.1:8000/users/me", body, {
+          headers: { Authorization: `Bearer ${token}` },
         });
-    };
+        toast.success("Profile updated successfully!");
+      } else if (activeTab === "security") {
+        if (passwordData.new_password !== passwordData.confirmPassword) {
+          toast.error("New password and confirm password do not match.");
+          return;
+        }
 
-    return (
-        <div className="settings-menu">
-            <h2>Settings</h2>
+        const body = {
+          old_password: passwordData.old_password,
+          new_password: passwordData.new_password,
+        };
+        await axios.put("http://127.0.0.1:8000/users/me/password", body, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success("Password updated successfully!");
 
-            {/* Tab navigation */}
-            <div className="settings-tabs">
-                <button
-                    className={activeTab === "profile" ? "tab-active" : ""}
-                    onClick={() => setActiveTab("profile")}
-                >
-                    Profile
-                </button>
-                <button
-                    className={activeTab === "notifications" ? "tab-active" : ""}
-                    onClick={() => setActiveTab("notifications")}
-                >
-                    Notifications
-                </button>
-            </div>
+        setPasswordData({
+          old_password: "",
+          new_password: "",
+          confirmPassword: "",
+        });
+      } else if (activeTab === "notifications") {
+        toast.success("Notification preferences saved locally.");
+      }
+    } catch (error: any) {
+      console.error(error);
+      const detail = error.response?.data?.detail || "Error saving changes";
+      toast.error(detail);
+    }
+  };
 
-            {/* Name settings */}
-            {activeTab === "profile" && (
-                <div className="settings-section">
-                    <div className="form-group">
-                        <label htmlFor="displayName">New Username</label>
-                        <input
-                            type="text"
-                            id="displayName"
-                            name="displayName"
-                            value={settings.username}
-                            onChange={handleInputChange}
-                            placeholder="Enter your display name"
-                        />
-                    </div>
+  return (
+    <div className="settings-menu">
+      <h2>Settings</h2>
 
-                    <div className="form-group">
-                        <label htmlFor="email">Change Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={settings.email}
-                            onChange={handleInputChange}
-                            placeholder="Enter your email"
-                        />
-                    </div>
+      <div className="settings-tabs">
+        <button
+          className={activeTab === "profile" ? "tab-active" : ""}
+          onClick={() => setActiveTab("profile")}
+        >
+          Profile
+        </button>
+        <button
+          className={activeTab === "security" ? "tab-active" : ""}
+          onClick={() => setActiveTab("security")}
+        >
+          🔒 Security
+        </button>
+        <button
+          className={activeTab === "notifications" ? "tab-active" : ""}
+          onClick={() => setActiveTab("notifications")}
+        >
+          Notifications
+        </button>
+      </div>
 
-                    {/* TODO add something for change password */}
-                </div>
-            )}
+      {activeTab === "profile" && (
+        <div className="settings-section">
+          <div className="form-group">
+            <label htmlFor="username">New Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={userUpdate.username}
+              onChange={handleProfileChange}
+              placeholder="Enter your display name"
+            />
+          </div>
 
-            {/* Notifications */}
-            {activeTab === "notifications" && (
-                <div className="settings-section">
-                    <div className="form-group checkbox-group">
-                        <input
-                            type="checkbox"
-                            id="emailNotifications"
-                            name="emailNotifications"
-                            checked={settings.emailNotifications}
-                            onChange={handleInputChange}
-                        />
-                        <label htmlFor="emailNotifications">Email Notifications</label>
-                    </div>
-                </div>
-            )}
-
-            {/* Save Button */}
-            <div className="settings-footer">
-                {saveStatus && <div className="save-status">{saveStatus}</div>}
-                <button className="save-button" onClick={saveSettings}>
-                    Save Changes
-                </button>
-            </div>
+          <div className="form-group">
+            <label htmlFor="email">Change Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={userUpdate.email}
+              onChange={handleProfileChange}
+              placeholder="Enter your email"
+            />
+          </div>
         </div>
-    );
+      )}
+
+      {activeTab === "security" && (
+        <div className="settings-section">
+          <div className="form-group">
+            <label htmlFor="currentPassword">Current Password</label>
+            <input
+              type="password"
+              id="currentPassword"
+              name="old_password"
+              value={passwordData.old_password}
+              onChange={handlePasswordChange}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="newPassword">New Password</label>
+            <input
+              type="password"
+              id="newPassword"
+              name="new_password"
+              value={passwordData.new_password}
+              onChange={handlePasswordChange}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Confirm Password</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              value={passwordData.confirmPassword}
+              onChange={handlePasswordChange}
+            />
+          </div>
+        </div>
+      )}
+
+      {activeTab === "notifications" && (
+        <div className="settings-section">
+          <div className="form-group checkbox-group">
+            <input
+              type="checkbox"
+              id="emailNotifications"
+              name="emailNotifications"
+              checked={userUpdate.emailNotifications}
+              onChange={handleProfileChange}
+            />
+            <label htmlFor="emailNotifications">Email Notifications</label>
+          </div>
+        </div>
+      )}
+
+      <div className="settings-footer">
+        <button className="save-button" onClick={saveChanges}>
+          Save Changes
+        </button>
+      </div>
+    </div>
+  );
 }

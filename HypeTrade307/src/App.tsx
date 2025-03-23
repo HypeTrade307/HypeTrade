@@ -12,7 +12,8 @@ import ViewStock from "./pages/ViewStock.tsx";
 import PortView from "./pages/Portfolio_friend_view.tsx";
 import ChatPage from "./pages/chat.tsx";
 import Forum_page from "./pages/forum_page.tsx";
-
+import PortfolioPage
+ from './pages/Portfoilos_viewer.tsx';
 // TODO: Update as new pages are added
 function App() {
     return (
@@ -25,6 +26,7 @@ function App() {
                 <Route path="/friends" element={<FriendRemove />} />
                 <Route path="/stock" element={<ViewStock />} />
                 <Route path="/PortView/:friendID" element={<PortView />} />
+                <Route path="/portfolios/:id" element={<PortfolioPage />} />
                 <Route path="/chat" element={<ChatPage />} />
                 <Route path="/forum" element={<Forum_page />} />
                 <Route path="*" element={<Page_Not_found />} />
