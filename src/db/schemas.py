@@ -113,3 +113,18 @@ class PortfolioResponse(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str
+
+# -----
+# Thread
+# -----
+
+class ThreadCreate(BaseModel):
+    title: str
+    creator_id: int
+    stock_id: int
+
+class ThreadResponse(BaseModel):
+    thread_id: int
+    title: str
+    stock_id: int
+    created_at: datetime

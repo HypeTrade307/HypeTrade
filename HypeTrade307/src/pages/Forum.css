@@ -1,0 +1,52 @@
+.forum-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.forum-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.create-thread-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.create-thread-button:hover {
+    background-color: #0056b3;
+}
+
+.thread-list {
+    list-style: none;
+    padding: 0;
+}
+
+.thread-item {
+    display: block;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #333;
+    transition: background 0.3s ease;
+}
+
+.thread-item:hover {
+    background: #e2e6ea;
+}
+
+.no-threads {
+    color: #666;
+    font-style: italic;
+}
