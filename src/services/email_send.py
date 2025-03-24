@@ -27,7 +27,7 @@ def send_simple_message(email, code):
     subject = "from the Python SDK!"
     sender = {"name":"whodis","email":"adityagandhi98101@gmail.com"}
     html_content = f"<html><body><h1>Your code is {code} </h1></body></html>"
-    to = [{"email":email,"name":""}]
+    to = [{"email":email,"name":"Unspecified"}]
     send_smtp_email = brevo_python.SendSmtpEmail(to=to, html_content=html_content, sender=sender, subject=subject) # SendSmtpEmail | Values to send a transactional email
 
     # The code is printed here for easier access. The mail takes 2-3 minutes to be rec'd.
