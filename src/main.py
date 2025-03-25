@@ -41,6 +41,9 @@ app.add_middleware(
     allow_methods=["*"],  # Allows GET, POST, OPTIONS, etc.
     allow_headers=["*"],  # Allows all headers
 )
+
+Base.metadata.create_all(bind=engine)
+
 seed_stocks(db=SessionLocal())
 # Include routers
 # friend check request model
