@@ -4,6 +4,7 @@ import Navbar from "../components/NavbarSection/Navbar";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme";
 import "./Forum.css";
+import thread_create from "@/pages/thread_create.tsx";
 
 function Forum() {
     const [threads, setThreads] = useState([]);

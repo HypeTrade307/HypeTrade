@@ -12,6 +12,7 @@ import ViewStock from "./pages/ViewStock.tsx";
 import PortView from "./pages/Portfolio_friend_view.tsx";
 import ChatPage from "./pages/chat.tsx";
 import Forum_page from "./pages/forum_page.tsx";
+// import ThreadCreate from "./pages/thread_create.tsx"
 import PortfolioPage
  from './pages/Portfoilos_viewer.tsx';
 // TODO: Update as new pages are added
@@ -28,6 +29,7 @@ function App() {
                 <Route path="/PortView/:friendID" element={<PortView />} />
                 <Route path="/portfolios/:id" element={<PortfolioPage />} />
                 <Route path="/chat" element={<ChatPage />} />
+                {/*<Route path="/thread_create" element={<ThreadCreate />} />*/}
                 <Route path="/forum" element={<Forum_page />} />
                 <Route path="*" element={<Page_Not_found />} />
             </Routes>

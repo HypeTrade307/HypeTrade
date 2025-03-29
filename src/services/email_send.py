@@ -30,7 +30,7 @@ def send_simple_message(email, code):
     to = [{"email":email,"name":"Unspecified"}]
     send_smtp_email = brevo_python.SendSmtpEmail(to=to, html_content=html_content, sender=sender, subject=subject) # SendSmtpEmail | Values to send a transactional email
 
-    # The code is printed here for easier access. The mail takes 2-3 minutes to be rec'd.
+    # The code is printed to uvicorn terminal for easier access. The mail takes 2-3 minutes to be rec'd.
 
     print(f"Code is {code}. Email may/may not have been sent yet.")
     try:
