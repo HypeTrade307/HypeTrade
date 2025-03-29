@@ -279,3 +279,38 @@ def get_portfolio_stocks(db: Session, portfolio_id: int) -> list[models.Stock]:
     if not portfolio:
         raise HTTPException(status_code=404, detail="Portfolio not found.")
     return portfolio.stocks
+
+def get_threads(db: Session) -> list[models.Thread]:
+    return (
+        db.query(models.Thread)
+        .all()
+    )
+
+
+# -----------------------------
+# THREADS
+# -----------------------------
+def get_thread_by_id(db: Session, thread_id: int) -> models.Thread | None:
+    return (
+        db.query(models.Thread)
+        .where(models.Thread.thread_id == thread_id)
+        .first()
+    )
+
+def create_thread(db: Session, user_id: int, thread_name: str, stock_id: int) -> models.Thread:
+    existing_thread = db.query(models.Thread).filter(models.Thread.creator_id == user_id, models.Thread.title == thread_name).first()
+    if existing_thread:
+        raise HTTPException(status_code=400, detail="Portfolio with this name already exists.")
+    new_thread = models.Thread(creator_id=user_id, title=thread_name, stock_id=stock_id)
+    db.add(new_thread)
+    db.commit()
+    db.refresh(new_thread)
+    return new_thread
+
+def get_thread_by_title_stock(db: Session, title: str, stock_id: int) -> models.Thread | None:
+    return (
+        db.query(models.Thread)
+        .where(models.Thread.title == title)
+        .where(models.Thread.stock_id == stock_id)
+        .first()
+    )

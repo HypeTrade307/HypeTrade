@@ -13,6 +13,7 @@ from src.db.database import SessionLocal, engine, Base
 from src.api.routes.users import router as users_router
 from src.api.routes.stocks import router as stocks_router
 from src.api.routes.portfolios import router as portfolio_router
+from src.api.routes.forum import router as forum_router
 from src.api.routes.auth import router as auth_router
 from src.processing.stock_processing import seed_stocks
 from fastapi.middleware.cors import CORSMiddleware
@@ -85,6 +86,7 @@ def process_text(data: InputData) -> List[str]:
 app.include_router(users_router)
 app.include_router(stocks_router)
 app.include_router(portfolio_router)
+app.include_router(forum_router)
 app.include_router(auth_router)
 
 # additional routes from main.py

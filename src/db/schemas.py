@@ -123,7 +123,6 @@ class TokenResponse(BaseModel):
 
 class ThreadCreate(BaseModel):
     title: str
-    creator_id: int
     stock_id: int
 
 class ThreadResponse(BaseModel):

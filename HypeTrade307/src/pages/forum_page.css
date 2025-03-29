@@ -1,0 +1,247 @@
+/* Forum.css */
+
+/* Main container */
+.forum-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+/* Forum header with title and create button */
+.forum-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.forum-header h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.create-thread-button {
+    background-color: deepskyblue;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.create-thread-button:hover {
+    background-color: #0099cc;
+}
+
+/* Thread list styles */
+.thread-list {
+    background-color: lightslategray;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+}
+
+.thread-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.thread-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.thread-title {
+    flex: 1;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.thread-stock {
+    margin: 0 10px;
+}
+
+.stock-badge {
+    background-color: #e0f0ff;
+    color: #0066cc;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.thread-date {
+    color: #777;
+    font-size: 14px;
+}
+
+/* Loading, error and empty states */
+.loading-indicator, .error-message, .empty-state {
+    text-align: center;
+    padding: 20px;
+    color: #555;
+}
+
+.error-message {
+    color: #cc3300;
+}
+
+/* Modal styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #777;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.thread-title-input, .stock-search-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* Stock search and dropdown */
+.stock-search-container {
+    position: relative;
+}
+
+.stock-dropdown {
+    position: absolute;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-top: none;
+    background-color: white;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.stock-option {
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #eee;
+}
+
+.stock-option:hover {
+    background-color: #f5f8ff;
+}
+
+.stock-ticker {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.stock-name {
+    color: #555;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+
+.create-button {
+    background-color: deepskyblue;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.create-button:hover {
+    background-color: #0099cc;
+}
+
+.create-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .thread-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .thread-stock, .thread-date {
+        margin-top: 8px;
+    }
+
+    .thread-date {
+        align-self: flex-end;
+    }
+}
