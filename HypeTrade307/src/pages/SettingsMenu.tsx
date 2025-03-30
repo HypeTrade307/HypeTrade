@@ -45,6 +45,25 @@ export default function SettingsMenu() {
       [name]: value,
     });
   };
+  const handleDeleteAccount = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("You are not authenticated. Please log in first.");
+      return;
+    }
+    try {
+      await axios.delete("http://127.0.0.1:8000/users/me/delete", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success("Account deleted successfully!");
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    } catch (error: any) {
+      console.error(error);
+      const detail = error.response?.data?.detail || "Error deleting account";
+      toast.error(detail);
+    }
+  };
 
   const saveChanges = async () => {
     const token = localStorage.getItem("token");
@@ -199,6 +218,11 @@ export default function SettingsMenu() {
       <div className="settings-footer">
         <button className="save-button" onClick={saveChanges}>
           Save Changes
+        </button>
+        <button
+          className="delete-button"
+          onClick={handleDeleteAccount}>
+          Delete Account
         </button>
       </div>
     </div>

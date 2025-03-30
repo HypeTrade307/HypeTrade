@@ -23,11 +23,9 @@ def validate_create(db: Session, user_data : schemas.UserCreate):
     return Errors.OK
 
 def validate_update(db : Session, user_data : schemas.UserUpdate):
-    if not re.search(r"[a-zA-Z0-9]", user_data.password):
-        return Errors.PASSWORD
     if crud.get_user_by_email(db, email=user_data.email):
         return Errors.EMAIL
-    if crud.get_user_by_name(db, name=user_data.name):
+    if crud.get_user_by_name(db, name=user_data.username):
         return Errors.USERNAME
     return Errors.OK
 

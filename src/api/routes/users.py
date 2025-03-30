@@ -106,7 +106,7 @@ def update_user_password(
     
     return crud.update_password(db, current_user.user_id, password_update.new_password)
 
-@router.delete("/me")
+@router.delete("/me/delete")
 def delete_user(
     current_user: models.User = Depends(get_current_user), 
     db: Session = Depends(get_db)
