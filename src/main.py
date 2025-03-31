@@ -11,6 +11,7 @@ from backend import check_if_friends as cf
 
 # import database setup
 from src.db.database import SessionLocal, engine, Base
+from src.api.routes.notifications import router as notification_router
 from src.api.routes.users import router as users_router
 from src.api.routes.stocks import router as stocks_router
 from src.api.routes.portfolios import router as portfolio_router
@@ -88,6 +89,7 @@ app.include_router(users_router)
 app.include_router(stocks_router)
 app.include_router(portfolio_router)
 app.include_router(auth_router)
+app.include_router(notification_router)
 
 # additional routes from main.py
 @app.get("/api/health")
