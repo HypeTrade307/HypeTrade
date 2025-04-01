@@ -130,3 +130,27 @@ class ThreadResponse(BaseModel):
     title: str
     stock_id: int
     created_at: datetime
+
+# ----------------------------
+# NOTIFICATION
+# ----------------------------
+
+# Add these new schemas for notifications
+class NotificationBase(BaseModel):
+    message: str
+    sender_id: int  # Changed from Optional to required based on your model
+    receiver_id: int
+    
+class NotificationCreate(NotificationBase):
+    pass
+
+class NotificationUpdate(BaseModel):
+    is_read: bool = True
+
+class Notification(NotificationBase):
+    notification_id: int
+    created_at: datetime
+    is_read: bool = False
+    
+    class Config:
+        orm_mode = True

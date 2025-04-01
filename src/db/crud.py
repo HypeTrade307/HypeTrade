@@ -314,3 +314,61 @@ def get_thread_by_title_stock(db: Session, title: str, stock_id: int) -> models.
         .where(models.Thread.stock_id == stock_id)
         .first()
     )
+# ----------------------------
+# NOTIFICATION CRUD
+# ----------------------------
+
+# Create a new notification
+def create_notification(db: Session, notification: schemas.NotificationCreate):
+    db_notification = models.Notification(
+        message=notification.message,
+        sender_id=notification.sender_id,
+        receiver_id=notification.receiver_id,
+        created_at=datetime.now(),
+        is_read=False
+    )
+    db.add(db_notification)
+    db.commit()
+    db.refresh(db_notification)
+    return db_notification
+
+# Get all notifications for a user
+def get_user_notifications(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+    return db.query(models.Notification)\
+        .filter(models.Notification.receiver_id == user_id)\
+        .order_by(models.Notification.created_at.desc())\
+        .offset(skip)\
+        .limit(limit)\
+        .all()
+
+# Mark a notification as read
+def mark_notification_as_read(db: Session, notification_id: int):
+    db_notification = db.query(models.Notification).filter(models.Notification.notification_id == notification_id).first()
+    if db_notification:
+        db_notification.is_read = True
+        db.commit()
+        db.refresh(db_notification)
+    return db_notification
+
+# Mark all notifications as read for a user
+def mark_all_notifications_as_read(db: Session, user_id: int):
+    db.query(models.Notification)\
+        .filter(models.Notification.receiver_id == user_id, models.Notification.is_read == False)\
+        .update({models.Notification.is_read: True})
+    db.commit()
+    return True
+
+# Create stock sentiment notifications
+def create_stock_sentiment_notification(db: Session, user_id: int, system_user_id: int, stock_ticker: str, stock_name: str, old_sentiment: float, new_sentiment: float):
+    change = new_sentiment - old_sentiment
+    if abs(change) >= 2.0:  # Only notify if change is significant
+        direction = "up" if change > 0 else "down"
+        message = f"{stock_ticker} ({stock_name}) sentiment is {direction} by {abs(change):.1f}"
+        
+        notification = schemas.NotificationCreate(
+            message=message,
+            receiver_id=user_id,
+            sender_id=system_user_id  # Using system user ID as sender
+        )
+        return create_notification(db, notification)
+    return None

@@ -10,6 +10,7 @@ from src import check_if_friends as cf, search_users as su
 
 # import database setup
 from src.db.database import SessionLocal, engine, Base
+from src.api.routes.notifications import router as notification_router
 from src.api.routes.users import router as users_router
 from src.api.routes.stocks import router as stocks_router
 from src.api.routes.portfolios import router as portfolio_router
@@ -43,6 +44,9 @@ app.add_middleware(
     allow_methods=["*"],  # Allows GET, POST, OPTIONS, etc.
     allow_headers=["*"],  # Allows all headers
 )
+
+Base.metadata.create_all(bind=engine)
+
 seed_stocks(db=SessionLocal())
 # Include routers
 # friend check request model
@@ -88,6 +92,7 @@ app.include_router(stocks_router)
 app.include_router(portfolio_router)
 app.include_router(forum_router)
 app.include_router(auth_router)
+app.include_router(notification_router)
 
 # additional routes from main.py
 @app.get("/api/health")

@@ -41,3 +41,21 @@ def get_stock_sentiment(stock_id: int, db: Session = Depends(get_db), interval: 
     # In a real application, you would fetch data from a database or API
     interval = interval * 24
     return [round(random.uniform(-10, 10), 3) for _ in range(int(interval / 12))]
+
+@router.get("/top/", response_model=List[StockResponse])
+def get_top_stocks(limit: int = 20, db: Session = Depends(get_db)):
+    """
+    Returns top stocks with analysis_mode='auto', limited by the parameter
+    """
+    from src.db import models  # Import models for direct query
+    
+    # Query stocks with analysis_mode='auto'
+    stocks = db.query(models.Stock).filter(
+        models.Stock.analysis_mode == "auto"
+    ).limit(limit).all()
+    
+    if not stocks:
+        # If no stocks are found, you might need to seed the database
+        raise HTTPException(status_code=404, detail="No auto-analyzed stocks found. Database may need seeding.")
+    
+    return stocks
