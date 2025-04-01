@@ -12,6 +12,7 @@ import ViewStock from "./pages/ViewStock.tsx";
 import PortView from "./pages/Portfolio_friend_view.tsx";
 import ChatPage from "./pages/chat.tsx";
 import Forum_page from "./pages/forum_page.tsx";
+import Thread_page from "./pages/thread_viewer.tsx"
 // import ThreadCreate from "./pages/thread_create.tsx"
 import PortfolioPage
  from './pages/Portfoilos_viewer.tsx';
@@ -29,7 +30,7 @@ function App() {
                 <Route path="/PortView/:friendID" element={<PortView />} />
                 <Route path="/portfolios/:id" element={<PortfolioPage />} />
                 <Route path="/chat" element={<ChatPage />} />
-                {/*<Route path="/thread_create" element={<ThreadCreate />} />*/}
+                <Route path="/thread/:id" element={<Thread_page />} />
                 <Route path="/forum" element={<Forum_page />} />
                 <Route path="*" element={<Page_Not_found />} />
             </Routes>
