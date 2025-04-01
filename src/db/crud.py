@@ -86,7 +86,7 @@ def get_post_by_id(db: Session, post_id: int):
     return db.query(models.Post).filter(models.Post.post_id == post_id).first()
 
 
-def get_posts_by_thread_id(db: Session, thread_id : int, skip: int = 0, limit: int = 10):
+def get_posts_by_thread_id(db: Session, thread_id : int, skip: int = 0, limit: int = 10) -> list[models.Post]:
     return db.query(models.Post).filter(models.Post.thread_id == thread_id).offset(skip).limit(limit).all()
 
 

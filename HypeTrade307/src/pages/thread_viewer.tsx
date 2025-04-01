@@ -48,20 +48,22 @@ function ThreadViewer() {
         async function fetchThread() {
             try {
                 const token = localStorage.getItem("token");
-                if (!token) {
-                    setError("Not authenticated");
-                    setLoading(false);
-                    return;
-                }
+                // if (!token) {
+                //     setError("Not authenticated");
+                //     setLoading(false);
+                //     return;
+                // }
+                console.log("something something");
 
                 const response = await axios.get(`http://127.0.0.1:8000/thread/${threadId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
+                console.log("Data sent to API:", { response });
 
                 setThread(response.data);
             } catch (err: any) {
-                console.error("Error fetching thread:", err);
-                setError(err.response?.data?.detail || "Failed to load thread");
+                    console.error("Full error response:", err.response?.data);
+                    setError(JSON.stringify(err.response?.data, null, 2));  // Pretty print error
             }
         }
 
@@ -75,11 +77,11 @@ function ThreadViewer() {
 
             try {
                 const token = localStorage.getItem("token");
-                if (!token) {
-                    setError("Not authenticated");
-                    setLoading(false);
-                    return;
-                }
+                // if (!token) {
+                //     setError("Not authenticated");
+                //     setLoading(false);
+                //     return;
+                // }
 
                 const response = await axios.get(`http://127.0.0.1:8000/thread/${threadId}`, {
                     headers: { Authorization: `Bearer ${token}` }
