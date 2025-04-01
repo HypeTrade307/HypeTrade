@@ -74,8 +74,8 @@ def delete_user(db: Session, user_id: int):
 # ----------------------------
 #  POST CRUD
 # ----------------------------
-def create_post(db: Session, title: str = None, content: str = None, created_by: int = None):
-    db_post = models.Post(title=title, content=content, author_id=created_by)
+def create_post(db: Session, thread_id: int, title: str = None, content: str = None, created_by: int = None):
+    db_post = models.Post(title=title, content=content, author_id=created_by, thread_id=thread_id)
     db.add(db_post)
     db.commit()
     db.refresh(db_post)

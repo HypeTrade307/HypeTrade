@@ -53,7 +53,7 @@ function ThreadViewer() {
                 //     setLoading(false);
                 //     return;
                 // }
-                console.log("something something");
+                console.log(`something something and my id is ${threadId}`);
 
                 const response = await axios.get(`http://127.0.0.1:8000/thread/${threadId}`, {
                     headers: { Authorization: `Bearer ${token}` }
@@ -83,9 +83,11 @@ function ThreadViewer() {
                 //     return;
                 // }
 
+                console.log(`creating post`);
                 const response = await axios.get(`http://127.0.0.1:8000/thread/${threadId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
+                console.log(`created post`);
 
                 setPosts(response.data);
             } catch (err: any) {
@@ -127,7 +129,7 @@ function ThreadViewer() {
             handleCloseModal();
 
             // Fetch updated posts
-            const response = await axios.get(`http://127.0.0.1:8000/threads/${threadId}/posts`, {
+            const response = await axios.get(`http://127.0.0.1:8000/thread/${threadId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -188,7 +190,7 @@ function ThreadViewer() {
                             <div
                                 key={post.post_id}
                                 className="post-item"
-                                onClick={() => navigate(`/post/${post.post_id}`)}
+                                onClick={() => navigate(`thread/${threadId}/post/${post.post_id}`)}
                             >
                                 <div className="post-header">
                                     <div className="post-title">{post.title}</div>

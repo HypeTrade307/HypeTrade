@@ -19,7 +19,9 @@ router = APIRouter(
 @router.get("/{thread_id}", response_model=List[schemas.PostResponse])
 def get_thread_posts(thread_id: int, db: Session = Depends(get_db)):
     # Get all posts for the thread
+    print("get_thread_posts")
     posts = crud.get_posts_by_thread_id(db, thread_id)
+    print("getting all posts for this thread")
 
     return posts
 
@@ -32,6 +34,7 @@ def create_post(
         current_user: models.User = Depends(get_current_user)
 ):
     # Verify thread exists
+    print("creating post")
     thread = crud.get_thread_by_id(db, thread_id)
     if not thread:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Thread with id {thread_id} not found")
@@ -40,5 +43,6 @@ def create_post(
 
     new_post = crud.create_post(db, title=post.title,
                                 content=post.content,
-                                created_by=current_user.user_id)
+                                created_by=current_user.user_id,
+                                thread_id=thread_id)
     return new_post

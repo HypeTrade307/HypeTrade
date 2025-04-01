@@ -30,7 +30,7 @@ function App() {
                 <Route path="/PortView/:friendID" element={<PortView />} />
                 <Route path="/portfolios/:id" element={<PortfolioPage />} />
                 <Route path="/chat" element={<ChatPage />} />
-                <Route path="/thread/:id" element={<Thread_page />} />
+                <Route path="/thread/:threadId" element={<Thread_page />} />
                 <Route path="/forum" element={<Forum_page />} />
                 <Route path="*" element={<Page_Not_found />} />
             </Routes>
