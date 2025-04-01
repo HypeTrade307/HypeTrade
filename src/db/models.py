@@ -200,7 +200,6 @@ class Post(Base):
     thread_id = Column(Integer, ForeignKey("threads.thread_id", ondelete="CASCADE"), nullable=False)
     author_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False)
     title = Column(Text, nullable=False)
-    post_url = Column(VARCHAR(255), unique=True, nullable=False)
     content = Column(Text, nullable=False)
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
     updated_at = Column(TIMESTAMP, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)

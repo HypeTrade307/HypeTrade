@@ -74,8 +74,8 @@ def delete_user(db: Session, user_id: int):
 # ----------------------------
 #  POST CRUD
 # ----------------------------
-def create_post(db: Session, post_data: schemas.PostCreate):
-    db_post = models.Post(**post_data.dict())
+def create_post(db: Session, title: str = None, content: str = None, created_by: int = None):
+    db_post = models.Post(title=title, content=content, author_id=created_by)
     db.add(db_post)
     db.commit()
     db.refresh(db_post)
@@ -86,8 +86,8 @@ def get_post_by_id(db: Session, post_id: int):
     return db.query(models.Post).filter(models.Post.post_id == post_id).first()
 
 
-def get_posts(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(models.Post).offset(skip).limit(limit).all()
+def get_posts_by_thread_id(db: Session, thread_id : int, skip: int = 0, limit: int = 10):
+    return db.query(models.Post).filter(models.Post.thread_id == thread_id).offset(skip).limit(limit).all()
 
 
 def update_post(db: Session, post_id: int, post_update: schemas.PostUpdate):
@@ -97,8 +97,6 @@ def update_post(db: Session, post_id: int, post_update: schemas.PostUpdate):
 
     if post_update.title is not None:
         db_post.title = post_update.title
-    if post_update.post_url is not None:
-        db_post.post_url = post_update.post_url
     if post_update.content is not None:
         db_post.content = post_update.content
 

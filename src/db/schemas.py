@@ -40,14 +40,11 @@ class UserPasswordUpdate(BaseModel):
 # ------------------
 class PostBase(BaseModel):
     title: Optional[str] = None
-    post_url: Optional[str] = None
     content: Optional[str] = None
 
 class PostCreate(PostBase):
     title: str
-    post_url: str
     content: str
-    author_id: int
 
 class PostUpdate(PostBase):
     pass  # For partial updates
@@ -55,9 +52,7 @@ class PostUpdate(PostBase):
 class PostResponse(BaseModel):
     post_id: int
     title: str
-    post_url: str
     content: str
-    author_id: int
     created_at: datetime
 
     class Config:

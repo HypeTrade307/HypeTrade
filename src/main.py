@@ -17,6 +17,7 @@ from src.api.routes.portfolios import router as portfolio_router
 from src.api.routes.forum import router as forum_router
 from src.api.routes.auth import router as auth_router
 from src.api.routes.sentiment import router as sentiment_router
+from src.api.routes.threads import router as threads_router
 from src.processing.stock_processing import seed_stocks
 from src.processing import scraping as sc
 from fastapi.middleware.cors import CORSMiddleware
@@ -83,6 +84,7 @@ def process_text(data: InputData) -> List[str]:
 
 # include users router from main.py
 app.include_router(users_router)
+app.include_router(threads_router)
 app.include_router(stocks_router)
 app.include_router(portfolio_router)
 app.include_router(forum_router)

@@ -31,13 +31,6 @@ def create_thread(
                 detail=f"thread with name {thread_data.title} for this stock already exists"
             )
 
-        # Use current user's ID instead of the one provided in thread_data
-        # new_thread = models.Thread(
-        #     title=thread_data.title,
-        #     creator_id=current_user.user_id,
-        #     stock_id=thread_data.stock_id
-        # )
-
         return crud.create_thread(db, user_id=current_user.user_id, thread_name=thread_data.title, stock_id=thread_data.stock_id)
 
     except SQLAlchemyError as e:
