@@ -154,3 +154,17 @@ class Notification(NotificationBase):
     
     class Config:
         orm_mode = True
+
+# ----------------------------
+# SENTIMENT ANALYSIS
+# ----------------------------
+
+class SentimentBase(BaseModel):
+    stock_id: int  # ID of the stock for which sentiment is analyzed
+    ticker: str  # Keyword used for sentiment analysis
+    timestamp: datetime  # Timestamp of the sentiment analysis
+    sentiment_value: float  # Sentiment value (from -10 to 10)
+
+class SentimentRequest(BaseModel):
+    stock_id: int  # ID of the stock for which sentiment is analyzed
+    ticker: str  # Keyword used for sentiment analysis

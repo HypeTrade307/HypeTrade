@@ -1,5 +1,9 @@
+import datetime
 from fastapi import HTTPException, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session
+
+from src.processing.scraping import parse_timeframe
 from . import models, schemas
 from passlib.hash import bcrypt as hashing
 # ----------------------------
@@ -193,6 +197,12 @@ def delete_stock(db: Session, stock_id: int) -> None:
     db.delete(stock)
     db.commit()
 
+def get_top_stocks(db: Session) -> list[models.Stock]:
+    stocks = db.query(models.Stock).filter(
+        models.Stock.analysis_mode == "auto"
+    ).all()
+    return stocks
+
 # ----------------------------
 #  PORTFOLIO CRUD
 # ----------------------------
@@ -372,3 +382,206 @@ def create_stock_sentiment_notification(db: Session, user_id: int, system_user_i
         )
         return create_notification(db, notification)
     return None
+
+# ----------------------------
+# SENTIMENT CRUD
+# ----------------------------
+
+def get_sentiment_by_stock_id(db: Session, stock_id: int) -> models.SentimentAnalysis:
+    return db.query(models.SentimentAnalysis).filter(models.SentimentAnalysis.stock_id == stock_id).order_by(models.SentimentAnalysis.created_at.desc()).first()
+
+def get_last_n_sentiments_by_stock_id(db: Session, stock_id: int, n: int) -> list[dict]:
+    results = (
+        db.query(models.SentimentAnalysis)
+        .filter(models.SentimentAnalysis.stock_id == stock_id)
+        .order_by(models.SentimentAnalysis.created_at.desc())
+        .limit(n)
+        .all()
+    )
+
+    return [
+        {
+            "timestamp": sentiment.created_at,
+            "value": sentiment.sentiment_value
+        } for sentiment in results
+    ]
+
+    # Example output of get_last_n_sentiments_by_stock_id function:
+    # [
+    #   { "timestamp": "2024-04-01 10:00", "value": 2.5 },
+    #   { "timestamp": "2024-04-01 11:00", "value": 3.0 },
+    #   { "timestamp": "2024-04-01 12:00", "value": -1.0 }
+    # ]
+
+
+from sqlalchemy import func
+
+def get_sentiment_summary_for_auto_stocks(db: Session) -> list[dict]:
+    """
+    Returns a summary of sentiment values for 'auto' stocks over time.
+    Each entry represents a timestamp (grouped by hour) and the average sentiment value.
+    """
+    # Subquery: get stock_ids of auto-mode stocks
+    auto_stock_ids = (
+        db.query(models.Stock.stock_id)
+        .filter(models.Stock.analysis_mode == "auto")
+        .subquery()
+    )
+
+    results = (
+        db.query(
+            func.date_format(models.SentimentAnalysis.created_at, "%Y-%m-%d %H:00:00").label("timestamp"),
+            func.avg(models.SentimentAnalysis.sentiment_value).label("value")
+        )
+        .filter(models.SentimentAnalysis.stock_id.in_(auto_stock_ids))
+        .group_by(func.date_format(models.SentimentAnalysis.created_at, "%Y-%m-%d %H:00:00"))
+        .order_by("timestamp")
+        .all()
+    )
+
+    return [{"timestamp": row.timestamp, "value": row.value} for row in results]
+
+    # Example output of get_sentiment_summary_for_auto_stocks function:
+    # [
+    #   { "timestamp": "2024-04-01 10:00", "value": 2.5 },
+    #   { "timestamp": "2024-04-01 11:00", "value": 3.0 },
+    #   { "timestamp": "2024-04-01 12:00", "value": -1.0 }
+    # ]
+
+
+def get_rolling_sentiment(db: Session, window_size: int = 3) -> list[dict]:
+    """
+    Returns rolling sentiment values for auto-mode stocks.
+    Each result includes: stock_id, timestamp, and rolling_avg (calculated over the specified window_size).
+    """
+    subquery = (
+        db.query(
+            models.SentimentAnalysis.stock_id,
+            models.SentimentAnalysis.sentiment_value,
+            models.SentimentAnalysis.created_at,
+            func.avg(models.SentimentAnalysis.sentiment_value)
+                .over(
+                    partition_by=models.SentimentAnalysis.stock_id,
+                    order_by=models.SentimentAnalysis.created_at,
+                    rows=window_size - 1
+                ).label("rolling_avg")
+        )
+        .join(models.Stock, models.SentimentAnalysis.stock_id == models.Stock.stock_id)
+        .filter(models.Stock.analysis_mode == "auto")
+        .order_by(models.SentimentAnalysis.created_at)
+        .subquery()
+    )
+
+    results = db.query(
+        subquery.c.stock_id,
+        subquery.c.created_at,
+        subquery.c.rolling_avg
+    ).all()
+
+    return [
+        {
+            "stock_id": row.stock_id,
+            "timestamp": row.created_at,
+            "rolling_avg": row.rolling_avg
+        } for row in results
+    ]
+    # Example output of get_rolling_sentiment function:
+    # [
+    #   { "stock_id": 1, "timestamp": "2024-04-01 10:00", "rolling_avg": 2.5 },
+    #   { "stock_id": 1, "timestamp": "2024-04-01 11:00", "rolling_avg": 3.0 },
+    #   { "stock_id": 2, "timestamp": "2024-04-01 10:00", "rolling_avg": -1.0 }
+    # ]
+    # Explanation:
+    # - "stock_id": The ID of the stock for which the sentiment is calculated.
+    # - "timestamp": The time at which the rolling average is computed.
+    # - "rolling_avg": The average sentiment value over the specified window size.
+
+
+
+def get_hybrid_rolling_sentiment(db: Session, window_size: int = 3) -> list[dict]:
+    """
+    Returns a rolling average sentiment across all 'auto' stocks over time.
+    Groups sentiment values by hourly intervals and then calculates a rolling average over those hourly averages.
+    """
+    # 1. Get IDs of auto stocks
+    auto_stock_ids = (
+        db.query(models.Stock.stock_id)
+        .filter(models.Stock.analysis_mode == "auto")
+        .subquery()
+    )
+
+    # 2. Get all sentiment entries for those stocks, grouped by hour using MySQL's date_format
+    sentiments = (
+        db.query(
+            func.date_format(models.SentimentAnalysis.created_at, "%Y-%m-%d %H:00:00").label("hour"),
+            models.SentimentAnalysis.sentiment_value
+        )
+        .filter(models.SentimentAnalysis.stock_id.in_(auto_stock_ids))
+        .order_by("hour")
+        .all()
+    )
+
+    from collections import defaultdict, deque
+
+    grouped = defaultdict(list)
+    for row in sentiments:
+        grouped[row.hour].append(row.sentiment_value)
+
+    hours = sorted(grouped.keys())
+    rolling_results = []
+    rolling_window = deque(maxlen=window_size)
+
+    for hour in hours:
+        avg_this_hour = sum(grouped[hour]) / len(grouped[hour])
+        rolling_window.append(avg_this_hour)
+        rolling_avg = sum(rolling_window) / len(rolling_window)
+        rolling_results.append({
+            "timestamp": hour,
+            "rolling_sentiment": round(rolling_avg, 3)
+        })
+
+    return rolling_results
+
+    #######
+    # Example output:
+    # [
+    # { "timestamp": "2024-04-01 10:00", "rolling_sentiment": 2.5 },
+    # { "timestamp": "2024-04-01 11:00", "rolling_sentiment": 2.8 },
+    # { "timestamp": "2024-04-01 12:00", "rolling_sentiment": 3.0 }
+    # ]
+
+def get_sentiment_summary_for_stock(db: Session, stock_id: int) -> list[dict]:
+    results = (
+        db.query(
+            func.date_format(models.SentimentAnalysis.created_at, '%Y-%m-%d %H:00:00').label("timestamp"),
+            func.avg(models.SentimentAnalysis.sentiment_value).label("value")
+        )
+        .filter(models.SentimentAnalysis.stock_id == stock_id)
+        .group_by(func.date_format(models.SentimentAnalysis.created_at, '%Y-%m-%d %H:00:00'))
+        .order_by("timestamp")
+        .all()
+    )
+
+    return [{"timestamp": row.timestamp, "value": row.value} for row in results]
+
+def get_sentiment_summary_for_stock_in_range(db: Session, stock_id: int, timeframe: str) -> list[dict]:
+    """
+    Returns average sentiment values for a stock in a given timeframe (e.g., '24h', '7d').
+    """
+    cutoff_time = parse_timeframe(timeframe)
+
+    results = (
+        db.query(
+            func.date_format(models.SentimentAnalysis.created_at, "%Y-%m-%d %H:00:00").label("timestamp"),
+            func.avg(models.SentimentAnalysis.sentiment_value).label("value")
+        )
+        .filter(models.SentimentAnalysis.stock_id == stock_id)
+        .filter(models.SentimentAnalysis.created_at >= cutoff_time)
+        .group_by(func.date_format(models.SentimentAnalysis.created_at, "%Y-%m-%d %H:00:00"))
+        .order_by("timestamp")
+        .all()
+    )
+
+    return [{"timestamp": row.timestamp, "value": row.value} for row in results]
+
+        

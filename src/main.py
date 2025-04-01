@@ -16,7 +16,9 @@ from src.api.routes.stocks import router as stocks_router
 from src.api.routes.portfolios import router as portfolio_router
 from src.api.routes.forum import router as forum_router
 from src.api.routes.auth import router as auth_router
+from src.api.routes.sentiment import router as sentiment_router
 from src.processing.stock_processing import seed_stocks
+from src.processing import scraping as sc
 from fastapi.middleware.cors import CORSMiddleware
 import sys
 import os
@@ -24,14 +26,7 @@ import os
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))  # add src to path
 app = FastAPI()
 Base.metadata.create_all(bind=engine)
-# enable CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # allow all origins (change this in production)
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["*"],
-)
+sc.test_reddit_connection()
 
 # @app.on_event("startup")
 # def on_startup():
@@ -93,7 +88,7 @@ app.include_router(portfolio_router)
 app.include_router(forum_router)
 app.include_router(auth_router)
 app.include_router(notification_router)
-
+app.include_router(sentiment_router)
 # additional routes from main.py
 @app.get("/api/health")
 def health_check():
