@@ -46,11 +46,11 @@ function Forum() {
         async function fetchThreads() {
             try {
                 const token = localStorage.getItem("token");
-                if (!token) {
-                    setError("Not authenticated");
-                    setLoading(false);
-                    return;
-                }
+                // if (!token) {
+                //     setError("Not authenticated");
+                //     setLoading(false);
+                //     return;
+                // }
 
                 const response = await axios.get("http://127.0.0.1:8000/threads", {
                     headers: { Authorization: `Bearer ${token}` }
@@ -73,10 +73,10 @@ function Forum() {
         async function fetchStocks() {
             try {
                 const token = localStorage.getItem("token");
-                if (!token) {
-                    setError("Not authenticated");
-                    return;
-                }
+                // if (!token) {
+                //     setError("Not authenticated");
+                //     return;
+                // }
 
                 const response = await axios.get("http://127.0.0.1:8000/stocks", {
                     headers: { Authorization: `Bearer ${token}` }

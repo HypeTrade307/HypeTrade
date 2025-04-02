@@ -57,6 +57,17 @@ class PostResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class CommentResponse(BaseModel):
+    id: int
+    text: str  # Ensure this matches what's in the database
+    content: str  # If required, add this field
+    comment_id: int
+    post_id: int
+    author_id: int
+    created_at: datetime
+    author: Optional[UserResponse]
+
 # ------------------
 #  STOCK SCHEMAS
 # ------------------

@@ -18,9 +18,11 @@ from src.api.routes.forum import router as forum_router
 from src.api.routes.auth import router as auth_router
 from src.api.routes.sentiment import router as sentiment_router
 from src.api.routes.threads import router as threads_router
+from src.api.routes.posts import router as posts_router, comment_router
 from src.processing.stock_processing import seed_stocks
 from src.processing import scraping as sc
 from fastapi.middleware.cors import CORSMiddleware
+
 import sys
 import os
 
@@ -91,6 +93,8 @@ app.include_router(forum_router)
 app.include_router(auth_router)
 app.include_router(notification_router)
 app.include_router(sentiment_router)
+app.include_router(posts_router)
+app.include_router(comment_router)
 # additional routes from main.py
 @app.get("/api/health")
 def health_check():

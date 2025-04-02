@@ -77,11 +77,6 @@ function ThreadViewer() {
 
             try {
                 const token = localStorage.getItem("token");
-                // if (!token) {
-                //     setError("Not authenticated");
-                //     setLoading(false);
-                //     return;
-                // }
 
                 console.log(`creating post`);
                 const response = await axios.get(`http://127.0.0.1:8000/thread/${threadId}`, {
@@ -190,7 +185,7 @@ function ThreadViewer() {
                             <div
                                 key={post.post_id}
                                 className="post-item"
-                                onClick={() => navigate(`thread/${threadId}/post/${post.post_id}`)}
+                                onClick={() => navigate(`${post.post_id}`)}
                             >
                                 <div className="post-header">
                                     <div className="post-title">{post.title}</div>

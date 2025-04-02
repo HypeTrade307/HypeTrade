@@ -70,6 +70,171 @@ def delete_user(db: Session, user_id: int):
     db.commit()
     return db_user
 
+# Adding to the existing crud.py file
+
+# --- Comment CRUD operations ---
+
+def get_comment_by_id(db: Session, comment_id: int):
+    """
+    Get a comment by its ID.
+    """
+    return db.query(models.Comment).filter(models.Comment.comment_id == comment_id).first()
+
+def get_comments_by_post_id(db: Session, post_id: int):
+    comments = db.query(models.Comment).filter(models.Comment.post_id == post_id).all()
+
+    return [
+        {
+            "content": comment.content,  # Ensure this field exists
+            "comment_id": comment.comment_id,  # Ensure this exists
+            "post_id": comment.post_id,
+            "author_id": comment.author.user_id,
+            "created_at": comment.created_at,
+            "author": {
+                "id": comment.author.user_id,
+                "username": comment.author.username
+            } if comment.author else None
+        }
+        for comment in comments
+    ]
+
+def create_comment(db: Session, content: str, author_id: int, post_id: int):
+    """
+    Create a new comment.
+    """
+    comment = {
+        "content": content,  # Ensure this field exists
+        "post_id": post_id,
+        "author_id": author_id,
+        "created_at": datetime.datetime.now()
+    }
+    comment = models.Comment(content=content,
+    post_id= post_id,
+    author_id= author_id)
+    db.add(comment)
+    db.commit()
+    db.refresh(comment)
+
+    # Format the author and liked_by information for the response
+    comment.liked_by = []
+
+    return comment
+
+def update_comment(db: Session, comment_id: int, comment_data: dict):
+    """
+    Update a comment with the provided data.
+    """
+    comment = db.query(models.Comment).filter(models.Comment.comment_id == comment_id).first()
+    if comment:
+        for key, value in comment_data.items():
+            setattr(comment, key, value)
+        db.commit()
+        db.refresh(comment)
+
+        # Format the author and liked_by information for the response
+        if comment.author:
+            comment.author = {
+                "user_id": comment.author.user_id,
+                "username": comment.author.username,
+                "profile_picture": getattr(comment.author, "profile_picture", None)
+            }
+        comment.liked_by = [
+            {"user_id": user.user_id, "username": user.username}
+            for user in comment.liked_by
+        ]
+
+    return comment
+
+def delete_comment(db: Session, comment_id: int):
+    """
+    Delete a comment by its ID.
+    """
+    comment = db.query(models.Comment).filter(models.Comment.comment_id == comment_id).first()
+    if comment:
+        db.delete(comment)
+        db.commit()
+        return True
+    return False
+
+# --- Post like/unlike operations ---
+
+def add_post_like(db: Session, post_id: int, user_id: int):
+    """
+    Add a like to a post.
+    Returns True if added successfully, False if already liked.
+    """
+    post = db.query(models.Post).filter(models.Post.post_id == post_id).first()
+    user = db.query(models.User).filter(models.User.user_id == user_id).first()
+
+    if not post or not user:
+        return False
+
+    # Check if user already liked this post
+    if user in post.liked_by:
+        return False
+
+    post.liked_by.append(user)
+    db.commit()
+    return True
+
+def remove_post_like(db: Session, post_id: int, user_id: int):
+    """
+    Remove a like from a post.
+    Returns True if removed successfully, False if not liked.
+    """
+    post = db.query(models.Post).filter(models.Post.post_id == post_id).first()
+    user = db.query(models.User).filter(models.User.user_id == user_id).first()
+
+    if not post or not user:
+        return False
+
+    # Check if user has liked this post
+    if user not in post.liked_by:
+        return False
+
+    post.liked_by.remove(user)
+    db.commit()
+    return True
+
+# --- Comment like/unlike operations ---
+
+def add_comment_like(db: Session, comment_id: int, user_id: int):
+    """
+    Add a like to a comment.
+    Returns True if added successfully, False if already liked.
+    """
+    comment = db.query(models.Comment).filter(models.Comment.comment_id == comment_id).first()
+    user = db.query(models.User).filter(models.User.user_id == user_id).first()
+
+    if not comment or not user:
+        return False
+
+    # Check if user already liked this comment
+    if user in comment.liked_by:
+        return False
+
+    comment.liked_by.append(user)
+    db.commit()
+    return True
+
+def remove_comment_like(db: Session, comment_id: int, user_id: int):
+    """
+    Remove a like from a comment.
+    Returns True if removed successfully, False if not liked.
+    """
+    comment = db.query(models.Comment).filter(models.Comment.comment_id == comment_id).first()
+    user = db.query(models.User).filter(models.User.user_id == user_id).first()
+
+    if not comment or not user:
+        return False
+
+    # Check if user has liked this comment
+    if user not in comment.liked_by:
+        return False
+
+    comment.liked_by.remove(user)
+    db.commit()
+    return True
 
 # ----------------------------
 #  POST CRUD
@@ -82,27 +247,31 @@ def create_post(db: Session, thread_id: int, title: str = None, content: str = N
     return db_post
 
 
-def get_post_by_id(db: Session, post_id: int):
-    return db.query(models.Post).filter(models.Post.post_id == post_id).first()
+def get_post_by_id(db: Session, post_id: int) -> models.Post:
+    """
+    Retrieve a post by its ID with author and likes information.
+    """
+    post = db.query(models.Post).filter(models.Post.post_id == post_id).first()
+    return post
+
+
+
+
+def update_post(db: Session, post_id: int, post_data: dict):
+    """
+    Update a post with the provided data.
+    """
+    post = db.query(models.Post).filter(models.Post.post_id == post_id).first()
+    if post:
+        for key, value in post_data.items():
+            setattr(post, key, value)
+        db.commit()
+        db.refresh(post)
+    return post
 
 
 def get_posts_by_thread_id(db: Session, thread_id : int, skip: int = 0, limit: int = 10) -> list[models.Post]:
     return db.query(models.Post).filter(models.Post.thread_id == thread_id).offset(skip).limit(limit).all()
-
-
-def update_post(db: Session, post_id: int, post_update: schemas.PostUpdate):
-    db_post = db.query(models.Post).filter(models.Post.post_id == post_id).first()
-    if not db_post:
-        return None
-
-    if post_update.title is not None:
-        db_post.title = post_update.title
-    if post_update.content is not None:
-        db_post.content = post_update.content
-
-    db.commit()
-    db.refresh(db_post)
-    return db_post
 
 
 def delete_post(db: Session, post_id: int):
