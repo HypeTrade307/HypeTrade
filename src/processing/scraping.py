@@ -21,12 +21,9 @@ def get_reddit_instance() -> praw.Reddit:
     Returns a configured PRAW Reddit instance using your app credentials.
     """
     reddit = praw.Reddit(
-        client_id="gjLN4fzi0lVLy0z3LXT8rg",  # from the top under "web app"
-        client_secret="-TUgNwZonRHyA-ssGGikWWW65dpINQ",  # shown next to "secret"
-        user_agent="HypeTradeApp/1.0 by u/Feisty-Drink-5677",  # descriptive user agent
-        # Optional: add these if you need to perform authenticated user actions
-        # username="YOUR_REDDIT_USERNAME",
-        # password="YOUR_REDDIT_PASSWORD",
+        client_id="CLIENT_ID",  # from the top under "web app"
+        client_secret="SECRET",  # shown next to "secret"
+        user_agent="HypeTradeApp/1.0 by u/reddit-name",  # descriptive user agent
     )
     return reddit
 
