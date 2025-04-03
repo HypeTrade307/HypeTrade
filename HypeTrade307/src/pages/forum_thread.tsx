@@ -14,6 +14,7 @@ import {ThreadContainer, PostContainer, PostUser, LeftText} from "../components/
 import catPic from '../assets/cat_pic.jpg'
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
+import BottomAdd from "../components/BottomActions/BottomAdd.tsx";
 
 //TODO: Add user specific profile badges here for the individual posts
 interface Post {
@@ -235,6 +236,7 @@ const Thread: React.FC = () => {
                             ))}
                         </List>
                     </div>
+                <BottomAdd></BottomAdd>
             </Container>
         </AppTheme>
     );
