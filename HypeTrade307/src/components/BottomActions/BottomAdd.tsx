@@ -15,22 +15,6 @@ import ColorModeIconDropdown from '../shared-theme/ColorModeIconDropdown.tsx';
 import Sitemark from '../SitemarkIcon';
 import type {} from '@mui/material/themeCssVarsAugmentation';
 
-const StyledToolbar = styled(Toolbar)(({ theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexShrink: 0,
-    borderRadius: `calc(${theme.shape.borderRadius}px + 8px)`,
-    backdropFilter: 'blur(24px)',
-    border: '1px solid',
-    borderColor: (theme.vars || theme).palette.divider,
-    backgroundColor: theme.vars
-        ? `rgba(${theme.vars.palette.background.defaultChannel} / 0.4)`
-        : alpha(theme.palette.background.default, 0.4),
-    boxShadow: (theme.vars || theme).shadows[1],
-    padding: '8px 12px',
-}));
-
 // const Navbar = () => {
 //     const [open, setOpen] = React.useState(false);
 //
@@ -151,9 +135,78 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import AddIcon from '@mui/icons-material/Add';
+import MakePost from "../PostSection/MakePost.tsx";
+import {useState} from "react";
+import CreatePostIcon from "@mui/icons-material/Create";
+import Modal from "@mui/material/Modal";
+import Typography from "@mui/material/Typography";
+import Stack from "@mui/material/Stack";
+
+async function handleClick() {
+    // </MakePost/>
+}
 
 const BottomAdd = () => {
     // const [value, setValue] = React.useState(0);
+    const [postText, setPostText] = useState("");
+
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    const createPost = async () => {
+        window.location.pathname = "/home";
+    };
+
+    return (
+        <Container sx={{color: 'darkblue', }}>
+            <Button
+                sx={{backgroundColor: 'darkblue' , color : 'white', }}
+                onClick={handleOpen}
+            >
+                icon={<AddIcon />}
+                <CreatePostIcon fontSize='large'/>
+            </Button>
+
+            <Modal
+                open={open}
+                onClose={handleClose}
+            >
+                <Box>
+                    {/*<Box sx={style}>*/}
+                    <Typography id="modal-modal-title" variant="h6" component="h2" style={{marginTop:'-8px'}}>
+                        Create A Post
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }} style={{marginTop:'-8px'}}>
+                        <label> Post: (Limit 500 Characters)</label>
+                        <div>
+                            <textarea
+                                style={{width:'90%', height:'200px', marginTop:'5px', marginBottom:'20px', border: '2px solid #0D67B5', borderRadius:'5px'}}
+                                placeholder=" Post..."
+                                // maxLength="500"
+                                // onInput={checkunderlimit}
+
+                                onChange={(event) => {
+                                    setPostText(event.target.value);
+                                }}
+                            />
+                        </div>
+                    </Typography>
+
+                    <hr />
+
+                    <Stack  spacing={2} direction="row">
+                        <label>
+                            <button onClick={createPost} style={{color:'#0D67B5'}}>SUBMIT</button>
+                        </label>
+                        <label>
+                            <button onClick={handleClose} style={{color:'red'}}> CLOSE </button>
+                        </label>
+                    </Stack>
+                </Box>
+            </Modal>
+        </Container>
+    );
 
     return (
         <AppBar
@@ -171,7 +224,8 @@ const BottomAdd = () => {
             <BottomNavigation
                 showLabels
             >
-                <BottomNavigationAction label="Add Post" icon={<AddIcon />} />
+                <MakePost/>
+                <BottomNavigationAction label="Add Post" icon={<AddIcon />} onClick={handleClick}/>
             </BottomNavigation>
         </Box>
         </AppBar>

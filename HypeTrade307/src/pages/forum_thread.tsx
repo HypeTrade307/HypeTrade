@@ -7,7 +7,7 @@ import {Avatar, List, ListItem, ListItemAvatar, Typography} from "@mui/material"
 import ListItemText from "@mui/material/ListItemText";
 import Divider from "@mui/material/Divider";
 import Post from "../components/PostSection/post.tsx";
-import {ThreadContainer, PostContainer, PostUser, LeftText} from "../components/PostSection/ForumElements.ts"
+import {ThreadContainer, PostContainer, PostUser} from "../components/PostSection/ForumElements.ts"
 
 // TODO: Change placeholder profile pic when db sorted
 
