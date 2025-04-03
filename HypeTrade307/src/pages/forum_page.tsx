@@ -36,11 +36,17 @@ function Forum(props: { disableCustomTheme?: boolean }) {
     return (
         <AppTheme {...props} themeComponents={xThemeComponents}>
             <CssBaseline enableColorScheme />
-            <Box sx={{ display: 'flex' }}>
-                {/*// TODO: fix sidebar styling*/}
-                {/*<SideMenu />*/}
+            <Box sx={{
+                display: 'flex',
+                width: {
+                    xs: 1, // theme.breakpoints.up('xs')
+                    sm: 700, // theme.breakpoints.up('sm')
+                    md: 800, // theme.breakpoints.up('md')
+                    lg: 1000, // theme.breakpoints.up('lg')
+                    xl: 1200, // theme.breakpoints.up('xl')
+                },
+            }}>
                 <Navbar />
-                {/* Main content */}
                 <Box
                     component="main"
                     sx={(theme) => ({
@@ -60,7 +66,6 @@ function Forum(props: { disableCustomTheme?: boolean }) {
                             mt: { xs: 8, md: 0 },
                         }}
                     >
-                        {/*<Header />*/}
                         <MainGrid />
                     </Stack>
                 </Box>

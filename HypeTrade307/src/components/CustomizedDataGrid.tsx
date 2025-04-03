@@ -10,7 +10,6 @@ const handleThreadClick: GridEventListener<'rowClick'> = (params) => {
 export default function CustomizedDataGrid() {
   return (
     <DataGrid
-      // checkboxSelection
       rows={rows}
       columns={columns}
       getRowClassName={(params) =>
