@@ -13,7 +13,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
     </content>
     <content url="file://$MODULE_DIR$/HypeTrade307/node_modules" />
-    <orderEntry type="jdk" jdkName="Python 3.13 (HypeTrade)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.11 virtualenv at ~/Development/HypeTrade/.venv" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Python 3.8 interpreter library" level="application" />
   </component>

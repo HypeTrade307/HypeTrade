@@ -1,6 +1,11 @@
 // import * as React from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import {DataGrid, GridEventListener} from '@mui/x-data-grid';
 import { columns, rows } from './internals/data/gridData';
+import * as React from "react";
+
+const handleThreadClick: GridEventListener<'rowClick'> = (params) => {
+  window.location.href = `/forum/${params.id}`;
+}
 
 export default function CustomizedDataGrid() {
   return (
@@ -41,6 +46,16 @@ export default function CustomizedDataGrid() {
               },
             },
           },
+        },
+      }}
+      // color="primary" variant="outlined" fullWidth
+      onRowClick={handleThreadClick}
+      sx={{
+        boxShadow: 2,
+        border: 2,
+        borderColor: 'primary.light',
+        '& .MuiDataGrid-cell:hover': {
+          color: 'primary.main',
         },
       }}
     />

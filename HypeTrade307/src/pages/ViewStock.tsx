@@ -11,6 +11,13 @@ interface Stock {
     sentiment: number;
 }
 
+interface Notification {
+    id: number;
+    message: string;
+    read: boolean;
+    timestamp: string;
+}
+
 type TimePeriod = "Day" | "Week" | "Month";
 
 function  ViewStock(props: {disableCustomTheme?: boolean }) {
@@ -22,6 +29,33 @@ function  ViewStock(props: {disableCustomTheme?: boolean }) {
         { name: "Tesla", abbreviation: "TSLA", value: 700, sentiment: -6.27 },
         { name: "Nvidia", abbreviation: "NVDA", value: 450, sentiment: 9.85 }
     ];
+
+    const [showNotifications, setShowNotifications] = useState<boolean>(false);
+    const [notifications, setNotifications] = useState<Notification[]>([
+        { id: 1, message: "AAPL stock's sentimental value is up 2.3", read: false, timestamp: "10:30 AM" },
+        { id: 2, message: "TSLA stock's sentimental value is down 3.1", read: false, timestamp: "11:45 AM" },
+        { id: 3, message: "Fred sent you a friend request!", read: true, timestamp: "Yesterday" }
+    ]);
+
+    const unreadCount = notifications.filter(notification => !notification.read).length; // holds the number of notifications that user has currently not read
+
+    const markAllAsRead = () => { // marks all notifications as read
+        setNotifications(notifications.map(notification => ({
+            ...notification,
+            read: true
+        })));
+    };
+
+    const markAsRead = (id: number) => { // marks one notification as read
+        setNotifications(notifications.map(notification => 
+            notification.id === id ? {...notification, read: true} : notification
+        ));
+    };
+
+    const toggleNotifications = () => {
+        setShowNotifications(!showNotifications);
+    };
+
 
     const getGraph = (): string => {
         if (!pickStock) {
@@ -42,16 +76,54 @@ function  ViewStock(props: {disableCustomTheme?: boolean }) {
 
                 <div>
                     <h1 className="title">Top 20 Stox</h1>
+                    
+                    {/* Notification Button */}
+                    <div className="notification-container">
+                        <button 
+                            className="notification-button" 
+                            onClick={toggleNotifications}
+                        >
+                            🔔
+                            {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
+                        </button>
+                        
+                        {/* notification dropdown */}
+                        {showNotifications && (
+                            <div className="notification-dropdown">
+                                <div className="notification-header">
+                                    <h3>Notifications</h3>
+                                    {unreadCount > 0 && (
+                                        <button className="mark-read-button" onClick={markAllAsRead}>
+                                            Mark all as read
+                                        </button>
+                                    )}
+                                </div>
+                                
+                                <div className="notification-list">
+                                    {notifications.length > 0 ? (
+                                        notifications.map((notification) => (
+                                            <div 
+                                                key={notification.id} 
+                                                className={`notification-item ${!notification.read ? 'unread' : ''}`}
+                                                onClick={() => markAsRead(notification.id)}
+                                            >
+                                                <p className="notification-message">{notification.message}</p>
+                                                <span className="notification-time">{notification.timestamp}</span>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="no-notifications">No notifications</p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    
                     <ul className="stock-list">
                         {stockList.map((stock) => (
-                            // key is what will show, which will be a stock name in this case
-                            // and when the name is clicked, it will update the front end's status to display
-                            // a stock-specific window
-                            <div>
+                            <div key={stock.abbreviation}>
                                 <button
                                     className="stock-button"
-                                    key={stock.name}
-                                    // className="px-4 py-2 bg-blue-500 text-white rounded"
                                     onClick={() => setPickStock(stock)}
                                 >
                                     {stock.name}
@@ -78,14 +150,14 @@ function  ViewStock(props: {disableCustomTheme?: boolean }) {
                                 <h2>
                                     {pickStock.name} ({pickStock.abbreviation})
                                 </h2>
-                                <p className="add something here">Stock Value: ${pickStock.value}</p>
-                                <p className="add something here">Sentiment: {pickStock.sentiment}</p>
+                                <p>Stock Value: ${pickStock.value}</p>
+                                <p>Sentiment: {pickStock.sentiment}</p>
 
                                 <ul className="button-list">
                                     <button
                                         className="time-buttons"
                                         onClick={() => setTimeButton("Month")}
-                                        >
+                                    >
                                         Month
                                     </button>
 
@@ -107,7 +179,6 @@ function  ViewStock(props: {disableCustomTheme?: boolean }) {
                                 <div>
                                     <p>{getGraph()}</p>
                                 </div>
-
                             </div>
                         </div>
                     )}
