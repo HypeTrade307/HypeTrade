@@ -1,0 +1,19 @@
+.help-container {
+  margin-top: 20px;
+  padding: 16px;
+}
+
+.help-header {
+  margin-top: 10px;
+  font-size: 5rem;
+  font-weight: bold;
+}
+
+.help-list {
+  padding-left: 20px;
+  margin-bottom: 16px;
+}
+
+.help-list li {
+  margin-bottom: 8px;
+}
