@@ -1,0 +1,7 @@
+[
+  { "name": "Jan", "size": 400 },
+  { "name": "Feb", "size": -300 },
+  { "name": "Mar", "size": 500 },
+  { "name": "Apr", "size": -700 },
+  { "name": "May", "size": 600 }
+]
