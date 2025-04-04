@@ -84,7 +84,7 @@ function FriendRemove(props: { disableCustomTheme?: boolean }) {
         onClose={() => {}} // Prevents clicking outside from closing
         sx={{
           position: "fixed",
-          left: "25%",
+          left: "5%",
           top: "50%",
           transform: "translateY(-50%)",
           maxWidth: "300px"

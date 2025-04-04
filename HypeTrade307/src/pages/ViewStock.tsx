@@ -1,8 +1,9 @@
-import {useState} from "react";
+import { useState, useEffect } from "react";
 import "../stocks.css";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme.tsx";
+import { Dialog, DialogTitle, DialogContent, Button } from "@mui/material";
 
 interface Stock {
     name: string;
@@ -20,9 +21,9 @@ interface Notification {
 
 type TimePeriod = "Day" | "Week" | "Month";
 
-function  ViewStock(props: {disableCustomTheme?: boolean }) {
-    const [pickStock, setPickStock] = useState<Stock | null>(null); // Way to know if a stock was selected
-    const [timeButton, setTimeButton] = useState<TimePeriod>("Day"); // Day is the default value
+function ViewStock(props: {disableCustomTheme?: boolean }) {
+    const [pickStock, setPickStock] = useState<Stock | null>(null);
+    const [timeButton, setTimeButton] = useState<TimePeriod>("Day");
 
     const stockList: Stock[] = [
         { name: "Apple", abbreviation: "AAPL", value: 180, sentiment: 5.12 },
@@ -37,17 +38,17 @@ function  ViewStock(props: {disableCustomTheme?: boolean }) {
         { id: 3, message: "Fred sent you a friend request!", read: true, timestamp: "Yesterday" }
     ]);
 
-    const unreadCount = notifications.filter(notification => !notification.read).length; // holds the number of notifications that user has currently not read
+    const unreadCount = notifications.filter(notification => !notification.read).length;
 
-    const markAllAsRead = () => { // marks all notifications as read
+    const markAllAsRead = () => {
         setNotifications(notifications.map(notification => ({
             ...notification,
             read: true
         })));
     };
 
-    const markAsRead = (id: number) => { // marks one notification as read
-        setNotifications(notifications.map(notification => 
+    const markAsRead = (id: number) => {
+        setNotifications(notifications.map(notification =>
             notification.id === id ? {...notification, read: true} : notification
         ));
     };
@@ -56,37 +57,58 @@ function  ViewStock(props: {disableCustomTheme?: boolean }) {
         setShowNotifications(!showNotifications);
     };
 
-
     const getGraph = (): string => {
         if (!pickStock) {
             return "No stock selected";
         }
-
-        // Right now, it just displays the time period, but later we can populate the graph here too
-
         return `${pickStock.name}'s performance over the last ${timeButton}`;
-    }
+    };
+
+    // Tutorial states
+    const [tutorialOpen, setTutorialOpen] = useState(false);
+    const [step, setStep] = useState(0);
+
+    useEffect(() => {
+        const tutorialMode = JSON.parse(localStorage.getItem("tutorialMode") || "false");
+        if (tutorialMode) {
+            setTutorialOpen(true);
+        }
+    }, []);
+
+    const nextStep = () => {
+        if (step < tutorialSteps.length - 1) {
+            setStep(step + 1);
+        } else {
+            setTutorialOpen(false);
+        }
+    };
+
+    const tutorialSteps = [
+        { title: "Viewing stock sentiment", description: "This is where you can track stock performance and sentiment analysis." },
+        { title: "Select a Stock", description: "Click on a stock to view its details and sentiment analysis." },
+        { title: "View Stock Graph", description: "Change the time period to view the stock performance over different durations." },
+        { title: "You're All Set!", description: "Now you can analyze the stock performance and make informed decisions." }
+    ];
 
     return (
         <>
             <AppTheme {...props}>
                 <CssBaseline enableColorScheme />
-
                 <Navbar />
 
                 <div>
                     <h1 className="title">Top 20 Stox</h1>
-                    
+
                     {/* Notification Button */}
                     <div className="notification-container">
-                        <button 
-                            className="notification-button" 
+                        <button
+                            className="notification-button"
                             onClick={toggleNotifications}
                         >
                             🔔
                             {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
                         </button>
-                        
+
                         {/* notification dropdown */}
                         {showNotifications && (
                             <div className="notification-dropdown">
@@ -98,12 +120,12 @@ function  ViewStock(props: {disableCustomTheme?: boolean }) {
                                         </button>
                                     )}
                                 </div>
-                                
+
                                 <div className="notification-list">
                                     {notifications.length > 0 ? (
                                         notifications.map((notification) => (
-                                            <div 
-                                                key={notification.id} 
+                                            <div
+                                                key={notification.id}
                                                 className={`notification-item ${!notification.read ? 'unread' : ''}`}
                                                 onClick={() => markAsRead(notification.id)}
                                             >
@@ -118,7 +140,7 @@ function  ViewStock(props: {disableCustomTheme?: boolean }) {
                             </div>
                         )}
                     </div>
-                    
+
                     <ul className="stock-list">
                         {stockList.map((stock) => (
                             <div key={stock.abbreviation}>
@@ -132,6 +154,7 @@ function  ViewStock(props: {disableCustomTheme?: boolean }) {
                         ))}
                     </ul>
 
+                    {/* Stock Details Popup */}
                     {pickStock && (
                         <div
                             className="hud-container"
@@ -143,7 +166,7 @@ function  ViewStock(props: {disableCustomTheme?: boolean }) {
                             >
                                 <button
                                     className="cancel"
-                                    onClick={() => {setPickStock(null) ; setTimeButton("Day")}}
+                                    onClick={() => { setPickStock(null); setTimeButton("Day"); }}
                                 >
                                     x
                                 </button>
@@ -184,8 +207,29 @@ function  ViewStock(props: {disableCustomTheme?: boolean }) {
                     )}
                 </div>
             </AppTheme>
+
+            {/* Tutorial Popup */}
+            <Dialog
+                open={tutorialOpen}
+                onClose={() => {}} // Prevents clicking outside from closing
+                sx={{
+                    position: "fixed",
+                    left: "12%",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    maxWidth: "300px"
+                }}
+                disableEscapeKeyDown
+                hideBackdrop
+            >
+                <DialogTitle>{tutorialSteps[step].title}</DialogTitle>
+                <DialogContent>
+                    <p>{tutorialSteps[step].description}</p>
+                    <Button onClick={nextStep}>{step < tutorialSteps.length - 1 ? "Next" : "Finish"}</Button>
+                </DialogContent>
+            </Dialog>
         </>
-    )
+    );
 }
 
 export default ViewStock;

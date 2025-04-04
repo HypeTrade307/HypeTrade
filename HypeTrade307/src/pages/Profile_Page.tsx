@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Home_page_button from "./Home_page_button.tsx";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -7,28 +7,52 @@ import FriendRemove from "./FriendRemove.tsx";
 import Portfolios_creation from "./Portfolios_creation.tsx";
 import SettingsMenu from "./SettingsMenu.tsx";
 import PortfolioViewer from "./Portfoilos_viewer.tsx";
+import { Dialog, DialogTitle, DialogContent, Button } from "@mui/material";
 import "./Profile_Page.css";
 
 function Profile_page(props: { disableCustomTheme?: boolean }) {
     const [showPortfolioViewer, setShowPortfolioViewer] = useState<boolean>(false);
     const [showSettings, setShowSettings] = useState<boolean>(false);
+    const [portfolioTutorialOpen, setPortfolioTutorialOpen] = useState(false);
+    const [portfolioStep, setPortfolioStep] = useState(0);
 
-    // Toggle between portfolio creation and viewer
+    // Check tutorial mode for portfolio tutorial
+    useEffect(() => {
+        const tutorialMode = JSON.parse(localStorage.getItem("tutorialMode") || "false");
+
+        if (tutorialMode) {
+            setPortfolioTutorialOpen(true);
+        }
+    }, []);
+
     const togglePortfolioViewer = () => {
         setShowPortfolioViewer(!showPortfolioViewer);
     };
 
-    // Toggle settings menu visibility
     const toggleSettings = () => {
         setShowSettings(!showSettings);
     };
 
-    // Close settings when clicking outside
     const handleClickOff = (e: React.MouseEvent<HTMLDivElement>) => {
         if ((e.target as HTMLElement).classList.contains("settings-overlay")) {
             setShowSettings(false);
         }
     };
+
+    const nextPortfolioStep = () => {
+        if (portfolioStep < portfolioTutorialSteps.length - 1) {
+            setPortfolioStep(portfolioStep + 1);
+        } else {
+            setPortfolioTutorialOpen(false);
+        }
+    };
+
+    const portfolioTutorialSteps = [
+        { title: "Adding portfolios", description: "This is the Portfolio Creation section. Here, you can create and manage your investment portfolios." },
+        { title: "Adding Portfolios", description: "Type the name of your portfolio in the text box, then click the 'Create Portfolio' button to add it to your list." },
+        { title: "Viewing Portfolios", description: "Click 'View All Portfolios' to see an overview of your created portfolios." },
+        { title: "You're All Set!", description: "Now you know how to create and manage portfolios effectively." }
+    ];
 
     return (
         <>
@@ -85,6 +109,34 @@ function Profile_page(props: { disableCustomTheme?: boolean }) {
                     )}
                 </div>
             </AppTheme>
+
+            {/* Right-Aligned Portfolio Tutorial Popup */}
+            <Dialog
+    open={portfolioTutorialOpen}
+    disableEscapeKeyDown // Prevent closing with Esc
+    hideBackdrop={true}  // Remove the backdrop entirely
+    PaperProps={{
+        sx: {
+            position: "fixed",
+            right: "20px",
+            top: "50%",
+            transform: "translateY(-50%)",
+            width: "300px",
+            boxShadow: 3,
+            borderRadius: 2,
+            padding: "10px",
+            pointerEvents: "auto", // Ensures the dialog is interactive
+        }
+    }}
+>
+    <DialogTitle>{portfolioTutorialSteps[portfolioStep].title}</DialogTitle>
+    <DialogContent>
+        <p>{portfolioTutorialSteps[portfolioStep].description}</p>
+        <Button onClick={nextPortfolioStep}>
+            {portfolioStep < portfolioTutorialSteps.length - 1 ? "Next" : "Finish"}
+        </Button>
+    </DialogContent>
+</Dialog>
         </>
     );
 }
