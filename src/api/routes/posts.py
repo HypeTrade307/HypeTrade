@@ -100,7 +100,9 @@ def like_post(
     # Add like
     result = crud.add_post_like(db, post_id, current_user.user_id)
     if not result:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You have already liked this post")
+        result = crud.remove_post_like(db, post_id, current_user.user_id)
+        if not result:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You have already liked this post")
 
     return {"message": "Post liked successfully"}
 
@@ -119,7 +121,9 @@ def unlike_post(
     # Remove like
     result = crud.remove_post_like(db, post_id, current_user.user_id)
     if not result:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You haven't liked this post")
+        result = crud.add_post_like(db, post_id, current_user.user_id)
+        if not result:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You haven't liked this post")
 
     return {"message": "Post unliked successfully"}
 
