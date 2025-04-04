@@ -25,9 +25,6 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
     borderRadius: `calc(${theme.shape.borderRadius}px + 8px)`,
     backdropFilter: 'blur(24px)',
     border: '1px solid',
-    // borderColor: theme.palette.divider,
-    // backgroundColor: alpha(theme.palette.background.default, 0.4),
-    // boxShadow: theme.shadows[1],
     borderColor: (theme.vars || theme).palette.divider,
     backgroundColor: theme.vars
         ? `rgba(${theme.vars.palette.background.defaultChannel} / 0.4)`
@@ -110,15 +107,8 @@ const Navbar = () => {
                             alignItems: 'center',
                         }}
                     >
-                        <Button color="primary" variant="text" size="small"
-                                onClick={() => handleMenuClick("Login")}
-                        >
-                            Sign in
-                        </Button>
-                        <Button color="primary" variant="contained" size="small"
-                                onClick={() => handleMenuClick("Login")}
-                        >
-                            Sign up
+                        <Button color="primary" variant="text" size="small">
+                            ometz_1 {/* Placeholder username */}
                         </Button>
                         <ColorModeIconDropdown />
                     </Box>

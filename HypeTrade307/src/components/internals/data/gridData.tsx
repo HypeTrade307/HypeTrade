@@ -99,5 +99,5 @@ export const rows: GridRowsProp = [
     views: 60,
     replies: 24,
     dateUpdated: '5/3/2025',
-  },
+  }
 ];
