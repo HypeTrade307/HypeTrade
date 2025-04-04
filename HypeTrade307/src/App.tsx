@@ -16,6 +16,7 @@ import Forum_page from "./pages/forum_page.tsx";
 import Thread_page from "./pages/thread_viewer.tsx";
 import Post_page from "./pages/post_viewer.tsx";
 import PortfolioPage from './pages/Portfoilos_viewer.tsx';
+import Specific_Stock from './pages/specific_stock_request.tsx'
 
 function App() {
     return (
@@ -34,6 +35,8 @@ function App() {
                 <Route path="/thread/:threadId" element={<Thread_page />} />
                 <Route path="/forum" element={<Forum_page />} />
                 <Route path="/thread/:threadId/:postId" element={<Post_page />} />
+                <Route path="/specific-stock" element={<Specific_Stock />} />
+
                 <Route path="*" element={<Page_Not_found />} />
             </Routes>
         </Router>
