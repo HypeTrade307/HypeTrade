@@ -22,12 +22,15 @@ from src.api.routes.posts import router as posts_router, comment_router
 from src.processing.stock_processing import seed_stocks
 from src.processing import scraping as sc
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))  # add src to path
 app = FastAPI()
+app.mount("/", StaticFiles(directory="HypeTrade307/", html=True), name="static")
+
 Base.metadata.create_all(bind=engine)
 sc.test_reddit_connection()
 
