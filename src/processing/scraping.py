@@ -1,10 +1,13 @@
 # reddit_scraper.py
 import datetime
+import os
 import re
 from time import sleep
 
+import dotenv
 # If you want to use PRAW:
 import praw
+from flask.cli import load_dotenv
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 # Import your DB models and session
@@ -20,10 +23,11 @@ def get_reddit_instance() -> praw.Reddit:
     """
     Returns a configured PRAW Reddit instance using your app credentials.
     """
+    load_dotenv()
     reddit = praw.Reddit(
-        client_id="CLIENT_ID",  # from the top under "web app"
-        client_secret="SECRET",  # shown next to "secret"
-        user_agent="HypeTradeApp/1.0 by u/reddit-name",  # descriptive user agent
+        client_id=os.getenv("REDDIT_CLIENT"),  # from the top under "web app"
+        client_secret=os.getenv("REDDIT_SECRET"),  # shown next to "secret"
+        user_agent="HypeTradeApp/1.0 by us",  # descriptive user agent
     )
     return reddit
 

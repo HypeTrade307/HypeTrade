@@ -12,34 +12,17 @@ from src.db import crud
 from fastapi.logger import logger
 
 
-# Comment schemas
-class CommentBase(BaseModel):
-    content: str
-
-class CommentCreate(CommentBase):
-    pass
-
-class CommentResponse(CommentBase):
-    comment_id: int
-    post_id: int
-    author_id: int
-    created_at: datetime
-    author: Optional[dict] = None
-    liked_by: Optional[List[dict]] = None
-
-    class Config:
-        from_attributes = True
-
-
 router = APIRouter(
     prefix="/specific-stock",
     tags=["Posts"]
 )
-# Get the existing post
+# Get the existing sentiment
 @router.get("/{stock_id}", response_model=schemas.PostResponse)
 def get_sentiment(post_id: int, db: Session = Depends(get_db)):
 
     post = crud.get_post_by_id(db, post_id)
+
     if not post:
+        print("got something")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id {post_id} not found")
     return post

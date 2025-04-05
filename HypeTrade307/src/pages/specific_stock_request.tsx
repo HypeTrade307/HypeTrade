@@ -18,11 +18,6 @@ interface SentimentData {
     article_count: number;
 }
 
-interface SentimentRequest {
-    ticker: string;
-    stock_id: number;
-}
-
 function SpecificStockRequest() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -36,8 +31,8 @@ function SpecificStockRequest() {
     // For sentiment data
     const [sentimentData, setSentimentData] = useState<SentimentData[]>([]);
     const [isFetchingSentiment, setIsFetchingSentiment] = useState(false);
-    const [timeframe, setTimeframe] = useState<string>("week");
-    const [numResults, setNumResults] = useState<number>(5);
+    const [lastUpdated, setLastUpdated] = useState<string>("");
+    const [updateStatus, setUpdateStatus] = useState<string>("");
 
     // Check authentication
     const isAuthenticated = !!localStorage.getItem("token");
@@ -86,82 +81,68 @@ function SpecificStockRequest() {
         setSelectedStock(stock);
         setStockSearch(`${stock.ticker} - ${stock.stock_name}`);
         setFilteredStocks([]);
-        // Automatically fetch sentiment data when a stock is selected
-        fetchSentimentData(stock.stock_id);
-    };
 
-    // Fetch sentiment data for a stock
-    const fetchSentimentData = async (stockId: number) => {
-        if (!stockId) return;
+        // Simulate fetching sentiment data with hard-coded values
+        setIsFetchingSentiment(true);
 
-        try {
-            setIsFetchingSentiment(true);
-            setError("");
+        // Simulate API call delay
+        setTimeout(() => {
+            const isRecentlyUpdated = stock.stock_id % 2 === 0;
 
-            const token = localStorage.getItem("token");
-            if (!token) {
-                setError("You must be logged in to view stock sentiment");
-                setIsFetchingSentiment(false);
-                return;
-            }
-
-            // Use the new API endpoint to get last n sentiment values
-            const response = await axios.get(
-                `http://127.0.0.1:8000/specific-stock/${stockId}?n=${numResults}`,
-                {
-                    headers: { Authorization: `Bearer ${token}` }
-                }
-            );
-
-            setSentimentData(response.data);
-            setIsFetchingSentiment(false);
-        } catch (err: any) {
-            console.error("Error fetching sentiment data:", err);
-            if (err.response?.status === 404) {
-                setSentimentData([]);
-                setError("No sentiment data available for this stock.");
+            if (isRecentlyUpdated) {
+                setLastUpdated("15 minutes ago");
+                setUpdateStatus("Recently scraped.");
+                setSentimentData(generateSentimentData(0.3));
             } else {
-                setError(err.response?.data?.detail || "Failed to fetch sentiment data");
+                setLastUpdated("45 minutes ago");
+                setUpdateStatus("Currently scraping again. Please wait for 15 minutes.");
+                setSentimentData(generateSentimentData(0.7));
             }
+
             setIsFetchingSentiment(false);
-        }
+        }, 500);
     };
 
-    // Request sentiment analysis update
-    const handleRequestUpdate = async () => {
+    // Generate mock sentiment data
+    const generateSentimentData = (baseSentiment: number): SentimentData[] => {
+        const data: SentimentData[] = [];
+        const now = new Date();
+
+        for (let i = 0; i < 5; i++) {
+            const date = new Date(now);
+            date.setDate(date.getDate() - i);
+
+            // Create a slight variation in sentiment scores
+            const variation = (Math.random() - 0.5) * 0.1;
+
+            data.push({
+                timestamp: date.toISOString(),
+                sentiment_score: baseSentiment + variation,
+                article_count: Math.floor(Math.random() * 20) + 5
+            });
+        }
+
+        return data;
+    };
+
+    // Request sentiment analysis update - now just simulates an update
+    const handleRequestUpdate = () => {
         if (!selectedStock) {
             setError("Please select a stock first");
             return;
         }
 
-        try {
-            setIsFetchingSentiment(true);
-            setError("");
+        setIsFetchingSentiment(true);
+        setError("");
 
-            const token = localStorage.getItem("token");
-            if (!token) {
-                setError("You must be logged in to request sentiment analysis");
-                setIsFetchingSentiment(false);
-                return;
-            }
-
-            const requestData: SentimentRequest = {
-                ticker: selectedStock.ticker,
-                stock_id: selectedStock.stock_id
-            };
-
-            // Request sentiment analysis
-            await axios.post("http://127.0.0.1:8000/specific-stock/request", requestData, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            // After requesting, fetch the updated data
-            await fetchSentimentData(selectedStock.stock_id);
-        } catch (err: any) {
-            console.error("Error requesting sentiment analysis:", err);
-            setError(err.response?.data?.detail || "Failed to request sentiment analysis");
+        // Simulate API call delay
+        setTimeout(() => {
+            // Always set to "recently updated" after requesting an update
+            setLastUpdated("Just now");
+            setUpdateStatus("Recently scraped.");
+            setSentimentData(generateSentimentData(0.3));
             setIsFetchingSentiment(false);
-        }
+        }, 1500);
     };
 
     // Helper function to get sentiment color based on score
@@ -232,6 +213,18 @@ function SpecificStockRequest() {
                                     {isFetchingSentiment ? "Processing..." : "Request Update"}
                                 </button>
                             </div>
+
+                            {/* Last updated section */}
+                            {lastUpdated && (
+                                <div className="last-updated-container">
+                                    <div className="last-updated">
+                                        <strong>Last updated on: </strong>{lastUpdated}
+                                    </div>
+                                    <div className="update-status">
+                                        {updateStatus}
+                                    </div>
+                                </div>
+                            )}
 
                             {isFetchingSentiment ? (
                                 <div className="loading-indicator">Loading sentiment data...</div>

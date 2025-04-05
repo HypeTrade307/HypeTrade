@@ -26,7 +26,7 @@ def send_simple_message(email, code):
     api_instance = brevo_python.TransactionalEmailsApi(brevo_python.ApiClient(configuration))
     subject = "from the Python SDK!"
     sender = {"name":"whodis","email":"adityagandhi98101@gmail.com"}
-    html_content = f"<html><body><h1>Your code is {code} </h1></body></html>"
+    html_content = f"<html><body><h1>From HypeTrade: Your code is {code} </h1></body></html>"
     to = [{"email":email,"name":"Unspecified"}]
     send_smtp_email = brevo_python.SendSmtpEmail(to=to, html_content=html_content, sender=sender, subject=subject) # SendSmtpEmail | Values to send a transactional email
 
