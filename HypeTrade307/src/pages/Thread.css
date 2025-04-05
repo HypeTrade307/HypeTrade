@@ -54,7 +54,7 @@
 }
 
 .post-item {
-    background-color: white;
+    background-color: lavender;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
@@ -75,6 +75,8 @@
 }
 
 .post-title {
+    background-color: lavender;
+    color: black;
     font-size: 1.25rem;
     font-weight: 600;
 }
@@ -113,7 +115,7 @@
 }
 
 .modal-content {
-    background-color: white;
+    background-color: lavender;
     border-radius: 8px;
     width: 90%;
     max-width: 600px;
@@ -127,14 +129,17 @@
     align-items: center;
     padding: 1rem 1.5rem;
     border-bottom: 1px solid #e0e0e0;
+    background-color: lavender;
 }
 
 .modal-header h2 {
     margin: 0;
+    background-color: lavender;
+    color: black;
 }
 
 .close-button {
-    background: none;
+    background: lavenderblush;
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
@@ -142,14 +147,20 @@
 
 .modal-body {
     padding: 1.5rem;
+    color: black;
+    background-color: lavender;
 }
 
 .form-group {
     margin-bottom: 1.5rem;
+    color: black;
+    background-color: lavender;
 }
 
 .form-group label {
     display: block;
+    color: black;
+    background-color: lavender;
     margin-bottom: 0.5rem;
     font-weight: 500;
 }

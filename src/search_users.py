@@ -3,6 +3,11 @@ from typing import List
 from src.api.routes.users import read_users
 from src.db.database import get_db
 
+'''
+
+DEPRECATED
+
+'''
 def search(username: str) -> List[str]:  # Returns a list for JSON serialization
     """
     :param username: username or string to search for within username
@@ -19,7 +24,3 @@ def search(username: str) -> List[str]:  # Returns a list for JSON serialization
     if not matches:
         results.append("No matches found")
     return list(results)  # Convert deque to list before returning
-
-# For testing:
-# print(search(""))
-

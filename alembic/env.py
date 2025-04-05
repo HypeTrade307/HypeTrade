@@ -21,8 +21,11 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
 
+from dotenv import load_dotenv
+load_dotenv()
+
 DB_USER = os.getenv("DB_USER", "root")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "mysecret")
+DB_PASSWORD = os.getenv("DB_PASSWORD") if os.getenv("DB_PASSWORD") else os.getenv("DB_PW")
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_NAME = os.getenv("DB_NAME", "test")
 # other values from the config, defined by the needs of env.py,
@@ -78,7 +81,7 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection, target_metadata=target_metadata, compare_type=True, compare_server_default=True
         )
 
         with context.begin_transaction():

@@ -146,6 +146,38 @@ function PostViewer() {
             setSubmitting(false);
         }
     };
+    function myFunction() {
+        handleDeletePost();
+        navigate(`/thread/${threadId}`);
+    }
+
+    // Handle post deletion
+    const handleDeletePost = async() => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                setError("Not authenticated");
+                return;
+            }
+
+            await axios.delete(
+                `http://127.0.0.1:8000/post/${postId}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            console.log("sent a comment:", commentContent);
+
+            // delete
+            await axios.get(`http://127.0.0.1:8000/post/${postId}/comments`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+        } catch (err: any) {
+            console.error("Error creating comment:", err);
+            setError(err.response?.data?.detail || "Failed to delete post");
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     // Handle post like/unlike
     const handleLikePost = async () => {
@@ -268,6 +300,12 @@ function PostViewer() {
                                     onClick={() => setShowCommentForm(!showCommentForm)}
                                 >
                                     Add Comment
+                                </button>
+                                <button
+                                    className="delete-button"
+                                    onClick={() => myFunction()}
+                                    >
+                                    Delete Post
                                 </button>
                             </div>
                         </div>

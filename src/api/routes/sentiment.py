@@ -4,7 +4,7 @@ from src.db import crud, schemas
 from src.db.database import get_db
 from src.processing import scraping, sentiment_analysis
 
-router = APIRouter(prefix="/sentiment", tags=["Sentiment"])
+router = APIRouter(prefix="/specific-stock", tags=["Sentiment"])
 
 @router.post("/request")
 def request_sentiment_analysis(request: schemas.SentimentRequest, db: Session = Depends(get_db)):
