@@ -1,5 +1,6 @@
 // portfolios_viewer.tsx
 
+import React from "react";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -123,6 +124,51 @@ export default function PortfolioPage() {
     }
   }
 
+  // 6. Import existing portfolio as csv file upload. Update the current portfolio to include csv data
+  async function uploadFile(file) {
+
+    // if (!file) return;
+    if (file) {
+      try {
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const token = localStorage.getItem("token");
+        if (!token || !portfolio) return;
+
+        const response = await axios.post(
+            `http://127.0.0.1:8000/portfolios/${portfolio.portfolio_id}/upload`, formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`
+              }
+            }
+        );
+
+        setPortfolio(response.data);
+
+      } catch (error) {
+        console.error("Error updating portfolio", error);
+      }
+    }
+  }
+
+
+  async function importPortfolioFromCSV(event) {
+
+    const inputFile = event.target.files[0];
+
+    try {
+      await uploadFile(inputFile);
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
   if (loading) return <div>Loading...</div>;
   if (error) return <Page_Not_found />;
 
@@ -177,6 +223,15 @@ export default function PortfolioPage() {
           <p>No stocks added yet.</p>
         )}
       </ul>
+
+      {/* Upload File Input */}
+      <div>
+        <label>Import existing portfolio from csv file:</label>
+        <form onChange={event => importPortfolioFromCSV(event)}>
+          <input type="file" className="input" />
+        </form>
+      </div>
+
     </div>
   );
 }

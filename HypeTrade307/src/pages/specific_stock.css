@@ -1,0 +1,267 @@
+/* Container */
+.post-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Header Section */
+.post-header-section {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.post-title-main {
+    font-size: 2rem;
+    margin: 0.5rem 0 1rem;
+}
+
+/* Form Section */
+.form-section {
+    background-color: lavender;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.stock-search-container {
+    position: relative;
+}
+
+.stock-search-input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.stock-dropdown {
+    position: absolute;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stock-option {
+    padding: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.stock-option:hover {
+    background-color: #f5f5f5;
+}
+
+.stock-ticker {
+    font-weight: bold;
+    color: #0066cc;
+}
+
+.stock-name {
+    color: #555;
+}
+
+/* Sentiment Container */
+.sentiment-container {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed #ccc;
+}
+
+.sentiment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.sentiment-header h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #333;
+}
+
+.update-button {
+    padding: 0.5rem 1.2rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #000000;
+    border: none;
+    color: white;
+    transition: background-color 0.2s;
+}
+
+.update-button:hover:not(:disabled) {
+    background-color: #333333;
+}
+
+.update-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.sentiment-results {
+    background-color: white;
+    border-radius: 6px;
+    border: 1px solid #eee;
+    padding: 1rem;
+}
+
+.sentiment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.sentiment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    transition: transform 0.1s;
+}
+
+.sentiment-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.sentiment-date {
+    color: #666;
+    font-size: 0.9rem;
+    flex: 1;
+}
+
+.sentiment-score {
+    font-weight: bold;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    text-align: center;
+    flex: 1;
+}
+
+.sentiment-score.positive {
+    background-color: #e6f7e6;
+    color: #2e7d32;
+}
+
+.sentiment-score.negative {
+    background-color: #fde9e9;
+    color: #c62828;
+}
+
+.sentiment-score.neutral {
+    background-color: #e0f2ff;
+    color: #0066cc;
+}
+
+.article-count {
+    color: #666;
+    font-size: 0.9rem;
+    flex: 1;
+    text-align: right;
+}
+
+.sentiment-average {
+    padding: 1rem;
+    border-top: 1px solid #eee;
+    font-size: 1.1rem;
+}
+
+.sentiment-average span.positive {
+    color: #2e7d32;
+    font-weight: bold;
+}
+
+.sentiment-average span.negative {
+    color: #c62828;
+    font-weight: bold;
+}
+
+.sentiment-average span.neutral {
+    color: #0066cc;
+    font-weight: bold;
+}
+
+.no-data-message {
+    padding: 2rem;
+    text-align: center;
+    background-color: #fff9e6;
+    border-radius: 6px;
+    border: 1px solid #ffe082;
+    color: #ff8f00;
+}
+
+/* Message States */
+.error-message {
+    color: #d32f2f;
+    padding: 1rem;
+    margin: 1rem 0;
+    background-color: #fde9e9;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.loading-indicator {
+    text-align: center;
+    padding: 1.5rem;
+    color: #666;
+    font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .post-title-main {
+        font-size: 1.5rem;
+    }
+
+    .form-section {
+        padding: 1rem;
+    }
+
+    .sentiment-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .sentiment-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .sentiment-date, .sentiment-score, .article-count {
+        width: 100%;
+        text-align: left;
+    }
+}

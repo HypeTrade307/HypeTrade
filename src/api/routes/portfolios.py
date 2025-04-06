@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -7,6 +7,7 @@ from src.security import get_current_user  # This dependency decodes the JWT and
 from src.db.database import get_db
 from src.db import schemas
 from src.db import crud
+from src.processing import import_portfolio
 
 router = APIRouter(prefix="/portfolios", tags=["Portfolios"])
 
@@ -99,3 +100,21 @@ def remove_stock_from_portfolio(
 def get_portfolio_stocks(portfolio_id: int, db: Session = Depends(get_db)):
     stocks = crud.get_portfolio_stocks(db, portfolio_id)
     return stocks
+
+# Import portfolio from csv upload
+@router.post("/{portfolio_id}/upload", response_model=schemas.PortfolioResponse)
+async def import_stocks_to_portfolio(
+        portfolio_id: int,
+        file: UploadFile = File(...),
+        db: Session = Depends(get_db),
+        current_user: models.User = Depends(get_current_user),
+):
+    portfolio = crud.get_portfolio(db, portfolio_id)
+
+    if not portfolio:
+        raise HTTPException(status_code=404, detail="Portfolio not found.")
+    if portfolio.user_id != current_user.user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to update this portfolio.")
+
+    updated_portfolio = import_portfolio.import_portfolio_from_csv(db, file.file, portfolio)
+    return updated_portfolio

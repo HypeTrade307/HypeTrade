@@ -107,8 +107,14 @@ export default function SettingsMenu() {
       }
     } catch (error: any) {
       console.error(error);
-      const detail = error.response?.data?.detail || "Error saving changes";
-      toast.error(detail);
+      const detail = error.response?.data?.detail;
+      if (detail === "Invalid new password") {
+        toast.error("New password is invalid.");
+      } else if (detail === "Old password is incorrect") {
+        toast.error("Old password is incorrect.");
+      } else {
+        toast.error(detail || "Error saving changes");
+      }
     }
   };
 
