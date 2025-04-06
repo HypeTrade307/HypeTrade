@@ -495,60 +495,133 @@ def get_thread_by_title_stock(db: Session, title: str, stock_id: int) -> models.
 # NOTIFICATION CRUD
 # ----------------------------
 
-# Create a new notification
-def create_notification(db: Session, notification: schemas.NotificationCreate):
-    db_notification = models.Notification(
-        message=notification.message,
-        sender_id=notification.sender_id,
-        receiver_id=notification.receiver_id,
-        created_at=datetime.now(),
-        is_read=False
-    )
-    db.add(db_notification)
-    db.commit()
-    db.refresh(db_notification)
-    return db_notification
-
 # Get all notifications for a user
 def get_user_notifications(db: Session, user_id: int, skip: int = 0, limit: int = 100):
-    return db.query(models.Notification)\
-        .filter(models.Notification.receiver_id == user_id)\
-        .order_by(models.Notification.created_at.desc())\
-        .offset(skip)\
-        .limit(limit)\
-        .all()
+    try:
+        return db.query(models.Notification)\
+            .filter(models.Notification.receiver_id == user_id)\
+            .order_by(models.Notification.created_at.desc())\
+            .offset(skip)\
+            .limit(limit)\
+            .all()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database error: {str(e)}"
+        )
 
-# Mark a notification as read
+# Mark a notification as read with proper validation
 def mark_notification_as_read(db: Session, notification_id: int):
-    db_notification = db.query(models.Notification).filter(models.Notification.notification_id == notification_id).first()
-    if db_notification:
+    try:
+        db_notification = db.query(models.Notification).filter(models.Notification.notification_id == notification_id).first()
+        if not db_notification:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Notification with ID {notification_id} not found."
+            )
+            
         db_notification.is_read = True
         db.commit()
         db.refresh(db_notification)
-    return db_notification
-
-# Mark all notifications as read for a user
-def mark_all_notifications_as_read(db: Session, user_id: int):
-    db.query(models.Notification)\
-        .filter(models.Notification.receiver_id == user_id, models.Notification.is_read == False)\
-        .update({models.Notification.is_read: True})
-    db.commit()
-    return True
-
-# Create stock sentiment notifications
-def create_stock_sentiment_notification(db: Session, user_id: int, system_user_id: int, stock_ticker: str, stock_name: str, old_sentiment: float, new_sentiment: float):
-    change = new_sentiment - old_sentiment
-    if abs(change) >= 2.0:  # Only notify if change is significant
-        direction = "up" if change > 0 else "down"
-        message = f"{stock_ticker} ({stock_name}) sentiment is {direction} by {abs(change):.1f}"
-        
-        notification = schemas.NotificationCreate(
-            message=message,
-            receiver_id=user_id,
-            sender_id=system_user_id  # Using system user ID as sender
+        return db_notification
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database error: {str(e)}"
         )
-        return create_notification(db, notification)
-    return None
+
+# Mark all notifications as read for a user with proper validation
+def mark_all_notifications_as_read(db: Session, user_id: int):
+    try:
+        # Verify user exists first
+        user = db.query(models.User).filter(models.User.user_id == user_id).first()
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User with ID {user_id} not found."
+            )
+            
+        db.query(models.Notification)\
+            .filter(models.Notification.receiver_id == user_id, models.Notification.is_read == False)\
+            .update({models.Notification.is_read: True})
+        db.commit()
+        return True
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database error: {str(e)}"
+        )
+
+# top stocks function
+def get_top_stocks(db: Session, limit: int = 20) -> list[models.Stock]:
+    """
+    Gets the top stocks with auto analysis mode, optionally limited to a specific count.
+    Also enriches with latest sentiment data if available.
+    """
+    try:
+        # Get stocks with auto analysis mode
+        stocks = db.query(models.Stock).filter(
+            models.Stock.analysis_mode == "auto"
+        ).limit(limit).all()
+        
+        # Enhance stocks with sentiment data where available
+        for stock in stocks:
+            latest_sentiment = db.query(models.SentimentAnalysis)\
+                .filter(models.SentimentAnalysis.stock_id == stock.stock_id)\
+                .order_by(models.SentimentAnalysis.created_at.desc())\
+                .first()
+                
+            if latest_sentiment:
+                # Attach sentiment value to stock object
+                stock.sentiment = latest_sentiment.sentiment_value
+                
+        return stocks
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database error retrieving top stocks: {str(e)}"
+        )
+    
+def create_notification(db: Session, sender_id: int, receiver_id: int, message: str, stock_id: int = None):
+    """
+    Create a new notification.
+    
+    Args:
+        db: Database session
+        sender_id: ID of the sender (system or user)
+        receiver_id: ID of the user receiving the notification
+        message: Notification message content
+        stock_id: Optional related stock ID
+    
+    Returns:
+        The created notification object
+    """
+    try:
+        # Create notification instance
+        new_notification = models.Notification(
+            sender_id=sender_id,
+            receiver_id=receiver_id,
+            message=message,
+            stock_id=stock_id,
+            is_read=False,
+            created_at=datetime.now()
+        )
+        
+        # Add to database
+        db.add(new_notification)
+        db.commit()
+        db.refresh(new_notification)
+        return new_notification
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create notification: {str(e)}"
+        )
 
 # ----------------------------
 # SENTIMENT CRUD

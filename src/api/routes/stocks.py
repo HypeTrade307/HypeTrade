@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from typing import List
 import random
 from src.db.database import get_db
+from src.db import models
 from src.db.schemas import StockCreate, StockUpdate, StockResponse
 from src.db.crud import (
     create_stock,
@@ -47,15 +49,39 @@ def get_top_stocks(limit: int = 20, db: Session = Depends(get_db)):
     """
     Returns top stocks with analysis_mode='auto', limited by the parameter
     """
-    from src.db import models  # Import models for direct query
-    
     # Query stocks with analysis_mode='auto'
     stocks = db.query(models.Stock).filter(
         models.Stock.analysis_mode == "auto"
+
+        # we can switch this to sentiment val or market later...
     ).limit(limit).all()
     
     if not stocks:
         # If no stocks are found, you might need to seed the database
         raise HTTPException(status_code=404, detail="No auto-analyzed stocks found. Database may need seeding.")
+    
+    return stocks
+
+# SEARCH FUNCTIONALITY!
+
+@router.get("/search", response_model=List[StockResponse])
+def search_stocks(
+    query: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Search for stocks by symbol or name.
+    The search is case-insensitive and matches partial strings.
+    """
+    # Convert query to lowercase for case-insensitive search
+    search_query = f"%{query.lower()}%"
+    
+    # Search in both symbol and name fields
+    stocks = db.query(models.Stock).filter(
+        or_(
+            models.Stock.symbol.ilike(search_query),
+            models.Stock.name.ilike(search_query)
+        )
+    ).all()
     
     return stocks

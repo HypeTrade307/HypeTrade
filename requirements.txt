@@ -29,7 +29,7 @@ transformers  # For FinBERT model
 torch  # PyTorch backend for FinBERT
 nltk  # Natural Language Toolkit (if needed)
 scikit-learn  # FinBERT utilities
-sentencepiece  # Tokenizer dependency for FinBERT
+# sentencepiece  # Tokenizer dependency for FinBERT
 
 # Notifications (Email, Push, etc.)
 # smtplib  # For sending emails
