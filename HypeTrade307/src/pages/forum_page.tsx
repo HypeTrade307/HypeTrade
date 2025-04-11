@@ -52,7 +52,7 @@ function Forum() {
                 //     return;
                 // }
 
-                const response = await axios.get("http://127.0.0.1:8000/threads", {
+                const response = await axios.get("http://localhost:8080/threads", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -78,7 +78,7 @@ function Forum() {
                 //     return;
                 // }
 
-                const response = await axios.get("http://127.0.0.1:8000/stocks", {
+                const response = await axios.get("http://localhost:8080/stocks", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -116,13 +116,13 @@ function Forum() {
         try {
             const token = localStorage.getItem("token");
             console.log("Token being sent:", token);
-            if (!token) {
-                setError("Not authenticated");
-                return;
-            }
+            // if (!token) {
+            //     setError("Not authenticated");
+            //     return;
+            // }
 
             const response = await axios.post(
-                "http://127.0.0.1:8000/threads/",
+                "http://localhost:8080/threads/",
                 {
                     title: title,
                     stock_id: selectedStock.stock_id,

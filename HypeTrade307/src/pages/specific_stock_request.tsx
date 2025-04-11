@@ -44,7 +44,7 @@ function SpecificStockRequest() {
                 setLoading(true);
                 const token = localStorage.getItem("token");
 
-                const response = await axios.get("http://127.0.0.1:8000/stocks", {
+                const response = await axios.get("http://localhost:8080/stocks", {
                     headers: token ? { Authorization: `Bearer ${token}` } : {}
                 });
 

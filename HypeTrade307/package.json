@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -34,6 +34,7 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.2.0",
     "react-toastify": "^11.0.5",
+    "recharts": "^2.15.2",
     "styled-components": "^6.1.15",
     "stylis-plugin-rtl": "^2.1.1",
     "tailwind-merge": "^3.0.2",

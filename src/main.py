@@ -38,9 +38,14 @@ sc.test_reddit_connection()
 # def on_startup():
 #     with SessionLocal() as db:
 #         seed_stocks(db)
+
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173"
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Change this to your frontend URL for security (e.g., "http://localhost:3000")
+    allow_origins=origins,  # Change this to your frontend URL for security (e.g., "http://localhost:3000")
     allow_credentials=True,
     allow_methods=["*"],  # Allows GET, POST, OPTIONS, etc.
     allow_headers=["*"],  # Allows all headers
