@@ -85,6 +85,8 @@ export default function PortfoliosCreation(props: { disableCustomTheme?: boolean
         }
     };
 
+    // @ts-ignore
+    // @ts-ignore
     return (
         <AppTheme {...props}>
             <Navbar />
