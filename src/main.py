@@ -5,9 +5,6 @@ from typing import List, Optional
 import os
 import uvicorn
 
-# import backend functions
-from src import check_if_friends as cf, search_users as su
-
 # import database setup
 from src.db.database import SessionLocal, engine, Base
 from src.api.routes.notifications import router as notification_router
@@ -54,44 +51,6 @@ app.add_middleware(
 Base.metadata.create_all(bind=engine)
 
 seed_stocks(db=SessionLocal())
-# Include routers
-# friend check request model
-class FriendCheckRequest(BaseModel):
-    current_user: str
-    requested_user: str
-
-# friend modification request model
-class FriendModifyRequest(BaseModel):
-    current_user: str
-    add_user: Optional[str] = None
-    remove_user: Optional[str] = None
-
-# text input model
-class InputData(BaseModel):
-    text: str
-
-# routes from server.py
-@app.post("/check_friends")
-def check_friends(request: FriendCheckRequest):
-    friend_list = cf.check_friends(request.current_user, request.requested_user)
-    return {"friends": friend_list if friend_list else []}
-
-@app.post("/add_friend")
-def add_friend(request: FriendModifyRequest):
-    if request.add_user:
-        cf.add_to_friendlist(request.current_user, request.add_user)
-    return {"message": "Friend request sent"}
-
-@app.post("/remove_friend")
-def remove_friend(request: FriendModifyRequest):
-    if request.remove_user:
-        cf.remove_from_friendlist(request.current_user, request.remove_user)
-    return {"message": "Friend removed"}
-
-@app.post("/process")
-def process_text(data: InputData) -> List[str]:  
-    return su.search(data.text)
-
 # include users router from main.py
 app.include_router(users_router)
 app.include_router(threads_router)
@@ -104,6 +63,9 @@ app.include_router(sentiment_router)
 app.include_router(posts_router)
 app.include_router(comment_router)
 # additional routes from main.py
+@app.route('/')
+def home():
+    return "Hello world"
 @app.get("/api/health")
 def health_check():
     return {"status": "ok"}
@@ -115,4 +77,5 @@ def root():
 # entry point
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8080))  # cloud run requires PORT env var
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    uvicorn.run(app, host="0.0.0.0", port=8080)
+    app.run(port=int(os.environ.get("PORT", 8080)),host='0.0.0.0',debug=True)

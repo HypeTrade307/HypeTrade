@@ -1,7 +1,5 @@
-FROM python:3.11
-WORKDIR .
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+FROM python:3.11-slim
+WORKDIR /app
 COPY . .
-EXPOSE 8080
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]
+RUN pip install --no-cache-dir -r requirements.txt
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
