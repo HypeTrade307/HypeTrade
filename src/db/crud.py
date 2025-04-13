@@ -1,5 +1,7 @@
 import datetime
+from enum import Enum
 from fastapi import HTTPException, status
+from pyparsing import Literal
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -824,4 +826,139 @@ def get_sentiment_summary_for_stock_in_range(db: Session, stock_id: int, timefra
 
     return [{"timestamp": row.timestamp, "value": row.value} for row in results]
 
+
+# ----------------------------
+# FLAG CRUD
+# ----------------------------
+
+def create_flag(db: Session, user_id: int, flag_type: str, reason: str, target_id: int) -> models.Flag:
+    """
+    Create a new flag for a post or comment.
+    
+    Args:
+        db: Database session
+        user_id: ID of the user who is flagging
+        flag_type: Type of the flag (e.g., "post", "comment")
+        reason: Reason for the flag
+        flagged_id: ID of the post or comment being flagged
+    
+    Returns:
+        The created flag object
+    """
+    try:
+        new_flag = models.Flag(
+            created_by=user_id,
+            flag_type=flag_type,
+            reason=reason,
+            target_id=target_id,
+            created_at=datetime.now()
+        )
         
+        db.add(new_flag)
+        db.commit()
+        db.refresh(new_flag)
+        return new_flag
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create flag: {str(e)}"
+        )
+
+class FlagType(str, Enum):
+    user = "user"
+    post = "post"
+    comment = "comment"
+    thread = "thread"
+
+def check_flagged(db: Session, target_id: int, flag_type: FlagType) -> bool:
+    """
+    Check if a post or comment has been flagged.
+    
+    Args:
+        db: Database session
+        flagged_id: ID of the post or comment being checked
+        flag_type: Type of the flag (e.g., "post", "comment")
+    
+    Returns:
+        True if flagged, False otherwise
+    """
+    try:
+        flag = db.query(models.Flag).filter(
+            models.Flag.target_id == target_id,
+            models.Flag.flag_type == flag_type
+        ).first()
+        
+        return flag is not None
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to check flag status: {str(e)}"
+        )
+
+def remove_flag(db: Session, flag_id: int) -> bool:
+    """
+    Remove a flag by its ID.
+    
+    Args:
+        db: Database session
+        flag_id: ID of the flag to be removed
+    
+    Returns:
+        True if removed successfully, False if not found
+    """
+    try:
+        flag = db.query(models.Flag).filter(models.Flag.flag_id == flag_id).first()
+        if not flag:
+            return False
+        
+        db.delete(flag)
+        db.commit()
+        return True
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to remove flag: {str(e)}"
+        )
+
+def find_flag(db: Session, target_id: int, flag_type: str) -> models.Flag | None:
+    """
+    Find a flag by its flagged ID and type.
+    
+    Args:
+        db: Database session
+        flagged_id: ID of the post or comment being checked
+        flag_type: Type of the flag (e.g., "post", "comment")
+    
+    Returns:
+        The found flag object or None if not found
+    """
+    try:
+        return db.query(models.Flag).filter(
+            models.Flag.target_id == target_id,  # Changed from flag_id
+            models.Flag.flag_type == flag_type
+        ).first()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to find flag: {str(e)}"
+        )
+
+def get_all_flags(db: Session) -> list[models.Flag]:
+    """
+    Get all flags in the database.
+    
+    Args:
+        db: Database session
+    
+    Returns:
+        List of all flag objects
+    """
+    try:
+        return db.query(models.Flag).all()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve flags: {str(e)}"
+        )
