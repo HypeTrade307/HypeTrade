@@ -55,6 +55,13 @@ export default function PortfolioPage() {
     fetchPortfolio();
   }, [id]);
 
+  //1.5 Add the id to local storage as a navigation crumb when you go to view a stock
+  useEffect(() => {
+    if (id) {
+      localStorage.setItem("currentPortfolioId", id);
+    }
+  }, [id]);
+
   // 2. Fetch all stocks for the typeahead
   useEffect(() => {
     async function fetchStocks() {
@@ -209,14 +216,26 @@ export default function PortfolioPage() {
       </div>
 
       {/* LIST STOCKS IN PORTFOLIO */}
-      <ul>
+      <ul style={{ listStyleType: "none", padding: 0 }}>
         {portfolio?.stocks && portfolio.stocks.length > 0 ? (
           portfolio.stocks.map((st, index) => (
-            <li key={index}>
-              {st.ticker} - {st.stock_name}
-              <button style={{ marginLeft: "8px" }} onClick={() => removeStock(st.stock_id)}>
-                Remove
-              </button>
+            <li key={index} style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}>
+              <div
+                onClick={() => navigate(`/stocks/${st.ticker}`)}
+                style={{
+                  cursor: "pointer",
+                  color: "#007bff",
+                  flex: 1,
+                  padding: "4px",
+                  borderRadius: "4px",
+                  transition: "background 0.2s"
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#f0f0f0")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+              >
+                {st.ticker} - {st.stock_name}
+              </div>
+              <button onClick={() => removeStock(st.stock_id)}>Remove</button>
             </li>
           ))
         ) : (
