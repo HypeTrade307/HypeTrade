@@ -5,7 +5,8 @@ import Navbar from "../components/NavbarSection/Navbar.tsx";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme.tsx";
 import axios from "axios";
-
+import MarketValue from "../assets/basic_Graph.tsx";
+import AreaGraph from "@/assets/area_Graph.tsx";
 // Define API base URL to fetch data in mySQL 
 const API_BASE_URL = "http://127.0.0.1:8000";
 
@@ -939,6 +940,8 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                                             No sentiment data available
                                         </div>
                                     )}
+                                    <MarketValue file={pickStock.ticker} />
+                                    <AreaGraph file={pickStock.ticker}/>
                                 </div>
                             </div>
                         </div>
