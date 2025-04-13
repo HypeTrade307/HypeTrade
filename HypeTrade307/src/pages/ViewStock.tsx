@@ -63,7 +63,25 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
     
     const [lastStockFetch, setLastStockFetch] = useState<Date | null>(null);
     const navigate = useNavigate();
+    const [tutorialOpen, setTutorialOpen] = useState(false);
+  const [step, setStep] = useState(0);
 
+  const tutorialSteps = [
+    { title: "Explore Stocks", description: "Here you can view the top S&P 500 stocks and track their sentiment." },
+    { title: "Select a stock", description: "Click on a stock you would like to see more information about." },
+    { title: "Stock Page", description: "Here information about the stock is displayed. You can see the sentiment and various graphs (stocks market data and stocks overall sentiment). Use this page to gather information on whether a stock might go up or down in the future." },
+    { title: "Changing the timespan", description: "You may also view different information based on how far back you would like to see the sentiment. Click through the 'Day', 'Week', and 'Month' buttons."},
+      { title: "Exiting the stock view", description: "To exit, either click the red X in the top right of the pop up, or click anywhere off of the pop up window."},
+    { title: "You're Ready!", description: "Now you can use this dashboard to monitor your investment insights! Happy trading!" }
+  ];
+
+  const nextStep = () => {
+    if (step < tutorialSteps.length - 1) {
+      setStep(step + 1);
+    } else {
+      setTutorialOpen(false);
+    }
+  };
     // Fetch authenticated user from API
     useEffect(() => {
         const fetchUser = async () => {
@@ -112,7 +130,14 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
             }
         }
     }, [isAuthenticated]);
-    
+
+    //tutorial mode check
+    useEffect(() => {
+        const tutorialMode = localStorage.getItem("tutorialMode");
+            if (tutorialMode === "true") {
+                setTutorialOpen(true);
+            }
+    }, []);
     // Format date for display
     const formatNotificationTime = (dateString: string): string => {
         const date = new Date(dateString);
@@ -947,6 +972,32 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                         </div>
                     )}
                 </div>
+                {tutorialOpen && tutorialSteps[step] && (
+                  <div
+                    style={{
+                      position: 'fixed',
+                      top: '100px',
+                      left: '40px',
+                      zIndex: 9999,
+                      background: 'white',
+                      padding: '1rem',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+                      width: '300px',
+                        color: 'black',
+                      pointerEvents: 'auto',
+                    }}
+                  >
+                    <h3 style={{ marginTop: 0 }}>{tutorialSteps[step].title}</h3>
+                    <p>{tutorialSteps[step].description}</p>
+                    <button
+                      style={{ marginTop: '0.5rem', width: '100%' }}
+                      onClick={nextStep}
+                    >
+                      {step < tutorialSteps.length - 1 ? "Next" : "Finish"}
+                    </button>
+                  </div>
+                )}
             </AppTheme>
         </>
     )

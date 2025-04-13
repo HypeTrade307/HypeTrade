@@ -1,5 +1,7 @@
 /* Forum.css */
 
+
+
 /* Main container */
 .forum-container {
     width: 100%;
@@ -107,9 +109,10 @@
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start; /* <--- changed from center */
+    align-items: flex-start;     /* <--- changed from center */
     z-index: 1000;
+    padding: 40px; /* optional: gives breathing room */
 }
 
 .modal-content {
@@ -244,4 +247,10 @@
     .thread-date {
         align-self: flex-end;
     }
+}
+
+.tutorial-modal {
+    margin-left: 5%;
+    margin-right: auto;
+    align-self: flex-start;
 }

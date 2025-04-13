@@ -4,6 +4,12 @@ import axios from "axios";
 import Navbar from "../components/NavbarSection/Navbar";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme";
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    Button
+} from "@mui/material";
 import "./Thread.css";
 
 // Define interfaces
@@ -43,27 +49,39 @@ function ThreadViewer() {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
 
+    // Tutorial state
+    const [tutorialOpen, setTutorialOpen] = useState(false);
+    const [step, setStep] = useState(0);
+
+    const tutorialSteps = [
+        { title: "Welcome to the Thread", description: "Here you can see all posts in this thread." },
+        { title: "Viewing Posts", description: "Click on any post to view or reply to it." },
+        { title: "Posting", description: "Click 'Create Post' to contribute to the discussion." },
+        { title: "You're Ready!", description: "That's it! Start participating in the conversation." }
+    ];
+
+    const nextStep = () => {
+        if (step < tutorialSteps.length - 1) {
+            setStep(step + 1);
+        } else {
+            setTutorialOpen(false);
+        }
+    };
+
     // Fetch thread details
     useEffect(() => {
         async function fetchThread() {
             try {
                 const token = localStorage.getItem("token");
-                // if (!token) {
-                //     setError("Not authenticated");
-                //     setLoading(false);
-                //     return;
-                // }
-                console.log(`something something and my id is ${threadId}`);
 
                 const response = await axios.get(`http://127.0.0.1:8000/thread/${threadId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                console.log("Data sent to API:", { response });
 
                 setThread(response.data);
             } catch (err: any) {
-                    console.error("Full error response:", err.response?.data);
-                    setError(JSON.stringify(err.response?.data, null, 2));  // Pretty print error
+                console.error("Full error response:", err.response?.data);
+                setError(JSON.stringify(err.response?.data, null, 2));
             }
         }
 
@@ -77,12 +95,9 @@ function ThreadViewer() {
 
             try {
                 const token = localStorage.getItem("token");
-
-                console.log(`creating post`);
                 const response = await axios.get(`http://127.0.0.1:8000/thread/${threadId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                console.log(`created post`);
 
                 setPosts(response.data);
             } catch (err: any) {
@@ -96,11 +111,17 @@ function ThreadViewer() {
         fetchPosts();
     }, [threadId]);
 
+    // Show tutorial on page load if enabled
+    useEffect(() => {
+        const tutorialMode = JSON.parse(localStorage.getItem("tutorialMode") || "false");
+        if (tutorialMode) {
+            setTutorialOpen(true);
+        }
+    }, []);
+
     // Create post
     const handleCreatePost = async () => {
-        if (!title || !content) {
-            return;
-        }
+        if (!title || !content) return;
 
         try {
             const token = localStorage.getItem("token");
@@ -111,19 +132,12 @@ function ThreadViewer() {
 
             await axios.post(
                 `http://127.0.0.1:8000/thread/${threadId}/posts`,
-                {
-                    title: title,
-                    content: content
-                },
-                {
-                    headers: { Authorization: `Bearer ${token}` }
-                }
+                { title, content },
+                { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            // Clear form and refresh posts
             handleCloseModal();
 
-            // Fetch updated posts
             const response = await axios.get(`http://127.0.0.1:8000/thread/${threadId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -142,7 +156,6 @@ function ThreadViewer() {
         setContent("");
     };
 
-    // Handle clicks outside the modal to close it
     const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if ((e.target as HTMLElement).classList.contains("modal-overlay")) {
             handleCloseModal();
@@ -255,6 +268,41 @@ function ThreadViewer() {
                         </div>
                     </div>
                 )}
+
+                {/* Tutorial Dialog */}
+                <Dialog
+                    open={tutorialOpen}
+                    onClose={() => {}}
+                    hideBackdrop
+                    disableEscapeKeyDown
+                    disableEnforceFocus
+                    PaperProps={{
+                        sx: {
+                            position: 'absolute',
+                            top: '50%',
+                            left: '5%',
+                            transform: 'translateY(-50%)',
+                            maxWidth: 400,
+                            padding: 2,
+                            zIndex: 1301,
+                            pointerEvents: 'auto',
+                        },
+                    }}
+                    sx={{ pointerEvents: 'none' }}
+                >
+                    <DialogTitle>{tutorialSteps[step].title}</DialogTitle>
+                    <DialogContent>
+                        <p>{tutorialSteps[step].description}</p>
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 2 }}
+                            onClick={nextStep}
+                        >
+                            {step < tutorialSteps.length - 1 ? "Next" : "Finish"}
+                        </Button>
+                    </DialogContent>
+                </Dialog>
             </div>
         </AppTheme>
     );

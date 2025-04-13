@@ -18,6 +18,7 @@ import Post_page from "./pages/post_viewer.tsx";
 import PortfolioPage from './pages/Portfoilos_viewer.tsx';
 import Specific_Stock from './pages/specific_stock_request.tsx'
 import ViewStockPage from "@/pages/ViewStockPage.tsx";
+import HelpPage from "@/pages/HelpPage.tsx";
 
 function App() {
     return (
@@ -38,7 +39,7 @@ function App() {
                 <Route path="/thread/:threadId/:postId" element={<Post_page />} />
                 <Route path="/specific-stock" element={<Specific_Stock />} />
                 <Route path="/stocks/:tkr" element={<ViewStockPage />} />
-
+                <Route path="/help" element={<HelpPage />} />
                 <Route path="*" element={<Page_Not_found />} />
             </Routes>
         </Router>

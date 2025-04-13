@@ -15,7 +15,7 @@ import ColorModeIconDropdown from '../shared-theme/ColorModeIconDropdown.tsx';
 import Sitemark from '../SitemarkIcon';
 import type {} from '@mui/material/themeCssVarsAugmentation';
 
-const pages = ['Home', 'ViewStock', 'Portfolio', 'Profile', 'Search', 'Friends', 'Chat', 'Forum'];
+const pages = ['Home', 'ViewStock', 'Portfolio', 'Profile', 'Search', 'Friends', 'Chat', 'Forum', 'Help'];
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
     display: 'flex',
@@ -65,6 +65,8 @@ const Navbar = () => {
             window.location.href = `/forum`;
         } else if (pageName === "Chat") {
             window.location.href = `/chat`;
+        } else if (pageName === "Help") {
+            window.location.href = `/help`;
         } else {
             try {
                 // TODO: Update once we have login working with database
