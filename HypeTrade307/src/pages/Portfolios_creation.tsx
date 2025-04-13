@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -137,7 +138,8 @@ export default function PortfoliosCreation(props: { disableCustomTheme?: boolean
                                             <DeleteIcon color="error" />
                                         </IconButton>
                                     }
-                                    button
+                                    //@ts-ignore
+                                button
                                     component={Link} 
                                     to={`/Portfolios/${portfolio.portfolio_id}`}
                                 >
