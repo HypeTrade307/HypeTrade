@@ -5,7 +5,10 @@ HypeTrade307/.build-cache
 /.env
 src/db/database.py
 src/.env
+
 HypeTrade307/package-lock.json
 HypeTrade307/package.json
 HypeTrade307/.env
 .gitignore
+/.build-cache
+
