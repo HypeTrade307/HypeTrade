@@ -62,7 +62,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
 
         try {
             const response = await axios.post(
-                "http://127.0.0.1:8000/auth/send_confirmation_code",
+                "http://localhost:8080/auth/send_confirmation_code",
                 { email: newUser.email },
                 { headers: { "Content-Type": "application/json" } }
             );
@@ -95,7 +95,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
 
         try {
             const response = await axios.post(
-                "http://127.0.0.1:8000/auth/signup",
+                "http://localhost:8080/auth/signup",
                 {
                     email: newUser.email,
                     username: newUser.username,
@@ -122,7 +122,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
         e.preventDefault();
         try {
             const response = await axios.post(
-                "http://127.0.0.1:8000/auth/login",
+                "http://localhost:8080/auth/login",
                 loginUser
             );
             localStorage.setItem("token", response.data.access_token);

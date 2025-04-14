@@ -1,0 +1,27 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; 
+  }
+  
+  .page-not-found {
+    
+    height: 100vh;
+    width: 100vw;
+    background-color: #683434;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: content-box;
+    
+  }
+  .button-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem; /* optional spacing */
+  }

@@ -55,7 +55,7 @@ function ThreadViewer() {
                 // }
                 console.log(`something something and my id is ${threadId}`);
 
-                const response = await axios.get(`http://127.0.0.1:8000/thread/${threadId}`, {
+                const response = await axios.get(`http://localhost:8080/thread/${threadId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 console.log("Data sent to API:", { response });
@@ -79,7 +79,7 @@ function ThreadViewer() {
                 const token = localStorage.getItem("token");
 
                 console.log(`creating post`);
-                const response = await axios.get(`http://127.0.0.1:8000/thread/${threadId}`, {
+                const response = await axios.get(`http://localhost:8080/thread/${threadId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 console.log(`created post`);
@@ -110,7 +110,7 @@ function ThreadViewer() {
             }
 
             await axios.post(
-                `http://127.0.0.1:8000/thread/${threadId}/posts`,
+                `http://localhost:8080/thread/${threadId}/posts`,
                 {
                     title: title,
                     content: content
@@ -124,7 +124,7 @@ function ThreadViewer() {
             handleCloseModal();
 
             // Fetch updated posts
-            const response = await axios.get(`http://127.0.0.1:8000/thread/${threadId}`, {
+            const response = await axios.get(`http://localhost:8080/thread/${threadId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

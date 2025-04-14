@@ -18,6 +18,7 @@ import AppTheme from '../components/shared-theme/AppTheme';
 // import Footer from './components/Footer';
 
 import ButtonToPortfolio from "./button_to_Portfolio_Creation.tsx";
+import ThemeToggle from '@/assets/theme_handler.tsx';
 
 function Home(props: {disableCustomTheme?: boolean }) {
     const [count, setCount] = useState(0)
@@ -61,6 +62,7 @@ function Home(props: {disableCustomTheme?: boolean }) {
                     <p>
                         Edit <code>src/App.tsx</code> and save to test HMR
                     </p>
+                    <ThemeToggle/>
                 </div>
                 <p className="read-the-docs">
                     Click on the Vite || React logos to learn more
