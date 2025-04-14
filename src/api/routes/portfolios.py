@@ -35,6 +35,20 @@ def get_my_portfolios(
 ):
     return crud.get_portfolios_by_user(db, current_user.user_id)
 
+@router.get("/user/{user_id}", response_model=List[schemas.PortfolioResponse])
+def get_user_portfolios(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    # Check if the requested user exists
+    user = crud.get_user_by_id(db, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+    
+    # Return portfolios for the specified user
+    return crud.get_portfolios_by_user(db, user_id)
+
 @router.put("/{portfolio_id}", response_model=schemas.PortfolioResponse)
 def update_existing_portfolio(
     portfolio_id: int, 

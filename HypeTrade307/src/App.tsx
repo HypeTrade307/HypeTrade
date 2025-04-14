@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Page_Not_found from "./pages/Page_Not_found.tsx";
 import Home from "./pages/home_page.tsx";
 import Profile_page from "./pages/Profile_Page.tsx";
+import UserProfilePage from "./pages/UserProfilePage.tsx";
 import Search_other_users from "./pages/Search_Other_Users.tsx";
 import LoginForm from "./pages/LoginForm.tsx";
 import FriendRemove from "./pages/FriendRemove.tsx";
@@ -25,6 +26,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/profile" element={<Profile_page />} />
+                <Route path="/profile/:userId" element={<UserProfilePage />} />
                 <Route path="/login" element={<LoginForm />} />
                 <Route path="/search" element={<Search_other_users />} />
                 <Route path="/friends" element={<FriendRemove />} />
