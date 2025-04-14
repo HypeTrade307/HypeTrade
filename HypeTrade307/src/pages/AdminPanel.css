@@ -1,0 +1,89 @@
+/* AdminPanel.css */
+
+.admin-panel {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .admin-panel h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+  }
+  
+  .flagged-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .flag-item {
+    border: 1px solid #ddd;
+    border-left: 4px solid #f39c12;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fafafa;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .flag-item strong {
+    color: #444;
+  }
+  
+  .flag-type {
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #2c3e50;
+    font-size: 0.9rem;
+  }
+  
+  .flag-reason {
+    font-style: italic;
+    color: #666;
+  }
+  
+  .flag-meta {
+    font-size: 0.8rem;
+    color: #999;
+  }
+  
+  .admin-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 15px;
+  }
+  
+  .admin-actions button {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+  }
+  
+  .delete-button {
+    background-color: #e74c3c;
+    color: white;
+  }
+  
+  .delete-button:hover {
+    background-color: #c0392b;
+  }
+  
+  .keep-button {
+    background-color: #2ecc71;
+    color: white;
+  }
+  
+  .keep-button:hover {
+    background-color: #27ae60;
+  }
+  
