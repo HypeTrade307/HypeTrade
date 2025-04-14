@@ -16,7 +16,7 @@ export default function BasicPage(props: {disableCustomTheme?: boolean }) {
         setResponseData(null);
 
         try {
-            const response = await fetch("http://localhost:8080/process", {
+            const response = await fetch("http://localhost:8080/api/process", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ text: inputText }),

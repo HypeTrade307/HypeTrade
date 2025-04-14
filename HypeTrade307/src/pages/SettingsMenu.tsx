@@ -52,7 +52,7 @@ export default function SettingsMenu() {
       return;
     }
     try {
-      await axios.delete("http://localhost:8080/users/me/delete", {
+      await axios.delete("http://localhost:8080/api/users/me/delete", {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Account deleted successfully!");
@@ -78,7 +78,7 @@ export default function SettingsMenu() {
           username: userUpdate.username,
           email: userUpdate.email,
         };
-        await axios.put("http://localhost:8080/users/me", body, {
+        await axios.put("http://localhost:8080/api/users/me", body, {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("Profile updated successfully!");
@@ -92,7 +92,7 @@ export default function SettingsMenu() {
           old_password: passwordData.old_password,
           new_password: passwordData.new_password,
         };
-        await axios.put("http://localhost:8080/users/me/password", body, {
+        await axios.put("http://localhost:8080/api/users/me/password", body, {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("Password updated successfully!");

@@ -73,7 +73,7 @@ function PostViewer() {
                 const token = localStorage.getItem("token");
                 if (!postId) return;
 
-                const response = await axios.get(`http://localhost:8080/post/${postId}`, {
+                const response = await axios.get(`http://localhost:8080/api/post/${postId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -95,7 +95,7 @@ function PostViewer() {
             try {
                 const token = localStorage.getItem("token");
 
-                const response = await axios.get(`http://localhost:8080/post/${postId}/comments`, {
+                const response = await axios.get(`http://localhost:8080/api/post/${postId}/comments`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 console.log("recd Comments:", response);
@@ -125,14 +125,14 @@ function PostViewer() {
             }
 
             await axios.post(
-                `http://localhost:8080/post/${postId}/comments`,
+                `http://localhost:8080/api/post/${postId}/comments`,
                 { content: commentContent },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             console.log("sent a comment:", commentContent);
 
             // Refresh comments
-            const response = await axios.get(`http://localhost:8080/post/${postId}/comments`, {
+            const response = await axios.get(`http://localhost:8080/api/post/${postId}/comments`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -161,13 +161,13 @@ function PostViewer() {
             }
 
             await axios.delete(
-                `http://localhost:8080/post/${postId}`,
+                `http://localhost:8080/api/post/${postId}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             console.log("sent a comment:", commentContent);
 
             // delete
-            await axios.get(`http://localhost:8080/post/${postId}/comments`, {
+            await axios.get(`http://localhost:8080/api/post/${postId}/comments`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -191,14 +191,14 @@ function PostViewer() {
             }
 
             const isLiked = post.liked_by?.some(like => like.user_id === userId);
-            const endpoint = `http://localhost:8080/post/${postId}/${isLiked ? 'unlike' : 'like'}`;
+            const endpoint = `http://localhost:8080/api/post/${postId}/${isLiked ? 'unlike' : 'like'}`;
 
             await axios.post(endpoint, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
             // Update post with new like status
-            const response = await axios.get(`http://localhost:8080/post/${postId}`, {
+            const response = await axios.get(`http://localhost:8080/api/post/${postId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -218,14 +218,14 @@ function PostViewer() {
                 return;
             }
 
-            const endpoint = `http://localhost:8080/comment/${commentId}/${isLiked ? 'unlike' : 'like'}`;
+            const endpoint = `http://localhost:8080/api/comment/${commentId}/${isLiked ? 'unlike' : 'like'}`;
 
             await axios.post(endpoint, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
             // Refresh comments
-            const response = await axios.get(`http://localhost:8080/post/${postId}/comments`, {
+            const response = await axios.get(`http://localhost:8080/api/post/${postId}/comments`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

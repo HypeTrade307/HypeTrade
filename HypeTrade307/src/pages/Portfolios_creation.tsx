@@ -34,7 +34,7 @@ export default function PortfoliosCreation(props: { disableCustomTheme?: boolean
         async function fetchPortfolios() {
             try {
                 const token = localStorage.getItem("token");
-                const response = await axios.get("http://localhost:8080/portfolios", {
+                const response = await axios.get("http://localhost:8080/api/portfolios", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setPortfolios(response.data);
@@ -51,7 +51,7 @@ export default function PortfoliosCreation(props: { disableCustomTheme?: boolean
             try {
                 const token = localStorage.getItem("token");
                 const response = await axios.post(
-                    "http://localhost:8080/portfolios",
+                    "http://localhost:8080/api/portfolios",
                     { portfolio_name: portfolioName },
                     {   
                         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
@@ -74,7 +74,7 @@ export default function PortfoliosCreation(props: { disableCustomTheme?: boolean
 
         try {
             const token = localStorage.getItem("token");
-            await axios.delete(`http://localhost:8080/portfolios/${portfolioId}`, {
+            await axios.delete(`http://localhost:8080/api/portfolios/${portfolioId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
