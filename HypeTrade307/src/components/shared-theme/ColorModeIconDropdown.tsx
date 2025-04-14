@@ -23,7 +23,7 @@ export default function ColorModeIconDropdown(props: IconButtonOwnProps) {
   };
 
   // Just for testing
-  setMode('dark');
+  
 
   if (!mode) {
     return (

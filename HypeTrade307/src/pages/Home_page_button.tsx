@@ -3,7 +3,7 @@ function Home_page_button(){
     return (
         <div>
             <button className='button_top_left' onClick={() => window.location.href = "./"}>
-                Main Page
+               Return to the Main Page
             </button>
         </div>
     );
