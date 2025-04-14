@@ -121,17 +121,13 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:8080/auth/login", loginUser);
+            const response = await axios.post(
+                "http://localhost:8080/auth/login",
+                loginUser
+            );
             localStorage.setItem("token", response.data.access_token);
             toast.success("Login successful!");
-    
-            // Now fetch user details to check admin status
-            const profileRes = await axios.get("http://localhost:8080/users/me", {
-                headers: { Authorization: `Bearer ${response.data.access_token}` },
-            });
-    
-            const isAdmin = profileRes.data?.is_admin;
-            navigate(isAdmin ? "/admin" : "/profile");
+            navigate("/Profile");
         } catch (err) {
             console.error(err);
             toast.error("Invalid credentials");

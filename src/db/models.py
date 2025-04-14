@@ -53,19 +53,6 @@ scrapedentry_stocks = Table(
 # MAIN TABLES
 # ------------------------------------------------------------------
 
-class Flag(Base):
-    __tablename__ = "flags"
-
-    flag_id = Column(Integer, primary_key=True, index=True)
-    flag_type = Column(Enum("post", "comment", "thread", "user", name="flag_type_enum"), nullable=False)
-    target_id = Column(Integer, nullable=False)  # Can point to post_id, comment_id, etc.
-    reason = Column(Text, nullable=True)
-    created_by = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"))
-    created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
-
-    # Relationships
-    creator = relationship("User", backref="flags_created")
-
 class User(Base):
     """
     The 'users' table. 
@@ -80,7 +67,6 @@ class User(Base):
     username = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, nullable=False)
     password = Column(String(255), nullable=False)  # hashed password
-    is_admin = Column(Boolean, default=False)  #ADMINISTRATOR
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
     updated_at = Column(TIMESTAMP, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 

@@ -1,37 +1,6 @@
-from enum import Enum
-from typing import List, Optional, Literal
+from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel, EmailStr
-
-# ------------------
-#  FLAG SCHEMAS
-# ------------------
-
-class FlagBase(BaseModel):
-    flag_id: int
-
-class FlagType(str, Enum):
-    user = "user"
-    post = "post"
-    comment = "comment"
-    thread = "thread"
-
-class FlagCreate(BaseModel):
-    flag_type: FlagType
-    target_id: int
-    reason: Optional[str] = None
-
-class FlagResponse(BaseModel):
-    flag_id: int
-    user_id: int
-    flag_type: FlagType
-    target_id : int
-    reason: Optional[str] = None  # Optional reason for the flag
-    created_at: datetime
-
-    class Config:
-        from_attributes = True  # If using Pydantic v1; use `from_attributes = True` in v2
-
 
 # ------------------
 #  USER SCHEMAS
@@ -185,7 +154,7 @@ class Notification(NotificationBase):
     is_read: bool = False
     
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 class NotificationCreate(BaseModel):
     receiver_id: int
@@ -193,7 +162,7 @@ class NotificationCreate(BaseModel):
     stock_id: Optional[int] = None
     
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 # ----------------------------
 # SENTIMENT ANALYSIS
