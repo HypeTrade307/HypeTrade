@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import Home_page_button from "./Home_page_button.tsx";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -14,7 +14,7 @@ function Profile_page(props: { disableCustomTheme?: boolean }) {
     const [showSettings, setShowSettings] = useState<boolean>(false);
 
     // Tutorial Left
-    const [showTutorialLeft, setShowTutorialLeft] = useState(true);
+    const [showTutorialLeft, setShowTutorialLeft] = useState(false);
     const [stepLeft, setStepLeft] = useState(0);
     const tutorialStepsLeft = [
         { title: "Friends List", description: "Here is the friends list. You can add friends by going to the 'Search' page" },
@@ -23,7 +23,7 @@ function Profile_page(props: { disableCustomTheme?: boolean }) {
     ];
 
     // Tutorial Right
-    const [showTutorialRight, setShowTutorialRight] = useState(true);
+    const [showTutorialRight, setShowTutorialRight] = useState(false);
     const [stepRight, setStepRight] = useState(0);
     const tutorialStepsRight = [
         { title: "Managing Portfolios", description: "Here is the portfolio page. You can add portfolios and access them." },
@@ -33,6 +33,13 @@ function Profile_page(props: { disableCustomTheme?: boolean }) {
         { title: "You're all set", description: "Now you can manage your portfolios!" },
     ];
 
+    useEffect(() => {
+    const tutorialMode = localStorage.getItem("tutorialMode");
+    if (tutorialMode === "true") {
+        setShowTutorialLeft(true);
+        setShowTutorialRight(true);
+    }
+}, []);
     const nextStepLeft = () => {
         if (stepLeft < tutorialStepsLeft.length - 1) {
             setStepLeft(stepLeft + 1);

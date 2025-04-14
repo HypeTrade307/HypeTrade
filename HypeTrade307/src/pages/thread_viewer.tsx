@@ -166,8 +166,32 @@ function ThreadViewer() {
         <AppTheme>
             <CssBaseline enableColorScheme />
             <Navbar />
+
             <div className="thread-container">
                 {/* Thread Header */}
+                {/* Back Button */}
+            <div style={{ padding: "1rem 0" }}>
+                <button
+                    className="back-to-forum-button"
+                    onClick={() => navigate("/forum")}
+                    style={{
+                        position: "fixed",
+                        top: "80px",
+                        left: "40px",
+                        zIndex: 1300,
+                        padding: "8px 16px",
+                        backgroundColor: "#1976d2",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        fontWeight: 500,
+                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)"
+                    }}
+                >
+                    ← Back to Forum
+                </button>
+            </div>
                 {thread && (
                     <div className="thread-header">
                         <h1>{thread.title}</h1>

@@ -1,8 +1,9 @@
-// portfolios_viewer.tsx
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import CssBaseline from "@mui/material/CssBaseline";
+import AppTheme from "../components/shared-theme/AppTheme";
+import Navbar from "../components/NavbarSection/Navbar";
 import Page_Not_found from "./Page_Not_found";
 
 interface StockBase {
@@ -17,7 +18,7 @@ interface Portfolio {
   stocks: StockBase[];
 }
 
-export default function PortfolioPage() {
+export default function PortfolioPage(props: { disableCustomTheme?: boolean }) {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -187,72 +188,76 @@ export default function PortfolioPage() {
   if (error) return <Page_Not_found />;
 
   return (
-    <div style={{ padding: "2rem", position: "relative" }}>
-      <button onClick={() => navigate("/")}>Back to Home</button>
-      <h2>Portfolio: {portfolio?.name}</h2>
+    <AppTheme {...props}>
+      <CssBaseline enableColorScheme />
+      <Navbar />
+      <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto", color: "white" }}>
+        <button onClick={() => navigate("/")}>Back to Home</button>
+        <h2>Portfolio: {portfolio?.name}</h2>
 
-      <div style={{ marginBottom: "1rem" }}>
-        <label>Search Stock:</label>
-        <input
-          type="text"
-          value={stockSearch}
-          onChange={(e) => setStockSearch(e.target.value)}
-          style={{ marginLeft: "6px" }}
-        />
-        {filteredStocks.length > 0 && (
-          <div style={{
-            border: "1px solid #ccc",
-            backgroundColor: "#fff",
-            color: "#000",
-            position: "absolute",
-            zIndex: 999,
-            marginTop: "4px"
-          }}>
-            {filteredStocks.map(stock => (
-              <div
-                key={stock.stock_id}
-                style={{ padding: "4px", cursor: "pointer" }}
-                onClick={() => addStockToPortfolio(stock.stock_id)}
-              >
-                {stock.ticker} - {stock.stock_name}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+        <div style={{ marginBottom: "1rem" }}>
+          <label>Search Stock:</label>
+          <input
+            type="text"
+            value={stockSearch}
+            onChange={(e) => setStockSearch(e.target.value)}
+            style={{ marginLeft: "6px" }}
+          />
+          {filteredStocks.length > 0 && (
+            <div style={{
+              border: "1px solid #ccc",
+              backgroundColor: "#fff",
+              color: "#000",
+              position: "absolute",
+              zIndex: 999,
+              marginTop: "4px"
+            }}>
+              {filteredStocks.map(stock => (
+                <div
+                  key={stock.stock_id}
+                  style={{ padding: "4px", cursor: "pointer" }}
+                  onClick={() => addStockToPortfolio(stock.stock_id)}
+                >
+                  {stock.ticker} - {stock.stock_name}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-      <ul style={{ listStyleType: "none", padding: 0 }}>
-        {portfolio?.stocks && portfolio.stocks.length > 0 ? (
-          portfolio.stocks.map((st, index) => (
-            <li key={index} style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}>
-              <div
-                onClick={() => navigate(`/stocks/${st.ticker}`)}
-                style={{
-                  cursor: "pointer",
-                  color: "#007bff",
-                  flex: 1,
-                  padding: "4px",
-                  borderRadius: "4px",
-                  transition: "background 0.2s"
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "#f0f0f0")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-              >
-                {st.ticker} - {st.stock_name}
-              </div>
-              <button onClick={() => removeStock(st.stock_id)}>Remove</button>
-            </li>
-          ))
-        ) : (
-          <p>No stocks added yet.</p>
-        )}
-      </ul>
+        <ul style={{ listStyleType: "none", padding: 0 }}>
+          {portfolio?.stocks && portfolio.stocks.length > 0 ? (
+            portfolio.stocks.map((st, index) => (
+              <li key={index} style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}>
+                <div
+                  onClick={() => navigate(`/stocks/${st.ticker}`)}
+                  style={{
+                    cursor: "pointer",
+                    color: "#4dabf5",
+                    flex: 1,
+                    padding: "4px",
+                    borderRadius: "4px",
+                    transition: "background 0.2s"
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#2c2c2c")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  {st.ticker} - {st.stock_name}
+                </div>
+                <button onClick={() => removeStock(st.stock_id)}>Remove</button>
+              </li>
+            ))
+          ) : (
+            <p>No stocks added yet.</p>
+          )}
+        </ul>
 
-      <div>
-        <label>Import existing portfolio from csv file:</label>
-        <form onChange={importPortfolioFromCSV}>
-          <input type="file" className="input" />
-        </form>
+        <div>
+          <label>Import existing portfolio from csv file:</label>
+          <form onChange={importPortfolioFromCSV}>
+            <input type="file" className="input" />
+          </form>
+        </div>
       </div>
 
       {tutorialOpen && (
@@ -280,6 +285,6 @@ export default function PortfolioPage() {
           </button>
         </div>
       )}
-    </div>
+    </AppTheme>
   );
 }

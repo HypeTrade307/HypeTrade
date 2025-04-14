@@ -13,6 +13,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ColorModeIconDropdown from '../shared-theme/ColorModeIconDropdown.tsx';
 import Sitemark from '../SitemarkIcon';
+import { useNavigate } from 'react-router-dom';
 import type {} from '@mui/material/themeCssVarsAugmentation';
 
 const pages = ['Home', 'ViewStock', 'Portfolio', 'Profile', 'Search', 'Friends', 'Chat', 'Forum', 'Help'];
@@ -25,9 +26,6 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
     borderRadius: `calc(${theme.shape.borderRadius}px + 8px)`,
     backdropFilter: 'blur(24px)',
     border: '1px solid',
-    // borderColor: theme.palette.divider,
-    // backgroundColor: alpha(theme.palette.background.default, 0.4),
-    // boxShadow: theme.shadows[1],
     borderColor: (theme.vars || theme).palette.divider,
     backgroundColor: theme.vars
         ? `rgba(${theme.vars.palette.background.defaultChannel} / 0.4)`
@@ -38,43 +36,35 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 
 const Navbar = () => {
     const [open, setOpen] = React.useState(false);
+    const navigate = useNavigate();
 
     const toggleDrawer = (newOpen: boolean) => () => {
         setOpen(newOpen);
     };
 
-    // Navigation for menu items
-    async function handleMenuClick(pageName: string) {
-        if (pageName === "Home") {
-            window.location.href = `/`;
-        } else if (pageName === "Portfolio") {
-            // window.location.href = `/`;
-        } else if (pageName === "Profile") {
-            window.location.href = `/profile`;
-        } else if (pageName === "Login") {
-            window.location.href = `/login`;
-        } else if (pageName === "Search") {
-            window.location.href = `/search`;
-        } else if (pageName === "Friends") {
-            window.location.href = `/friends`;
-        } else if (pageName === "ViewStock") {
-            window.location.href = `/stock`;
-        } else if (pageName === "Portfolio") {
-            window.location.href = `/portfolio/:friendID`;
-        } else if (pageName === "Forum") {
-            window.location.href = `/forum`;
-        } else if (pageName === "Chat") {
-            window.location.href = `/chat`;
-        } else if (pageName === "Help") {
-            window.location.href = `/help`;
-        } else {
-            try {
-                // TODO: Update once we have login working with database
-            } catch {
-                alert("Error!");
-            }
+    const handleMenuClick = (pageName: string, openSignup = false) => {
+        if (pageName === 'Home') {
+            navigate('/');
+        } else if (pageName === 'ViewStock') {
+            navigate('/stock');
+        } else if (pageName === 'Portfolio') {
+            navigate('/portfolio/:friendID');
+        } else if (pageName === 'Profile') {
+            navigate('/profile');
+        } else if (pageName === 'Login') {
+            navigate('/login', { state: { openSignup } });
+        } else if (pageName === 'Search') {
+            navigate('/search');
+        } else if (pageName === 'Friends') {
+            navigate('/friends');
+        } else if (pageName === 'Forum') {
+            navigate('/forum');
+        } else if (pageName === 'Chat') {
+            navigate('/chat');
+        } else if (pageName === 'Help') {
+            navigate('/help');
         }
-    }
+    };
 
     return (
         <AppBar
@@ -94,7 +84,9 @@ const Navbar = () => {
                         <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                             {pages.map((page) => (
                                 <Button
-                                    variant="text" color="info" size="small"
+                                    variant="text"
+                                    color="info"
+                                    size="small"
                                     key={page}
                                     onClick={() => handleMenuClick(page)}
                                 >
@@ -110,13 +102,19 @@ const Navbar = () => {
                             alignItems: 'center',
                         }}
                     >
-                        <Button color="primary" variant="text" size="small"
-                                onClick={() => handleMenuClick("Login")}
+                        <Button
+                            color="primary"
+                            variant="text"
+                            size="small"
+                            onClick={() => handleMenuClick('Login')}
                         >
-                            Sign in
+                            Log in
                         </Button>
-                        <Button color="primary" variant="contained" size="small"
-                                onClick={() => handleMenuClick("Login")}
+                        <Button
+                            color="primary"
+                            variant="contained"
+                            size="small"
+                            onClick={() => handleMenuClick('Login', true)}
                         >
                             Sign up
                         </Button>
@@ -138,12 +136,7 @@ const Navbar = () => {
                             }}
                         >
                             <Box sx={{ p: 2, backgroundColor: 'background.default' }}>
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        justifyContent: 'flex-end',
-                                    }}
-                                >
+                                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                                     <IconButton onClick={toggleDrawer(false)}>
                                         <CloseRoundedIcon />
                                     </IconButton>
@@ -161,16 +154,20 @@ const Navbar = () => {
                                 <Divider sx={{ my: 3 }} />
                                 <MenuItem>
                                     <Button
-                                        color="primary" variant="contained" fullWidth
-                                        onClick={() => handleMenuClick("Login")}
+                                        color="primary"
+                                        variant="contained"
+                                        fullWidth
+                                        onClick={() => handleMenuClick('Login', true)}
                                     >
                                         Sign up
                                     </Button>
                                 </MenuItem>
                                 <MenuItem>
                                     <Button
-                                        color="primary" variant="outlined" fullWidth
-                                        onClick={() => handleMenuClick("Login")}
+                                        color="primary"
+                                        variant="outlined"
+                                        fullWidth
+                                        onClick={() => handleMenuClick('Login')}
                                     >
                                         Sign in
                                     </Button>
@@ -182,6 +179,6 @@ const Navbar = () => {
             </Container>
         </AppBar>
     );
-}
+};
 
 export default Navbar;
