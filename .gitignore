@@ -1,8 +1,11 @@
 basic-formula-451520-c0-5d2c021b78b6.json
+.build-cache
+HypeTrade307/.build-cache
 *.pyc
 /.env
 src/db/database.py
 src/.env
 HypeTrade307/package-lock.json
 HypeTrade307/package.json
+HypeTrade307/.env
 .gitignore
