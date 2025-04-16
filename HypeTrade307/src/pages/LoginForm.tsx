@@ -5,6 +5,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme.tsx";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { API_BASE_URL } from '../config';
 
 interface User {
     email: string;
@@ -62,7 +63,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
 
         try {
             const response = await axios.post(
-                "http://127.0.0.1:8000/auth/send_confirmation_code",
+                `${API_BASE_URL}/auth/send_confirmation_code`,
                 { email: newUser.email },
                 { headers: { "Content-Type": "application/json" } }
             );
@@ -95,7 +96,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
 
         try {
             const response = await axios.post(
-                "http://127.0.0.1:8000/auth/signup",
+                `${API_BASE_URL}/auth/signup`,
                 {
                     email: newUser.email,
                     username: newUser.username,
@@ -122,7 +123,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
         e.preventDefault();
         try {
             const response = await axios.post(
-                "http://127.0.0.1:8000/auth/login",
+                `${API_BASE_URL}/auth/login`,
                 loginUser
             );
             localStorage.setItem("token", response.data.access_token);

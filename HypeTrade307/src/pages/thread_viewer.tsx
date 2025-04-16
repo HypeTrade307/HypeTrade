@@ -5,6 +5,7 @@ import Navbar from "../components/NavbarSection/Navbar";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme";
 import "./Thread.css";
+import { API_BASE_URL } from '../config';
 
 // Define interfaces
 interface Post {
@@ -55,7 +56,7 @@ function ThreadViewer() {
                 // }
                 console.log(`something something and my id is ${threadId}`);
 
-                const response = await axios.get(`http://127.0.0.1:8000/thread/${threadId}`, {
+                const response = await axios.get(`${API_BASE_URL}/threads/${threadId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 console.log("Data sent to API:", { response });
@@ -79,7 +80,7 @@ function ThreadViewer() {
                 const token = localStorage.getItem("token");
 
                 console.log(`creating post`);
-                const response = await axios.get(`http://127.0.0.1:8000/thread/${threadId}`, {
+                const response = await axios.get(`${API_BASE_URL}/threads/${threadId}/posts`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 console.log(`created post`);
@@ -110,7 +111,7 @@ function ThreadViewer() {
             }
 
             await axios.post(
-                `http://127.0.0.1:8000/thread/${threadId}/posts`,
+                `${API_BASE_URL}/threads/${threadId}/posts`,
                 {
                     title: title,
                     content: content
@@ -124,7 +125,7 @@ function ThreadViewer() {
             handleCloseModal();
 
             // Fetch updated posts
-            const response = await axios.get(`http://127.0.0.1:8000/thread/${threadId}`, {
+            const response = await axios.get(`${API_BASE_URL}/threads/${threadId}/posts`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE_URL } from '../../config';
 import './UserSearchBar.css';
 
 interface User {
@@ -45,7 +46,7 @@ export default function UserSearchBar() {
         const token = localStorage.getItem('token');
         const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
         
-        const response = await axios.get(`http://127.0.0.1:8000/users/search/${searchQuery}`, { headers });
+        const response = await axios.get(`${API_BASE_URL}/users/search/${searchQuery}`, { headers });
         
         if (response.status === 200) {
           setSearchResults(response.data);

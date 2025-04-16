@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Page_Not_found from "./Page_Not_found";
+import { API_BASE_URL } from '../config';
 
 interface StockBase {
   stock_id: number;
@@ -41,7 +42,7 @@ export default function PortfolioPage() {
           setLoading(false);
           return;
         }
-        const response = await axios.get(`http://127.0.0.1:8000/portfolios/${id}`, {
+        const response = await axios.get(`${API_BASE_URL}/portfolios/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setPortfolio(response.data);
@@ -62,7 +63,7 @@ export default function PortfolioPage() {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        const response = await axios.get("http://127.0.0.1:8000/stocks", {
+        const response = await axios.get(`${API_BASE_URL}/stocks`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setAvailableStocks(response.data);
@@ -94,7 +95,7 @@ export default function PortfolioPage() {
       if (!token || !portfolio) return;
 
       const response = await axios.post(
-        `http://127.0.0.1:8000/portfolios/${portfolio.portfolio_id}/stocks/${stock_id}`,
+        `${API_BASE_URL}/portfolios/${portfolio.portfolio_id}/stocks/${stock_id}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -115,7 +116,7 @@ export default function PortfolioPage() {
       if (!token || !portfolio) return;
 
       const response = await axios.delete(
-        `http://127.0.0.1:8000/portfolios/${portfolio.portfolio_id}/stocks/${stock_id}`,
+        `${API_BASE_URL}/portfolios/${portfolio.portfolio_id}/stocks/${stock_id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setPortfolio(response.data);
@@ -138,7 +139,7 @@ export default function PortfolioPage() {
         if (!token || !portfolio) return;
 
         const response = await axios.post(
-            `http://127.0.0.1:8000/portfolios/${portfolio.portfolio_id}/upload`, formData,
+            `${API_BASE_URL}/portfolios/${portfolio.portfolio_id}/upload`, formData,
             {
               headers: {
                 "Content-Type": "multipart/form-data",

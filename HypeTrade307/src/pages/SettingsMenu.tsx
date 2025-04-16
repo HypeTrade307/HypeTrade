@@ -1,6 +1,7 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { API_BASE_URL } from '../config';
 import "./SettingsMenu.css";
 
 interface UserUpdate {
@@ -52,7 +53,7 @@ export default function SettingsMenu() {
       return;
     }
     try {
-      await axios.delete("http://127.0.0.1:8000/users/me/delete", {
+      await axios.delete(`${API_BASE_URL}/users/me/delete`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Account deleted successfully!");
@@ -78,7 +79,7 @@ export default function SettingsMenu() {
           username: userUpdate.username,
           email: userUpdate.email,
         };
-        await axios.put("http://127.0.0.1:8000/users/me", body, {
+        await axios.put(`${API_BASE_URL}/users/me`, body, {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("Profile updated successfully!");
@@ -92,7 +93,7 @@ export default function SettingsMenu() {
           old_password: passwordData.old_password,
           new_password: passwordData.new_password,
         };
-        await axios.put("http://127.0.0.1:8000/users/me/password", body, {
+        await axios.put(`${API_BASE_URL}/users/me/password`, body, {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("Password updated successfully!");

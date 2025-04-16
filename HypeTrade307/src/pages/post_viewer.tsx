@@ -5,6 +5,7 @@ import Navbar from "../components/NavbarSection/Navbar";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme";
 import "./Post.css";
+import { API_BASE_URL } from '../config';
 
 // Define interfaces
 interface Comment {
@@ -73,7 +74,7 @@ function PostViewer() {
                 const token = localStorage.getItem("token");
                 if (!postId) return;
 
-                const response = await axios.get(`http://127.0.0.1:8000/post/${postId}`, {
+                const response = await axios.get(`${API_BASE_URL}/post/${postId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -95,7 +96,7 @@ function PostViewer() {
             try {
                 const token = localStorage.getItem("token");
 
-                const response = await axios.get(`http://127.0.0.1:8000/post/${postId}/comments`, {
+                const response = await axios.get(`${API_BASE_URL}/post/${postId}/comments`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 console.log("recd Comments:", response);
@@ -125,14 +126,14 @@ function PostViewer() {
             }
 
             await axios.post(
-                `http://127.0.0.1:8000/post/${postId}/comments`,
+                `${API_BASE_URL}/post/${postId}/comments`,
                 { content: commentContent },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             console.log("sent a comment:", commentContent);
 
             // Refresh comments
-            const response = await axios.get(`http://127.0.0.1:8000/post/${postId}/comments`, {
+            const response = await axios.get(`${API_BASE_URL}/post/${postId}/comments`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -161,13 +162,13 @@ function PostViewer() {
             }
 
             await axios.delete(
-                `http://127.0.0.1:8000/post/${postId}`,
+                `${API_BASE_URL}/post/${postId}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             console.log("sent a comment:", commentContent);
 
             // delete
-            await axios.get(`http://127.0.0.1:8000/post/${postId}/comments`, {
+            await axios.get(`${API_BASE_URL}/post/${postId}/comments`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -191,14 +192,14 @@ function PostViewer() {
             }
 
             const isLiked = post.liked_by?.some(like => like.user_id === userId);
-            const endpoint = `http://127.0.0.1:8000/post/${postId}/${isLiked ? 'unlike' : 'like'}`;
+            const endpoint = `${API_BASE_URL}/post/${postId}/${isLiked ? 'unlike' : 'like'}`;
 
             await axios.post(endpoint, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
             // Update post with new like status
-            const response = await axios.get(`http://127.0.0.1:8000/post/${postId}`, {
+            const response = await axios.get(`${API_BASE_URL}/post/${postId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -218,14 +219,14 @@ function PostViewer() {
                 return;
             }
 
-            const endpoint = `http://127.0.0.1:8000/comment/${commentId}/${isLiked ? 'unlike' : 'like'}`;
+            const endpoint = `${API_BASE_URL}/comment/${commentId}/${isLiked ? 'unlike' : 'like'}`;
 
             await axios.post(endpoint, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
             // Refresh comments
-            const response = await axios.get(`http://127.0.0.1:8000/post/${postId}/comments`, {
+            const response = await axios.get(`${API_BASE_URL}/post/${postId}/comments`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

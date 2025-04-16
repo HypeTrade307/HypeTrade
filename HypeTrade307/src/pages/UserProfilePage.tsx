@@ -6,6 +6,7 @@ import Navbar from '../components/NavbarSection/Navbar';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../components/shared-theme/AppTheme';
 import './UserProfilePage.css';
+import { API_BASE_URL } from '../config';
 
 interface User {
   user_id: number;
@@ -54,7 +55,7 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
         console.log('Checking authentication with token');
         // Use a more reliable endpoint to check authentication
         // Similar to ViewStock.tsx which uses notifications/user/
-        const response = await axios.get('http://127.0.0.1:8000/notifications/user/', {
+        const response = await axios.get(`${API_BASE_URL}/notifications/user/`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -81,7 +82,7 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
             // If we can't get the user ID from notifications, try portfolios
             console.log('No receiver_id in notifications, trying portfolios');
             try {
-              const portfoliosResponse = await axios.get('http://127.0.0.1:8000/portfolios/', {
+              const portfoliosResponse = await axios.get(`${API_BASE_URL}/portfolios/`, {
                 headers: { Authorization: `Bearer ${token}` }
               });
               
@@ -138,14 +139,14 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
         // Fetch user data
-        const userResponse = await axios.get(`http://127.0.0.1:8000/users/${userId}`, { headers });
+        const userResponse = await axios.get(`${API_BASE_URL}/users/${userId}`, { headers });
         setUser(userResponse.data);
 
         // Check if users are friends - using the available endpoint
         if (isAuthenticated && currentUserId) {
           try {
             const friendsResponse = await axios.post(
-              'http://127.0.0.1:8000/check_friends',
+              `${API_BASE_URL}/check_friends`,
               { 
                 current_user: currentUserId.toString(), 
                 requested_user: userId 
@@ -190,7 +191,7 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
       
       // Use the dedicated endpoint to get portfolios for this specific user
       const portfoliosResponse = await axios.get(
-        `http://127.0.0.1:8000/portfolios/user/${userId}`, 
+        `${API_BASE_URL}/portfolios/user/${userId}`, 
         { headers }
       );
       console.log('User portfolios response:', portfoliosResponse);
@@ -208,7 +209,7 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
           try {
             console.log(`Fetching stocks for portfolio ${portfolio.portfolio_id}`);
             const stocksResponse = await axios.get(
-              `http://127.0.0.1:8000/portfolios/${portfolio.portfolio_id}/stocks`, 
+              `${API_BASE_URL}/portfolios/${portfolio.portfolio_id}/stocks`, 
               { headers }
             );
             console.log(`Stocks for portfolio ${portfolio.portfolio_id}:`, stocksResponse.data);
@@ -254,7 +255,7 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
 
       // Use the available endpoint for adding friends
       await axios.post(
-        'http://127.0.0.1:8000/add_friend',
+        `${API_BASE_URL}/add_friend`,
         { 
           current_user: currentUserId?.toString(), 
           add_user: userId 

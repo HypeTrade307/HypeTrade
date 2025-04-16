@@ -18,6 +18,7 @@ import AppTheme from "../components/shared-theme/AppTheme.tsx";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { API_BASE_URL } from '../config';
 
 interface Portfolio {
     portfolio_id: number;
@@ -33,7 +34,7 @@ export default function PortfoliosCreation(props: { disableCustomTheme?: boolean
         async function fetchPortfolios() {
             try {
                 const token = localStorage.getItem("token");
-                const response = await axios.get("http://127.0.0.1:8000/portfolios", {
+                const response = await axios.get(`${API_BASE_URL}/portfolios`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setPortfolios(response.data);
@@ -50,7 +51,7 @@ export default function PortfoliosCreation(props: { disableCustomTheme?: boolean
             try {
                 const token = localStorage.getItem("token");
                 const response = await axios.post(
-                    "http://127.0.0.1:8000/portfolios",
+                    `${API_BASE_URL}/portfolios`,
                     { portfolio_name: portfolioName },
                     {   
                         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }
@@ -73,7 +74,7 @@ export default function PortfoliosCreation(props: { disableCustomTheme?: boolean
 
         try {
             const token = localStorage.getItem("token");
-            await axios.delete(`http://127.0.0.1:8000/portfolios/${portfolioId}`, {
+            await axios.delete(`${API_BASE_URL}/portfolios/${portfolioId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

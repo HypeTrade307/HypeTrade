@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AppBar, Toolbar, Typography, Button, Container, CssBaseline, Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import Navbar from "../components/NavbarSection/Navbar.tsx";
 import AppTheme from "../components/shared-theme/AppTheme.tsx";
 import './ChatPage.css';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 interface Message {
   text: string;
@@ -16,14 +19,15 @@ const ChatPage = () => {
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null); // Track message index for deletion
   const [openDialog, setOpenDialog] = useState(false); // Track dialog visibility
 
+  // Replace hardcoded WebSocket URL with API_BASE_URL
+  const wsUrl = API_BASE_URL.replace('http', 'ws');
+  const socket = new WebSocket(`${wsUrl}`);
+
   useEffect(() => {
     const storedMessages = localStorage.getItem('chatMessages');
     if (storedMessages) {
       setMessages(JSON.parse(storedMessages));
     }
-
-    const socket = new WebSocket('ws://127.0.0.1:8000');
-    setWs(socket);
 
     socket.onopen = () => {
       console.log('Connected to WebSocket server');

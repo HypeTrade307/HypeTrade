@@ -5,6 +5,7 @@ import Navbar from "../components/NavbarSection/Navbar";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme";
 import "./Forum.css";
+import { API_BASE_URL } from '../config';
 
 // Define interfaces
 interface Thread {
@@ -52,7 +53,7 @@ function Forum() {
                 //     return;
                 // }
 
-                const response = await axios.get("http://127.0.0.1:8000/threads", {
+                const response = await axios.get(`${API_BASE_URL}/threads`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -78,7 +79,7 @@ function Forum() {
                 //     return;
                 // }
 
-                const response = await axios.get("http://127.0.0.1:8000/stocks", {
+                const response = await axios.get(`${API_BASE_URL}/stocks`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -122,7 +123,7 @@ function Forum() {
             // }
 
             const response = await axios.post(
-                "http://127.0.0.1:8000/threads/",
+                `${API_BASE_URL}/threads/`,
                 {
                     title: title,
                     stock_id: selectedStock.stock_id,

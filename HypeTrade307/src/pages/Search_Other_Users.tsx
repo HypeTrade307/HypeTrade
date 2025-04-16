@@ -1,7 +1,9 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme.tsx";
+import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 export default function BasicPage(props: {disableCustomTheme?: boolean }) {
     const [inputText, setInputText] = useState("");
@@ -16,17 +18,19 @@ export default function BasicPage(props: {disableCustomTheme?: boolean }) {
         setResponseData(null);
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/process", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text: inputText }),
+            const response = await axios.post(`${API_BASE_URL}/process`, { text: inputText }, {
+                headers: { "Content-Type": "application/json" }
             });
 
-            if (!response.ok) throw new Error("Failed to fetch");
-
-            const data: string[] = await response.json();
-            setResponseData(data);
+            // Axios automatically parses JSON responses
+            // The data is available in response.data
+            if (response.data) {
+                setResponseData(response.data);
+            } else {
+                throw new Error("No data received");
+            }
         } catch (err) {
+            console.error("Error fetching data:", err);
             setError("Error fetching data.");
         } finally {
             setLoading(false);

@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { API_BASE_URL } from '../config';
 import './FriendRequestNotification.css';
 
 interface FriendRequest {
@@ -33,7 +34,7 @@ export default function FriendRequestNotification() {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const response = await axios.get('http://127.0.0.1:8000/users/friend-requests', {
+        const response = await axios.get(`${API_BASE_URL}/users/friend-requests`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -58,7 +59,7 @@ export default function FriendRequestNotification() {
       if (!token) return;
 
       await axios.post(
-        `http://127.0.0.1:8000/users/accept-friend-request/${requestId}`,
+        `${API_BASE_URL}/users/accept-friend-request/${requestId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -78,7 +79,7 @@ export default function FriendRequestNotification() {
       if (!token) return;
 
       await axios.post(
-        `http://127.0.0.1:8000/users/decline-friend-request/${requestId}`,
+        `${API_BASE_URL}/users/decline-friend-request/${requestId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

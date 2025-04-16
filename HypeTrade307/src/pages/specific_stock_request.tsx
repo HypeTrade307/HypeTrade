@@ -4,6 +4,7 @@ import Navbar from "../components/NavbarSection/Navbar";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme";
 import "./specific_stock.css";
+import { API_BASE_URL } from '../config';
 
 // Define interfaces
 interface Stock {
@@ -44,7 +45,7 @@ function SpecificStockRequest() {
                 setLoading(true);
                 const token = localStorage.getItem("token");
 
-                const response = await axios.get("http://127.0.0.1:8000/stocks", {
+                const response = await axios.get(`${API_BASE_URL}/stocks`, {
                     headers: token ? { Authorization: `Bearer ${token}` } : {}
                 });
 

@@ -7,8 +7,7 @@ import AppTheme from "../components/shared-theme/AppTheme.tsx";
 import axios from "axios";
 import MarketValue from "../assets/basic_Graph.tsx";
 import AreaGraph from "@/assets/area_Graph.tsx";
-// Define API base URL to fetch data in mySQL 
-const API_BASE_URL = "http://127.0.0.1:8000";
+import { API_BASE_URL } from "../config";
 
 interface Stock {
     stock_id: number;
@@ -75,7 +74,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                 }
 
                 // below basically checks if there is a current user, if not, notis and portfolios are not
-                const response = await axios.get("http://127.0.0.1:8000/notifications/user/", {
+                const response = await axios.get(`${API_BASE_URL}/notifications/user/`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
