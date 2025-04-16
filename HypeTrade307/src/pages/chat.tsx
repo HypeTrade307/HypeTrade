@@ -22,7 +22,7 @@ const ChatPage = () => {
       setMessages(JSON.parse(storedMessages));
     }
 
-    const socket = new WebSocket('ws://localhost:8080');
+    const socket = new WebSocket('ws://127.0.0.1:8000');
     setWs(socket);
 
     socket.onopen = () => {

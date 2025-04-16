@@ -52,7 +52,7 @@ function Forum() {
                 //     return;
                 // }
 
-                const response = await axios.get("http://localhost:8080/threads", {
+                const response = await axios.get("http://127.0.0.1:8000/threads", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -78,7 +78,7 @@ function Forum() {
                 //     return;
                 // }
 
-                const response = await axios.get("http://localhost:8080/stocks", {
+                const response = await axios.get("http://127.0.0.1:8000/stocks", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -122,7 +122,7 @@ function Forum() {
             // }
 
             const response = await axios.post(
-                "http://localhost:8080/threads/",
+                "http://127.0.0.1:8000/threads/",
                 {
                     title: title,
                     stock_id: selectedStock.stock_id,
