@@ -33,6 +33,7 @@ dist-ssr
 *.zip
 *.tar.gz
 .build-cache
+.env.yaml
 
 # Editor directories and files
 .vscode/*

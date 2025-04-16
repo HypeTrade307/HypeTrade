@@ -60,15 +60,15 @@ app.include_router(comment_router, prefix="/api")
 def health_check():
     return {"status": "ok"}
 
-# # Serve the frontend static files in production
-# if os.path.exists('/app/HypeTrade307/dist'):
-#     app.mount("/", StaticFiles(directory="/app/HypeTrade307/dist", html=True), name="frontend")
-#
-#     @app.get("/{full_path:path}")
-#     def serve_frontend(full_path: str):
-#         if os.path.exists(f"/app/HypeTrade307/dist/{full_path}"):
-#             return FileResponse(f"/app/HypeTrade307/dist/{full_path}")
-#         return FileResponse("/app/HypeTrade307/dist/index.html")
+# Serve the frontend static files in production
+if os.path.exists('/app/HypeTrade307/dist'):
+    app.mount("/", StaticFiles(directory="/app/HypeTrade307/dist", html=True), name="frontend")
+
+    @app.get("/{full_path:path}")
+    def serve_frontend(full_path: str):
+        if os.path.exists(f"/app/HypeTrade307/dist/{full_path}"):
+            return FileResponse(f"/app/HypeTrade307/dist/{full_path}")
+        return FileResponse("/app/HypeTrade307/dist/index.html")
 
 @app.get("/")
 def root():
