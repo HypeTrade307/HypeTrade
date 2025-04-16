@@ -32,9 +32,8 @@ dist-ssr
 .env
 *.zip
 *.tar.gz
-.build-cache
 .env.yaml
-
+.build-cache/index.json
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
