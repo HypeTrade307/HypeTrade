@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 import uvicorn
+from fastapi.openapi.models import Response
+
 from src.db.database import SessionLocal, engine, Base
 from src.api.routes.notifications import router as notification_router
 from src.api.routes.users import router as users_router
@@ -59,10 +61,33 @@ app.include_router(comment_router, prefix="/api")
 # Serve the frontend static files in production
 app.mount("/", StaticFiles(directory="/app/HypeTrade307/dist", html=True), name="frontend")
 
+# from fastapi import Request
+#
+# @app.get("/{full_path:path}")
+# def serve_frontend(full_path: str, request: Request):
+#     # don't serve index.html for API calls
+#     if request.url.path.startswith("/api"):
+#         return FileResponse("/app/HypeTrade307/dist/Page_Not_Found.tsx")
+#
+#     file_path = f"/app/HypeTrade307/dist/{full_path}"
+#     if os.path.exists(file_path):
+#         return FileResponse(file_path)
+#     return FileResponse("/app/HypeTrade307/dist/index.html")
+
+from fastapi import Request, Response
+
 @app.get("/{full_path:path}")
-def serve_frontend(full_path: str):
-    if os.path.exists(f"/app/HypeTrade307/dist/{full_path}"):
-        return FileResponse(f"/app/HypeTrade307/dist/{full_path}")
+def serve_frontend(full_path: str, request: Request):
+    # ignore all API routes
+    if request.url.path.startswith("/api"):
+        return Response(status_code=404)
+
+    # serve the file if it exists
+    file_path = f"/app/HypeTrade307/dist/{full_path}"
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+
+    # for all other routes (like /profile), serve the frontend entry
     return FileResponse("/app/HypeTrade307/dist/index.html")
 
 @app.get("/api/health")
