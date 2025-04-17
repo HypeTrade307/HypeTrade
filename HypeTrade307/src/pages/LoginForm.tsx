@@ -5,7 +5,6 @@ import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme.tsx";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { API_BASE_URL } from '../config';
 
 interface User {
     email: string;
@@ -63,7 +62,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
 
         try {
             const response = await axios.post(
-                `${API_BASE_URL}/auth/send_confirmation_code`,
+                "http://localhost:8080/auth/send_confirmation_code",
                 { email: newUser.email },
                 { headers: { "Content-Type": "application/json" } }
             );
@@ -96,7 +95,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
 
         try {
             const response = await axios.post(
-                `${API_BASE_URL}/auth/signup`,
+                "http://localhost:8080/auth/signup",
                 {
                     email: newUser.email,
                     username: newUser.username,
@@ -122,13 +121,17 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await axios.post(
-                `${API_BASE_URL}/auth/login`,
-                loginUser
-            );
+            const response = await axios.post("http://localhost:8080/auth/login", loginUser);
             localStorage.setItem("token", response.data.access_token);
             toast.success("Login successful!");
-            navigate("/Profile");
+    
+            // Now fetch user details to check admin status
+            const profileRes = await axios.get("http://localhost:8080/users/me", {
+                headers: { Authorization: `Bearer ${response.data.access_token}` },
+            });
+    
+            const isAdmin = profileRes.data?.is_admin;
+            navigate(isAdmin ? "/admin" : "/profile");
         } catch (err) {
             console.error(err);
             toast.error("Invalid credentials");

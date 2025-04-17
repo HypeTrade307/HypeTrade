@@ -16,44 +16,6 @@ ERROR_MESSAGES = {
 }
 
 ####################################
-#  Create / Read / Search (public or admin usage)
-####################################
-
-# If you want to allow creating new users via POST:
-# @router.post("/", response_model=schemas.UserResponse)
-# def create_user(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
-#     error = validate_create(db=db, user_data=user_data)
-#     if error != Errors.OK:
-#         raise HTTPException(status_code=400, detail=ERROR_MESSAGES[error])
-#     new_user = crud.create_user(db, user_data)
-#     return new_user
-
-@router.get("/{user_id}", response_model=schemas.UserResponse)
-def read_user(user_id: int, db: Session = Depends(get_db)):
-    """
-    Fetch any user's data by ID (for admin usage).
-    The 'user_id' path param is used here, unlike the /me route.
-    """
-    user = crud.get_user_by_id(db, user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
-
-@router.get("/", response_model=list[schemas.UserResponse])
-def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    """
-    Fetch a list of all users, possibly for admin usage.
-    """
-    return crud.get_users(db, skip, limit)
-
-@router.get("/search/{name}", response_model=list[schemas.UserResponse])
-def search_user(name: str, db: Session = Depends(get_db)):
-    """
-    Search users by name (partial match).
-    """
-    return crud.get_user_by_name(db, name=name)
-
-####################################
 #  Current User Endpoints (No user_id path)
 ####################################
 
@@ -118,4 +80,46 @@ def delete_user(
     if not deleted_user:
         raise HTTPException(status_code=404, detail="User not found")
     return {"message": f"User {current_user.username} deleted successfully"}
+
+
+
+####################################
+#  Create / Read / Search (public or admin usage)
+####################################
+
+# If you want to allow creating new users via POST:
+# @router.post("/", response_model=schemas.UserResponse)
+# def create_user(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
+#     error = validate_create(db=db, user_data=user_data)
+#     if error != Errors.OK:
+#         raise HTTPException(status_code=400, detail=ERROR_MESSAGES[error])
+#     new_user = crud.create_user(db, user_data)
+#     return new_user
+
+@router.get("/{user_id}", response_model=schemas.UserResponse)
+def read_user(user_id: int, db: Session = Depends(get_db)):
+    """
+    Fetch any user's data by ID (for admin usage).
+    The 'user_id' path param is used here, unlike the /me route.
+    """
+    user = crud.get_user_by_id(db, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+@router.get("/", response_model=list[schemas.UserResponse])
+def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    """
+    Fetch a list of all users, possibly for admin usage.
+    """
+    return crud.get_users(db, skip, limit)
+
+@router.get("/search/{name}", response_model=list[schemas.UserResponse])
+def search_user(name: str, db: Session = Depends(get_db)):
+    """
+    Search users by name (partial match).
+    """
+    return crud.get_user_by_name(db, name=name)
+
+
 
