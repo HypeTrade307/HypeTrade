@@ -27,6 +27,7 @@ steps:
   # Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     args:
+      - 'gcloud'
       - 'run'
       - 'deploy'
       - 'hypetrade'
