@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { API_BASE_URL } from '../config';
 import './FriendRequestNotification.css';
+import { API_BASE_URL } from '../config';
 
 interface FriendRequest {
   request_id: number;
@@ -11,85 +11,88 @@ interface FriendRequest {
   created_at: string;
 }
 
-export default function FriendRequestNotification() {
+const FriendRequestNotification: React.FC = () => {
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Check if user is authenticated
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token);
-  }, []);
-
-  // Fetch friend requests
-  useEffect(() => {
-    const fetchFriendRequests = async () => {
-      if (!isAuthenticated) {
-        setLoading(false);
-        return;
-      }
-
+    const checkAuth = async () => {
       try {
         const token = localStorage.getItem('token');
-        if (!token) return;
-
-        const response = await axios.get(`${API_BASE_URL}/users/friend-requests`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
-        setFriendRequests(response.data);
+        if (token) {
+          setIsAuthenticated(true);
+          await fetchFriendRequests();
+        }
       } catch (error) {
-        console.error('Error fetching friend requests:', error);
-      } finally {
-        setLoading(false);
+        console.error('Error checking authentication:', error);
       }
     };
 
-    fetchFriendRequests();
+    checkAuth();
+    const interval = setInterval(fetchFriendRequests, 30000); // Poll every 30 seconds
 
-    // Set up polling for new friend requests
-    const intervalId = setInterval(fetchFriendRequests, 30000); // Check every 30 seconds
-    return () => clearInterval(intervalId);
-  }, [isAuthenticated]);
+    return () => clearInterval(interval);
+  }, []);
 
-  const handleAcceptRequest = async (requestId: number) => {
+  const fetchFriendRequests = async () => {
+    if (!isAuthenticated) return;
+
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
-      await axios.post(
-        `${API_BASE_URL}/users/accept-friend-request/${requestId}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      // Remove the accepted request from the list
-      setFriendRequests(friendRequests.filter(request => request.request_id !== requestId));
-      toast.success('Friend request accepted!');
+      const response = await axios.get('/api/users/friend_requests', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      setFriendRequests(response.data);
     } catch (error) {
-      console.error('Error accepting friend request:', error);
-      toast.error('Failed to accept friend request');
+      console.error('Error fetching friend requests:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDeclineRequest = async (requestId: number) => {
+  const handleAcceptRequest = async (senderId: number) => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) return;
+      if (!token) {
+        toast.error('Authentication error. Please log in again.');
+        return;
+      }
 
       await axios.post(
-        `${API_BASE_URL}/users/decline-friend-request/${requestId}`,
+        `${API_BASE_URL}/accept_friend_request/${senderId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // Remove the declined request from the list
-      setFriendRequests(friendRequests.filter(request => request.request_id !== requestId));
-      toast.info('Friend request declined');
-    } catch (error) {
+      toast.success('Friend request accepted');
+      setFriendRequests(requests => requests.filter(req => req.sender_id !== senderId));
+    } catch (error: any) {
+      console.error('Error accepting friend request:', error);
+      toast.error(error.response?.data?.detail || 'Failed to accept friend request');
+    }
+  };
+
+  const handleDeclineRequest = async (senderId: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Authentication error. Please log in again.');
+        return;
+      }
+
+      await axios.post(
+        `${API_BASE_URL}/decline_friend_request/${senderId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success('Friend request declined');
+      setFriendRequests(requests => requests.filter(req => req.sender_id !== senderId));
+    } catch (error: any) {
       console.error('Error declining friend request:', error);
-      toast.error('Failed to decline friend request');
+      toast.error(error.response?.data?.detail || 'Failed to decline friend request');
     }
   };
 
@@ -114,15 +117,15 @@ export default function FriendRequestNotification() {
               </span>
             </div>
             <div className="friend-request-actions">
-              <button 
+              <button
                 className="accept-button"
-                onClick={() => handleAcceptRequest(request.request_id)}
+                onClick={() => handleAcceptRequest(request.sender_id)}
               >
                 Accept
               </button>
-              <button 
+              <button
                 className="decline-button"
-                onClick={() => handleDeclineRequest(request.request_id)}
+                onClick={() => handleDeclineRequest(request.sender_id)}
               >
                 Decline
               </button>
@@ -132,4 +135,6 @@ export default function FriendRequestNotification() {
       </div>
     </div>
   );
-} 
+};
+
+export default FriendRequestNotification; 

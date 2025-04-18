@@ -588,7 +588,7 @@ def get_top_stocks(db: Session, limit: int = 20) -> list[models.Stock]:
             detail=f"Database error retrieving top stocks: {str(e)}"
         )
     
-def create_notification(db: Session, sender_id: int, receiver_id: int, message: str, stock_id: int = None):
+def create_notification(db: Session, sender_id: int, receiver_id: int, message: str):
     """
     Create a new notification.
     
@@ -597,7 +597,6 @@ def create_notification(db: Session, sender_id: int, receiver_id: int, message: 
         sender_id: ID of the sender (system or user)
         receiver_id: ID of the user receiving the notification
         message: Notification message content
-        stock_id: Optional related stock ID
     
     Returns:
         The created notification object
@@ -608,9 +607,8 @@ def create_notification(db: Session, sender_id: int, receiver_id: int, message: 
             sender_id=sender_id,
             receiver_id=receiver_id,
             message=message,
-            stock_id=stock_id,
             is_read=False,
-            created_at=datetime.now()
+            created_at=datetime.datetime.utcnow()
         )
         
         # Add to database
@@ -961,4 +959,338 @@ def get_all_flags(db: Session) -> list[models.Flag]:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve flags: {str(e)}"
+        )
+
+# ----------------------------
+# FRIEND REQUEST CRUD
+# ----------------------------
+
+def send_friend_request(db: Session, sender_id: int, receiver_id: int) -> bool:
+    """
+    Send a friend request from one user to another.
+    
+    Args:
+        db: Database session
+        sender_id: ID of the user sending the request
+        receiver_id: ID of the user receiving the request
+        
+    Returns:
+        True if the request was sent successfully, False otherwise
+    """
+    try:
+        # Check if users exist
+        sender = db.query(models.User).filter(models.User.user_id == sender_id).first()
+        receiver = db.query(models.User).filter(models.User.user_id == receiver_id).first()
+        
+        if not sender or not receiver:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+            
+        # Check if request already exists
+        existing_request = db.query(models.user_friends).filter(
+            models.user_friends.c.user_id == sender_id,
+            models.user_friends.c.friend_id == receiver_id
+        ).first()
+        
+        if existing_request:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Friend request already exists"
+            )
+            
+        # Create the friend request
+        db.execute(
+            models.user_friends.insert().values(
+                user_id=sender_id,
+                friend_id=receiver_id,
+                status="pending"
+            )
+        )
+        
+        # Create a notification for the receiver
+        message = f"{sender.username} sent you a friend request"
+        create_notification(db, sender_id, receiver_id, message)
+        
+        db.commit()
+        return True
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to send friend request: {str(e)}"
+        )
+
+def get_friend_requests(db: Session, user_id: int) -> list[dict]:
+    """
+    Get all pending friend requests for a user.
+    
+    Args:
+        db: Database session
+        user_id: ID of the user to get requests for
+        
+    Returns:
+        List of friend request objects
+    """
+    try:
+        # Get all pending friend requests where the user is the receiver
+        requests = db.query(models.user_friends).filter(
+            models.user_friends.c.friend_id == user_id,
+            models.user_friends.c.status == "pending"
+        ).all()
+        
+        # Format the requests with sender information
+        formatted_requests = []
+        for request in requests:
+            sender = db.query(models.User).filter(models.User.user_id == request.user_id).first()
+            if sender:
+                formatted_requests.append({
+                    "request_id": request.user_id,  # Using user_id as request_id for simplicity
+                    "sender_id": request.user_id,
+                    "receiver_id": request.friend_id,
+                    "status": request.status,
+                    "created_at": request.created_at if hasattr(request, 'created_at') else datetime.datetime.now(),
+                    "sender_username": sender.username
+                })
+                
+        return formatted_requests
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get friend requests: {str(e)}"
+        )
+
+def accept_friend_request(db: Session, receiver_id: int, sender_id: int) -> bool:
+    """
+    Accept a friend request.
+    
+    Args:
+        db: Database session
+        receiver_id: ID of the user accepting the request
+        sender_id: ID of the user who sent the request
+        
+    Returns:
+        True if the request was accepted successfully, False otherwise
+    """
+    try:
+        # Check if the request exists
+        request = db.query(models.user_friends).filter(
+            models.user_friends.c.user_id == sender_id,
+            models.user_friends.c.friend_id == receiver_id,
+            models.user_friends.c.status == "pending"
+        ).first()
+        
+        if not request:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Friend request not found"
+            )
+            
+        # Update the request status to accepted
+        db.execute(
+            models.user_friends.update().where(
+                models.user_friends.c.user_id == sender_id,
+                models.user_friends.c.friend_id == receiver_id
+            ).values(status="accepted")
+        )
+        
+        # Create a notification for the sender
+        receiver = db.query(models.User).filter(models.User.user_id == receiver_id).first()
+        if receiver:
+            message = f"{receiver.username} accepted your friend request"
+            create_notification(db, receiver_id, sender_id, message)
+        
+        db.commit()
+        return True
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to accept friend request: {str(e)}"
+        )
+
+def decline_friend_request(db: Session, receiver_id: int, sender_id: int) -> bool:
+    """
+    Decline a friend request.
+    
+    Args:
+        db: Database session
+        receiver_id: ID of the user declining the request
+        sender_id: ID of the user who sent the request
+        
+    Returns:
+        True if the request was declined successfully, False otherwise
+    """
+    try:
+        # Check if the request exists
+        request = db.query(models.user_friends).filter(
+            models.user_friends.c.user_id == sender_id,
+            models.user_friends.c.friend_id == receiver_id,
+            models.user_friends.c.status == "pending"
+        ).first()
+        
+        if not request:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Friend request not found"
+            )
+            
+        # Delete the request
+        db.execute(
+            models.user_friends.delete().where(
+                models.user_friends.c.user_id == sender_id,
+                models.user_friends.c.friend_id == receiver_id
+            )
+        )
+        
+        db.commit()
+        return True
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to decline friend request: {str(e)}"
+        )
+
+def get_friends(db: Session, user_id: int) -> list[models.User]:
+    """
+    Get all friends for a user.
+    
+    Args:
+        db: Database session
+        user_id: ID of the user to get friends for
+        
+    Returns:
+        List of friend user objects
+    """
+    try:
+        user = db.query(models.User).filter(models.User.user_id == user_id).first()
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+            
+        # Get all accepted friend relationships
+        friends = []
+        for friend in user.friends:
+            # Check if the friendship is accepted
+            friendship = db.query(models.user_friends).filter(
+                models.user_friends.c.user_id == user_id,
+                models.user_friends.c.friend_id == friend.user_id,
+                models.user_friends.c.status == "accepted"
+            ).first()
+            
+            if friendship:
+                friends.append(friend)
+                
+        return friends
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get friends: {str(e)}"
+        )
+
+def remove_friend(db: Session, user_id: int, friend_id: int) -> bool:
+    """
+    Remove a friend relationship.
+    
+    Args:
+        db: Database session
+        user_id: ID of the user removing the friend
+        friend_id: ID of the friend to remove
+        
+    Returns:
+        True if the friend was removed successfully, False otherwise
+    """
+    try:
+        # Check if the friendship exists
+        friendship = db.query(models.user_friends).filter(
+            models.user_friends.c.user_id == user_id,
+            models.user_friends.c.friend_id == friend_id,
+            models.user_friends.c.status == "accepted"
+        ).first()
+        
+        if not friendship:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Friendship not found"
+            )
+            
+        # Delete the friendship
+        db.execute(
+            models.user_friends.delete().where(
+                models.user_friends.c.user_id == user_id,
+                models.user_friends.c.friend_id == friend_id
+            )
+        )
+        
+        db.commit()
+        return True
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to remove friend: {str(e)}"
+        )
+
+def check_friendship_status(db: Session, user_id: int, other_user_id: int) -> str:
+    """
+    Check the friendship status between two users.
+    
+    Args:
+        db: Database session
+        user_id: ID of the first user
+        other_user_id: ID of the second user
+        
+    Returns:
+        The friendship status: "friends", "pending", or "none"
+    """
+    try:
+        # Check if they are friends
+        friendship = db.query(models.user_friends).filter(
+            models.user_friends.c.user_id == user_id,
+            models.user_friends.c.friend_id == other_user_id,
+            models.user_friends.c.status == "accepted"
+        ).first()
+        
+        if friendship:
+            return "friends"
+            
+        # Check if there's a pending request
+        request = db.query(models.user_friends).filter(
+            models.user_friends.c.user_id == user_id,
+            models.user_friends.c.friend_id == other_user_id,
+            models.user_friends.c.status == "pending"
+        ).first()
+        
+        if request:
+            return "pending"
+            
+        # Check if the other user sent a request
+        other_request = db.query(models.user_friends).filter(
+            models.user_friends.c.user_id == other_user_id,
+            models.user_friends.c.friend_id == user_id,
+            models.user_friends.c.status == "pending"
+        ).first()
+        
+        if other_request:
+            return "pending"
+            
+        return "none"
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to check friendship status: {str(e)}"
         )

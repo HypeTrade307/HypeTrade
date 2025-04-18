@@ -40,6 +40,7 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(null);
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState<boolean>(false);
 
   // Check if user is authenticated and get current user ID
   useEffect(() => {
@@ -253,13 +254,16 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
         return;
       }
 
-      // Use the available endpoint for adding friends
+      console.log('Sending friend request with data:', {
+        current_user: currentUserId,
+        add_user: parseInt(userId),
+        current_user_type: typeof currentUserId,
+        add_user_type: typeof userId
+      });
+
       await axios.post(
-        `${API_BASE_URL}/add_friend`,
-        { 
-          current_user: currentUserId?.toString(), 
-          add_user: userId 
-        },
+        `${API_BASE_URL}/send_friend_request/${userId}`,
+        {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -269,6 +273,7 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
       window.location.reload();
     } catch (error: any) {
       console.error('Error sending friend request:', error);
+      console.error('Error response:', error.response?.data);
       
       if (error.response && error.response.status === 401) {
         toast.error('Authentication error. Please log in again.');
@@ -276,6 +281,56 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
         navigate('/login');
       } else {
         const errorMessage = error.response?.data?.detail || 'Failed to send friend request';
+        toast.error(errorMessage);
+      }
+    }
+  };
+
+  const handleRemoveFriend = async () => {
+    if (!isAuthenticated || !userId) {
+      toast.error('Please log in to remove friends');
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Authentication error. Please log in again.');
+        navigate('/login');
+        return;
+      }
+
+      console.log('Removing friend with data:', {
+        current_user: currentUserId,
+        remove_user: userId
+      });
+
+      // Use the available endpoint for removing friends
+      await axios.post(
+        `${API_BASE_URL}/remove_friend`,
+        { 
+          current_user: currentUserId?.toString(), 
+          remove_user: userId 
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success('Friend removed successfully!');
+      setIsFriend(false);
+      
+      // Refresh the page to update the UI
+      window.location.reload();
+    } catch (error: any) {
+      console.error('Error removing friend:', error);
+      console.error('Error response:', error.response?.data);
+      
+      if (error.response && error.response.status === 401) {
+        toast.error('Authentication error. Please log in again.');
+        localStorage.removeItem('token');
+        navigate('/login');
+      } else {
+        const errorMessage = error.response?.data?.detail || 'Failed to remove friend';
         toast.error(errorMessage);
       }
     }
@@ -336,7 +391,15 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
           )}
           
           {isAuthenticated && !isCurrentUser && isFriend && (
-            <div className="friend-status">Friends</div>
+            <div className="friend-actions">
+              <div className="friend-status">Friends</div>
+              <button 
+                className="remove-friend-button"
+                onClick={() => setShowRemoveConfirm(true)}
+              >
+                Remove Friend
+              </button>
+            </div>
           )}
           
           {!isAuthenticated && (
@@ -349,6 +412,33 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
           )}
         </div>
         
+        {/* Confirmation Dialog for Removing Friend */}
+        {showRemoveConfirm && (
+          <div className="confirmation-dialog">
+            <div className="confirmation-content">
+              <h3>Remove Friend</h3>
+              <p>Are you sure you want to remove {user.username} from your friends list?</p>
+              <div className="confirmation-buttons">
+                <button 
+                  className="confirm-button"
+                  onClick={() => {
+                    handleRemoveFriend();
+                    setShowRemoveConfirm(false);
+                  }}
+                >
+                  Yes, Remove
+                </button>
+                <button 
+                  className="cancel-button"
+                  onClick={() => setShowRemoveConfirm(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
         <div className="user-profile-content">
           <div className="user-info-section">
             <h2>User Information</h2>
@@ -356,7 +446,6 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
               <span className="info-label">Username:</span>
               <span className="info-value">{user.username}</span>
             </div>
-            {/* Email removed for privacy */}
           </div>
           
           <div className="user-portfolios-section">

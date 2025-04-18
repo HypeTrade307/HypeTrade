@@ -1,14 +1,17 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 import os
 import uvicorn
+from fastapi import HTTPException
+import json
 
 # import backend functions
 from src import check_if_friends as cf, search_users as su
 
 # import database setup
+from src.db import crud
 from src.db.database import SessionLocal, engine, Base
 from src.api.routes.notifications import router as notification_router
 from src.api.routes.users import router as users_router
@@ -19,6 +22,7 @@ from src.api.routes.auth import router as auth_router
 from src.api.routes.sentiment import router as sentiment_router
 from src.api.routes.threads import router as threads_router
 from src.api.routes.posts import router as posts_router, comment_router
+from src.api.routes.friends import router as friends_router
 from src.processing.stock_processing import seed_stocks
 from src.processing import scraping as sc
 from fastapi.middleware.cors import CORSMiddleware
@@ -51,39 +55,10 @@ app.add_middleware(
 Base.metadata.create_all(bind=engine)
 
 seed_stocks(db=SessionLocal())
-# Include routers
-# friend check request model
-class FriendCheckRequest(BaseModel):
-    current_user: str
-    requested_user: str
-
-# friend modification request model
-class FriendModifyRequest(BaseModel):
-    current_user: str
-    add_user: Optional[str] = None
-    remove_user: Optional[str] = None
 
 # text input model
 class InputData(BaseModel):
     text: str
-
-# routes from server.py
-@app.post("/check_friends")
-def check_friends(request: FriendCheckRequest):
-    friend_list = cf.check_friends(request.current_user, request.requested_user)
-    return {"friends": friend_list if friend_list else []}
-
-@app.post("/add_friend")
-def add_friend(request: FriendModifyRequest):
-    if request.add_user:
-        cf.add_to_friendlist(request.current_user, request.add_user)
-    return {"message": "Friend request sent"}
-
-@app.post("/remove_friend")
-def remove_friend(request: FriendModifyRequest):
-    if request.remove_user:
-        cf.remove_from_friendlist(request.current_user, request.remove_user)
-    return {"message": "Friend removed"}
 
 @app.post("/process")
 def process_text(data: InputData) -> List[str]:  
@@ -100,6 +75,7 @@ app.include_router(notification_router)
 app.include_router(sentiment_router)
 app.include_router(posts_router)
 app.include_router(comment_router)
+app.include_router(friends_router)
 # additional routes from main.py
 @app.get("/api/health")
 def health_check():

@@ -14,6 +14,7 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ColorModeIconDropdown from '../shared-theme/ColorModeIconDropdown.tsx';
 import Sitemark from '../SitemarkIcon';
 import UserSearchBar from './UserSearchBar';
+import FriendRequestNotification from '../FriendRequestNotification';
 import type {} from '@mui/material/themeCssVarsAugmentation';
 
 const pages = ['Home', 'ViewStock', 'Portfolio', 'Profile', 'Search', 'Friends', 'Chat', 'Forum'];
@@ -110,6 +111,7 @@ const Navbar = () => {
                             alignItems: 'center',
                         }}
                     >
+                        <FriendRequestNotification />
                         <Button color="primary" variant="text" size="small"
                                 onClick={() => handleMenuClick("Login")}
                         >

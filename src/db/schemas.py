@@ -34,6 +34,45 @@ class FlagResponse(BaseModel):
 
 
 # ------------------
+#  FRIEND REQUEST SCHEMAS
+# ------------------
+
+class FriendRequestStatus(str, Enum):
+    pending = "pending"
+    accepted = "accepted"
+    blocked = "blocked"
+
+class FriendRequestBase(BaseModel):
+    sender_id: int
+    receiver_id: int
+    status: str
+
+class FriendRequestCreate(FriendRequestBase):
+    pass
+
+class FriendRequestResponse(FriendRequestBase):
+    request_id: int
+    created_at: datetime
+    sender_username: str
+
+    class Config:
+        orm_mode = True
+
+class FriendRequestAction(BaseModel):
+    current_user: int
+    add_user: int
+
+class FriendResponse(BaseModel):
+    user_id: int
+    username: str
+    email: str
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        orm_mode = True
+
+# ------------------
 #  USER SCHEMAS
 # ------------------
 class UserBase(BaseModel):

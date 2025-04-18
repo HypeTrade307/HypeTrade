@@ -17,11 +17,11 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    min-height: 100vh;
+    /*min-height: 100vh;
     overflow-y: auto;
     position: relative;
     box-sizing: border-box;
-    margin-top: 80px;
+    margin-top: 64px; /* Height of the navbar */
   }
   
   /* Page title */

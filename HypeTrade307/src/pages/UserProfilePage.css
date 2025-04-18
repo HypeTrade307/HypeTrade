@@ -47,13 +47,11 @@
 }
 
 .friend-status {
-  background-color: #2196F3;
+  background-color: #4caf50;
   color: white;
-  padding: 10px 20px;
+  padding: 5px 10px;
   border-radius: 4px;
-  font-weight: 500;
-  font-size: 16px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  font-size: 14px;
 }
 
 .user-profile-content {
@@ -274,4 +272,89 @@
   .stocks-table td {
     padding: 8px 10px;
   }
+}
+
+.friend-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.remove-friend-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.remove-friend-button:hover {
+  background-color: #d32f2f;
+}
+
+.confirmation-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.confirmation-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 100%;
+}
+
+.confirmation-content h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.confirmation-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.confirm-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.confirm-button:hover {
+  background-color: #d32f2f;
+}
+
+.cancel-button {
+  background-color: #9e9e9e;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.cancel-button:hover {
+  background-color: #757575;
 } 
