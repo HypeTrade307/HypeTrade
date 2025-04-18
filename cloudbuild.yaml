@@ -1,13 +1,30 @@
 steps:
-  # Build the container image
+  # Pull the latest image for layer caching
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-central1-docker.pkg.dev/${PROJECT_ID}/hypetrade-repo/hypetrade-app:${SHORT_SHA}', '.']
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        docker pull us-central1-docker.pkg.dev/${PROJECT_ID}/hypetrade-repo/hypetrade-app:latest || true
 
-  # Push the container image to Artifact Registry
+  # Build with cache-from
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-t', 'us-central1-docker.pkg.dev/${PROJECT_ID}/hypetrade-repo/hypetrade-app:${SHORT_SHA}',
+      '-t', 'us-central1-docker.pkg.dev/${PROJECT_ID}/hypetrade-repo/hypetrade-app:latest',
+      '--cache-from', 'us-central1-docker.pkg.dev/${PROJECT_ID}/hypetrade-repo/hypetrade-app:latest',
+      '.'
+    ]
+
+  # Push both tagged image and 'latest'
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-central1-docker.pkg.dev/${PROJECT_ID}/hypetrade-repo/hypetrade-app:${SHORT_SHA}']
 
-  # Deploy with inline environment variables
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/${PROJECT_ID}/hypetrade-repo/hypetrade-app:latest']
+
+  # Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     args:
       - 'run'
@@ -17,4 +34,8 @@ steps:
       - '--region=us-central1'
       - '--platform=managed'
       - '--allow-unauthenticated'
-      - '--set-env-vars=DATABASE_URL=postgresql://user:pass@host/db,SECRET_KEY=your_secret,REDDIT_CLIENT_ID=your_id,REDDIT_CLIENT_SECRET=your_secret,REDDIT_USER_AGENT=your_agent'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 1800s
