@@ -4,6 +4,12 @@ import axios from "axios";
 import Navbar from "../components/NavbarSection/Navbar";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme";
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    Button
+} from "@mui/material";
 import "./Thread.css";
 import { API_BASE_URL } from '../config';
 
@@ -43,6 +49,25 @@ function ThreadViewer() {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
+
+    // Tutorial state
+    const [tutorialOpen, setTutorialOpen] = useState(false);
+    const [step, setStep] = useState(0);
+
+    const tutorialSteps = [
+        { title: "Welcome to the Thread", description: "Here you can see all posts in this thread." },
+        { title: "Viewing Posts", description: "Click on any post to view or reply to it." },
+        { title: "Posting", description: "Click 'Create Post' to contribute to the discussion." },
+        { title: "You're Ready!", description: "That's it! Start participating in the conversation." }
+    ];
+
+    const nextStep = () => {
+        if (step < tutorialSteps.length - 1) {
+            setStep(step + 1);
+        } else {
+            setTutorialOpen(false);
+        }
+    };
 
     // Fetch thread details
     useEffect(() => {
@@ -97,11 +122,17 @@ function ThreadViewer() {
         fetchPosts();
     }, [threadId]);
 
+    // Show tutorial on page load if enabled
+    useEffect(() => {
+        const tutorialMode = JSON.parse(localStorage.getItem("tutorialMode") || "false");
+        if (tutorialMode) {
+            setTutorialOpen(true);
+        }
+    }, []);
+
     // Create post
     const handleCreatePost = async () => {
-        if (!title || !content) {
-            return;
-        }
+        if (!title || !content) return;
 
         try {
             const token = localStorage.getItem("token");
@@ -156,6 +187,29 @@ function ThreadViewer() {
             <Navbar />
             <div className="thread-container">
                 {/* Thread Header */}
+                {/* Back Button */}
+            <div style={{ padding: "1rem 0" }}>
+                <button
+                    className="back-to-forum-button"
+                    onClick={() => navigate("/forum")}
+                    style={{
+                        position: "fixed",
+                        top: "80px",
+                        left: "40px",
+                        zIndex: 1300,
+                        padding: "8px 16px",
+                        backgroundColor: "#1976d2",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        fontWeight: 500,
+                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)"
+                    }}
+                >
+                    ← Back to Forum
+                </button>
+            </div>
                 {thread && (
                     <div className="thread-header">
                         <h1>{thread.title}</h1>
@@ -256,6 +310,41 @@ function ThreadViewer() {
                         </div>
                     </div>
                 )}
+
+                {/* Tutorial Dialog */}
+                <Dialog
+                    open={tutorialOpen}
+                    onClose={() => {}}
+                    hideBackdrop
+                    disableEscapeKeyDown
+                    disableEnforceFocus
+                    PaperProps={{
+                        sx: {
+                            position: 'absolute',
+                            top: '50%',
+                            left: '5%',
+                            transform: 'translateY(-50%)',
+                            maxWidth: 400,
+                            padding: 2,
+                            zIndex: 1301,
+                            pointerEvents: 'auto',
+                        },
+                    }}
+                    sx={{ pointerEvents: 'none' }}
+                >
+                    <DialogTitle>{tutorialSteps[step].title}</DialogTitle>
+                    <DialogContent>
+                        <p>{tutorialSteps[step].description}</p>
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 2 }}
+                            onClick={nextStep}
+                        >
+                            {step < tutorialSteps.length - 1 ? "Next" : "Finish"}
+                        </Button>
+                    </DialogContent>
+                </Dialog>
             </div>
         </AppTheme>
     );

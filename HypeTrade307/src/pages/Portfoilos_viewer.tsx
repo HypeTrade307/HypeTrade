@@ -1,9 +1,9 @@
-// portfolios_viewer.tsx
-
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import CssBaseline from "@mui/material/CssBaseline";
+import AppTheme from "../components/shared-theme/AppTheme";
+import Navbar from "../components/NavbarSection/Navbar";
 import Page_Not_found from "./Page_Not_found";
 import { API_BASE_URL } from '../config';
 
@@ -19,7 +19,7 @@ interface Portfolio {
   stocks: StockBase[];  // an array of objects
 }
 
-export default function PortfolioPage() {
+export default function PortfolioPage(props: { disableCustomTheme?: boolean }) {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -27,12 +27,36 @@ export default function PortfolioPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // For typeahead
   const [availableStocks, setAvailableStocks] = useState<StockBase[]>([]);
   const [stockSearch, setStockSearch] = useState("");
   const [filteredStocks, setFilteredStocks] = useState<StockBase[]>([]);
 
-  // 1. Fetch the portfolio
+  const [tutorialOpen, setTutorialOpen] = useState(false);
+  const [step, setStep] = useState(0);
+
+  const tutorialSteps = [
+    { title: "View Portfolio", description: "This page shows all the stocks in your selected portfolio." },
+    { title: "Add Stocks", description: "Use the search box to find stocks and add them to your portfolio." },
+    { title: "Import CSV", description: "You can also import a CSV file to bulk add stocks." },
+    { title: "Click to View", description: "Click on a stock to view all the stock details (similar to the ViewStock page)." },
+    { title: "Done!", description: "You're ready to manage your portfolio!" }
+  ];
+
+  const nextStep = () => {
+    if (step < tutorialSteps.length - 1) {
+      setStep(step + 1);
+    } else {
+      setTutorialOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (localStorage.getItem("tutorialMode") === "true") {
+      setTutorialOpen(true);
+    }
+  }, []);
+
+  //1. Fetch the portfolio
   useEffect(() => {
     async function fetchPortfolio() {
       try {
@@ -55,7 +79,11 @@ export default function PortfolioPage() {
     }
     fetchPortfolio();
   }, [id]);
-
+  useEffect(() => {
+    if (id) {
+      localStorage.setItem("currentPortfolioId", id);
+    }
+  }, [id]);
   // 2. Fetch all stocks for the typeahead
   useEffect(() => {
     async function fetchStocks() {
@@ -97,9 +125,7 @@ export default function PortfolioPage() {
       const response = await axios.post(
         `${API_BASE_URL}/portfolios/${portfolio.portfolio_id}/stocks/${stock_id}`,
         {},
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setPortfolio(response.data);
       setStockSearch("");
@@ -125,10 +151,7 @@ export default function PortfolioPage() {
     }
   }
 
-  // 6. Import existing portfolio as csv file upload. Update the current portfolio to include csv data
-  async function uploadFile(file) {
-
-    // if (!file) return;
+  async function uploadFile(file: File) {
     if (file) {
       try {
 
@@ -156,14 +179,12 @@ export default function PortfolioPage() {
     }
   }
 
-
-  async function importPortfolioFromCSV(event) {
-
-    const inputFile = event.target.files[0];
-
+  async function importPortfolioFromCSV(event: React.ChangeEvent<HTMLInputElement>) {
+    const inputFile = event.target.files?.[0];
     try {
-      await uploadFile(inputFile);
-
+      if (inputFile) {
+        await uploadFile(inputFile);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -173,66 +194,105 @@ export default function PortfolioPage() {
   if (loading) return <div>Loading...</div>;
   if (error) return <Page_Not_found />;
 
-  return (
-    <div>
-      <button onClick={() => navigate("/")}>Back to Home</button>
-      <h2>Portfolio: {portfolio?.name}</h2>
+  // @ts-ignore
+    return (
+    <AppTheme {...props}>
+      <CssBaseline enableColorScheme />
+      <Navbar />
+      <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto", color: "white" }}>
+        <button onClick={() => navigate("/")}>Back to Home</button>
+        <h2>Portfolio: {portfolio?.name}</h2>
 
-      {/* STOCK SEARCH INPUT */}
-      <div style={{ marginBottom: "1rem" }}>
-        <label>Search Stock:</label>
-        <input
-          type="text"
-          value={stockSearch}
-          onChange={(e) => setStockSearch(e.target.value)}
-          style={{ marginLeft: "6px" }}
-        />
-        {filteredStocks.length > 0 && (
-          <div style={{
-            border: "1px solid #ccc",
-            backgroundColor: "#fff",
-            color: "#000",
-            position: "absolute",
-            zIndex: 999,
-            marginTop: "4px"
-          }}>
-            {filteredStocks.map(stock => (
-              <div
-                key={stock.stock_id}
-                style={{ padding: "4px", cursor: "pointer" }}
-                onClick={() => addStockToPortfolio(stock.stock_id)}
-              >
-                {stock.ticker} - {stock.stock_name}
-              </div>
-            ))}
-          </div>
-        )}
+        <div style={{ marginBottom: "1rem" }}>
+          <label>Search Stock:</label>
+          <input
+            type="text"
+            value={stockSearch}
+            onChange={(e) => setStockSearch(e.target.value)}
+            style={{ marginLeft: "6px" }}
+          />
+          {filteredStocks.length > 0 && (
+            <div style={{
+              border: "1px solid #ccc",
+              backgroundColor: "#fff",
+              color: "#000",
+              position: "absolute",
+              zIndex: 999,
+              marginTop: "4px"
+            }}>
+              {filteredStocks.map(stock => (
+                <div
+                  key={stock.stock_id}
+                  style={{ padding: "4px", cursor: "pointer" }}
+                  onClick={() => addStockToPortfolio(stock.stock_id)}
+                >
+                  {stock.ticker} - {stock.stock_name}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <ul style={{ listStyleType: "none", padding: 0 }}>
+          {portfolio?.stocks && portfolio.stocks.length > 0 ? (
+            portfolio.stocks.map((st, index) => (
+              <li key={index} style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}>
+                <div
+                  onClick={() => navigate(`/stocks/${st.ticker}`)}
+                  style={{
+                    cursor: "pointer",
+                    color: "#4dabf5",
+                    flex: 1,
+                    padding: "4px",
+                    borderRadius: "4px",
+                    transition: "background 0.2s"
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#2c2c2c")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  {st.ticker} - {st.stock_name}
+                </div>
+                <button onClick={() => removeStock(st.stock_id)}>Remove</button>
+              </li>
+            ))
+          ) : (
+            <p>No stocks added yet.</p>
+          )}
+        </ul>
+
+        <div>
+          <label>Import existing portfolio from csv file:</label>
+          <form onChange={importPortfolioFromCSV}>
+            <input type="file" className="input" />
+          </form>
+        </div>
       </div>
 
-      {/* LIST STOCKS IN PORTFOLIO */}
-      <ul>
-        {portfolio?.stocks && portfolio.stocks.length > 0 ? (
-          portfolio.stocks.map((st, index) => (
-            <li key={index}>
-              {st.ticker} - {st.stock_name}
-              <button style={{ marginLeft: "8px" }} onClick={() => removeStock(st.stock_id)}>
-                Remove
-              </button>
-            </li>
-          ))
-        ) : (
-          <p>No stocks added yet.</p>
-        )}
-      </ul>
-
-      {/* Upload File Input */}
-      <div>
-        <label>Import existing portfolio from csv file:</label>
-        <form onChange={event => importPortfolioFromCSV(event)}>
-          <input type="file" className="input" />
-        </form>
-      </div>
-
-    </div>
+      {tutorialOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '45%',
+            right: '80%',
+            zIndex: 9999,
+            background: 'white',
+            color: 'black',
+            padding: '1rem',
+            borderRadius: '10px',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+            width: '320px'
+          }}
+        >
+          <h3 style={{ marginTop: 0 }}>{tutorialSteps[step].title}</h3>
+          <p>{tutorialSteps[step].description}</p>
+          <button
+            style={{ marginTop: '0.5rem', width: '100%' }}
+            onClick={nextStep}
+          >
+            {step < tutorialSteps.length - 1 ? "Next" : "Finish"}
+          </button>
+        </div>
+      )}
+    </AppTheme>
   );
 }
