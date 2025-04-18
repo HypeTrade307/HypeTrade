@@ -10,7 +10,7 @@ def get_financial_sentiment(text):
     )
     
     # Get your endpoint
-    endpoint = aiplatform.Endpoint("projects/basic-formula-451520-c0/locations/us-central1/endpoints/8056369086831001600")
+    endpoint = aiplatform.Endpoint("projects/basic-formula-451520-c0/locations/us-central1/endpoints/7711258775151181824")
     
     # Format the instance
     instance = {

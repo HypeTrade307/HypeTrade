@@ -66,21 +66,30 @@ app.include_router(comment_router, prefix="/api")
 def health_check():
     return {"status": "ok"}
 
-app.mount("/", StaticFiles(directory="/app/HypeTrade307/dist", html=True), name="static")
 from fastapi.responses import FileResponse
 from fastapi.requests import Request
 
-@app.get("/{full_path:path}")
-async def spa_fallback(full_path: str, request: Request):
-    # Let API routes 404 naturally
-    if full_path.startswith("api/"):
-        return Response(status_code=404)
+DIST_DIR = "/app/HypeTrade307/dist"
 
-    # Serve index.html fallback for frontend routes
-    index_path = "/app/HypeTrade307/dist/index.html"
-    if os.path.exists(index_path):
-        return FileResponse(index_path)
-    return Response(status_code=500, content="index.html not found")
+@app.middleware("http")
+async def spa_static_handler(request: Request, call_next):
+    path = request.url.path
+
+    # Allow API routes through
+    if path.startswith("/api/"):
+        return await call_next(request)
+
+    # Try serving static files
+    static_file_path = os.path.join(DIST_DIR, path.lstrip("/"))
+    if os.path.exists(static_file_path) and not os.path.isdir(static_file_path):
+        return FileResponse(static_file_path)
+
+    # Otherwise serve index.html (for React Router)
+    index_file = os.path.join(DIST_DIR, "index.html")
+    if os.path.exists(index_file):
+        return FileResponse(index_file)
+
+    return Response(status_code=404, content="Not Found")
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
