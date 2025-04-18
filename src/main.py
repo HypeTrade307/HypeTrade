@@ -74,33 +74,38 @@ app.include_router(comment_router, prefix="/api")
 #         return FileResponse(file_path)
 #     return FileResponse("/app/HypeTrade307/dist/index.html")
 
-from fastapi import Request, Response
-
-# Remove the earlier StaticFiles mount since we're handling all routes manually
-# app.mount("/", StaticFiles(directory="/app/HypeTrade307/dist", html=True), name="frontend")
-
-# Serve static assets (JS, CSS, images)
-app.mount("/assets", StaticFiles(directory="/app/HypeTrade307/dist/assets"), name="static")
-
-@app.get("/{full_path:path}")
-async def serve_frontend(full_path: str, request: Request):
-    # Handle API routes - let them go to the API handlers
-    if request.url.path.startswith("/api/"):
-        # This will just continue to the next route handler
-        return Response(status_code=404)
-
-    # Look for specific files (like favicon, manifest, etc.)
-    file_path = f"/app/HypeTrade307/dist/{full_path}"
-    if os.path.exists(file_path) and not os.path.isdir(file_path):
-        return FileResponse(file_path)
-
-    # For all other routes, serve the index.html for client-side routing
-    return FileResponse("/app/HypeTrade307/dist/index.html")
-
+from fastapi import Request
+# Health check endpoint
 @app.get("/api/health")
 def health_check():
     return {"status": "ok"}
 
+# Mount static assets directory explicitly
+if os.path.exists("/app/HypeTrade307/dist/assets"):
+    app.mount("/assets", StaticFiles(directory="/app/HypeTrade307/dist/assets"), name="static")
+
+# Handle specific files at root level (like favicon.ico, robots.txt, etc.)
+@app.get("/favicon.ico")
+async def favicon():
+    return FileResponse("/app/HypeTrade307/dist/favicon.ico") if os.path.exists("/app/HypeTrade307/dist/favicon.ico") else Response(status_code=404)
+
+# Any other specific static files should be added here...
+
+# Catch-all route handler must be at the end
+@app.get("/{path:path}")
+async def serve_spa(path: str, request: Request):
+    # Don't interfere with API routes
+    if path.startswith("api/"):
+        # This request will be handled by the API routers
+        return Response(status_code=404)
+
+    # Try to serve static file directly if it exists
+    file_path = f"/app/HypeTrade307/dist/{path}"
+    if os.path.exists(file_path) and not os.path.isdir(file_path):
+        return FileResponse(file_path)
+
+    # Fall back to index.html for all other routes (to be handled by React Router)
+    return FileResponse("/app/HypeTrade307/dist/index.html")
 # entry point
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8080))  # cloud run requires PORT env var
