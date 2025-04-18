@@ -1,7 +1,14 @@
 from fastapi import FastAPI
-import uvicorn
-from fastapi.openapi.models import Response
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import Response
+import os
+import sys
 
+# Add current directory to sys path
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+
+# Local imports
 from src.db.database import SessionLocal, engine, Base
 from src.api.routes.notifications import router as notification_router
 from src.api.routes.users import router as users_router
@@ -14,24 +21,24 @@ from src.api.routes.threads import router as threads_router
 from src.api.routes.posts import router as posts_router, comment_router
 from src.processing.stock_processing import seed_stocks
 from src.processing import scraping as sc
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-import sys
-import os
 
-sys.path.append(os.path.abspath(os.path.dirname(__file__)))  # add src to path
 app = FastAPI()
+
+# Create database tables
 Base.metadata.create_all(bind=engine)
+
+# Run Reddit connection test
 sc.test_reddit_connection()
 
-# Add origins for both development and production
+# Seed stock data
+seed_stocks(db=SessionLocal())
+
+# CORS config
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    # For production with Cloud Run
-    "https://*.run.app",
-    # Add your custom domain if you have one
+    "https://*.run.app",  # Cloud Run wildcard
+    # Add any other deployed frontend origins here
 ]
 
 app.add_middleware(
@@ -42,11 +49,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
-seed_stocks(db=SessionLocal())
-
-# Include all routers
+# Register API routers
 app.include_router(users_router, prefix="/api")
 app.include_router(threads_router, prefix="/api")
 app.include_router(stocks_router, prefix="/api")
@@ -58,55 +61,17 @@ app.include_router(sentiment_router, prefix="/api")
 app.include_router(posts_router, prefix="/api")
 app.include_router(comment_router, prefix="/api")
 
-# Serve the frontend static files in production
-# app.mount("/", StaticFiles(directory="/app/HypeTrade307/dist", html=True), name="frontend")
-
-# from fastapi import Request
-#
-# @app.get("/{full_path:path}")
-# def serve_frontend(full_path: str, request: Request):
-#     # don't serve index.html for API calls
-#     if request.url.path.startswith("/api"):
-#         return FileResponse("/app/HypeTrade307/dist/Page_Not_Found.tsx")
-#
-#     file_path = f"/app/HypeTrade307/dist/{full_path}"
-#     if os.path.exists(file_path):
-#         return FileResponse(file_path)
-#     return FileResponse("/app/HypeTrade307/dist/index.html")
-
-from fastapi import Request
-# Health check endpoint
+# Health check
 @app.get("/api/health")
 def health_check():
     return {"status": "ok"}
 
-# Mount static assets directory explicitly
-if os.path.exists("/app/HypeTrade307/dist/assets"):
-    app.mount("/assets", StaticFiles(directory="/app/HypeTrade307/dist/assets"), name="static")
+# Serve frontend build directory as static files
+if os.path.exists("/app/HypeTrade307/dist"):
+    app.mount("/", StaticFiles(directory="/app/HypeTrade307/dist", html=True), name="static")
 
-# Handle specific files at root level (like favicon.ico, robots.txt, etc.)
-@app.get("/favicon.ico")
-async def favicon():
-    return FileResponse("/app/HypeTrade307/dist/favicon.ico") if os.path.exists("/app/HypeTrade307/dist/favicon.ico") else Response(status_code=404)
-
-# Any other specific static files should be added here...
-
-# Catch-all route handler must be at the end
-@app.get("/{path:path}")
-async def serve_spa(path: str, request: Request):
-    # Don't interfere with API routes
-    if path.startswith("api/"):
-        # This request will be handled by the API routers
-        return Response(status_code=404)
-
-    # Try to serve static file directly if it exists
-    file_path = f"/app/HypeTrade307/dist/{path}"
-    if os.path.exists(file_path) and not os.path.isdir(file_path):
-        return FileResponse(file_path)
-
-    # Fall back to index.html for all other routes (to be handled by React Router)
-    return FileResponse("/app/HypeTrade307/dist/index.html")
-# entry point
+# Entry point
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8080))  # cloud run requires PORT env var
+    import uvicorn
+    port = int(os.getenv("PORT", 8080))  # Cloud Run requires PORT env var
     uvicorn.run(app, host="0.0.0.0", port=port)
