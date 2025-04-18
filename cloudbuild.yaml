@@ -1,0 +1,20 @@
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/${PROJECT_ID}/hypetrade-repo/hypetrade-app:${SHORT_SHA}', '.']
+
+  # Push the container image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/${PROJECT_ID}/hypetrade-repo/hypetrade-app:${SHORT_SHA}']
+
+  # Deploy with inline environment variables
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'hypetrade'
+      - '--image=us-central1-docker.pkg.dev/${PROJECT_ID}/hypetrade-repo/hypetrade-app:${SHORT_SHA}'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars=DATABASE_URL=postgresql://user:pass@host/db,SECRET_KEY=your_secret,REDDIT_CLIENT_ID=your_id,REDDIT_CLIENT_SECRET=your_secret,REDDIT_USER_AGENT=your_agent'

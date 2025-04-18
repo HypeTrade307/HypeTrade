@@ -59,7 +59,7 @@ app.include_router(posts_router, prefix="/api")
 app.include_router(comment_router, prefix="/api")
 
 # Serve the frontend static files in production
-app.mount("/", StaticFiles(directory="/app/HypeTrade307/dist", html=True), name="frontend")
+# app.mount("/", StaticFiles(directory="/app/HypeTrade307/dist", html=True), name="frontend")
 
 # from fastapi import Request
 #
@@ -76,18 +76,25 @@ app.mount("/", StaticFiles(directory="/app/HypeTrade307/dist", html=True), name=
 
 from fastapi import Request, Response
 
+# Remove the earlier StaticFiles mount since we're handling all routes manually
+# app.mount("/", StaticFiles(directory="/app/HypeTrade307/dist", html=True), name="frontend")
+
+# Serve static assets (JS, CSS, images)
+app.mount("/assets", StaticFiles(directory="/app/HypeTrade307/dist/assets"), name="static")
+
 @app.get("/{full_path:path}")
-def serve_frontend(full_path: str, request: Request):
-    # ignore all API routes
-    if request.url.path.startswith("/api"):
+async def serve_frontend(full_path: str, request: Request):
+    # Handle API routes - let them go to the API handlers
+    if request.url.path.startswith("/api/"):
+        # This will just continue to the next route handler
         return Response(status_code=404)
 
-    # serve the file if it exists
+    # Look for specific files (like favicon, manifest, etc.)
     file_path = f"/app/HypeTrade307/dist/{full_path}"
-    if os.path.exists(file_path):
+    if os.path.exists(file_path) and not os.path.isdir(file_path):
         return FileResponse(file_path)
 
-    # for all other routes (like /profile), serve the frontend entry
+    # For all other routes, serve the index.html for client-side routing
     return FileResponse("/app/HypeTrade307/dist/index.html")
 
 @app.get("/api/health")
