@@ -38,6 +38,8 @@ steps:
 
 options:
   logging: CLOUD_LOGGING_ONLY
+  env:
+    - DOCKER_BUILDKIT=1
 
 # what
 

@@ -67,33 +67,51 @@ def health_check():
     return {"status": "ok"}
 
 # Mount static assets directory explicitly
-dist_path = "/app/HypeTrade307/dist"
-if os.path.exists(f"{dist_path}/assets"):
-    app.mount("/assets", StaticFiles(directory=f"{dist_path}/assets"), name="static")
+# IMPORTANT: Update the path to where your frontend files are actually located
+frontend_path = "/app/frontend"
+if os.path.exists(f"{frontend_path}/assets"):
+    app.mount("/assets", StaticFiles(directory=f"{frontend_path}/assets"), name="static")
 
 # Handle specific files at root level
 @app.get("/favicon.ico")
 async def favicon():
-    favicon_path = f"{dist_path}/favicon.ico"
+    favicon_path = f"{frontend_path}/favicon.ico"
     return FileResponse(favicon_path) if os.path.exists(favicon_path) else Response(status_code=404)
 
 # Catch-all route for SPA - MUST be last
 @app.get("/{full_path:path}")
 async def serve_spa(full_path: str, request: Request):
+    print(f"Handling request for: {full_path}")
+
     # Don't handle API routes here
     if full_path.startswith("api/"):
+        print("API route, not handling in SPA catch-all")
         return Response(status_code=404)
 
     # Try to serve the requested path directly if it exists
-    file_path = f"{dist_path}/{full_path}"
+    file_path = f"{frontend_path}/{full_path}"
+    print(f"Checking if file exists at: {file_path}")
     if os.path.exists(file_path) and not os.path.isdir(file_path):
+        print(f"File exists, serving directly: {file_path}")
         return FileResponse(file_path)
 
-    # Fall back to index.html for client-side routing
-    index_path = f"{dist_path}/index.html"
-    if os.path.exists(index_path):
-        return FileResponse(index_path)
+    # List what files are actually in the frontend directory
+    print(f"Contents of {frontend_path}:")
+    if os.path.exists(frontend_path):
+        print(os.listdir(frontend_path))
+    else:
+        print(f"Directory {frontend_path} does not exist!")
 
+    # Fall back to index.html for client-side routing
+    index_path = f"{frontend_path}/index.html"
+    print(f"Checking for index at: {index_path}")
+    if os.path.exists(index_path):
+        print(f"Serving index.html for route: {full_path}")
+        return FileResponse(index_path)
+    else:
+        print(f"Index file not found at {index_path}")
+
+    print(f"404 - Could not serve: {full_path}")
     return Response(status_code=404)
 
 # Entry point
