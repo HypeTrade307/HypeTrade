@@ -59,7 +59,7 @@ function Home(props: {disableCustomTheme?: boolean }) {
                         count is {count}
                     </button>
                     <p>
-                        Edit <code>src/App.tsx</code> and save to test HMR
+                        Edit <code>src/App.tsx</code> and save to test HMR. thhis sources from repo
                     </p>
                 </div>
                 <p className="read-the-docs">
