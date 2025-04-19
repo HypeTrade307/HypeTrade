@@ -9,7 +9,8 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
+        // Remove the rewrite - this is causing issues with your API paths
+        // rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
   },

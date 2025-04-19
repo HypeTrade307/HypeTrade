@@ -1,7 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import Response
+from fastapi.responses import FileResponse, Response
 import os
 import sys
 
@@ -66,61 +66,38 @@ app.include_router(comment_router, prefix="/api")
 def health_check():
     return {"status": "ok"}
 
-from fastapi.responses import FileResponse
-from fastapi.requests import Request
-
-import os
-from fastapi import FastAPI, Request
-from fastapi.responses import FileResponse, Response
-from fastapi.staticfiles import StaticFiles
-
-# Other imports and setup remain the same...
-
-# Set up API routes first (before any catch-all routes)
-app.include_router(users_router, prefix="/api")
-app.include_router(threads_router, prefix="/api")
-app.include_router(stocks_router, prefix="/api")
-app.include_router(portfolio_router, prefix="/api")
-app.include_router(forum_router, prefix="/api")
-app.include_router(auth_router, prefix="/api")
-app.include_router(notification_router, prefix="/api")
-app.include_router(sentiment_router, prefix="/api")
-app.include_router(posts_router, prefix="/api")
-app.include_router(comment_router, prefix="/api")
-
-# Health check endpoint
-@app.get("/api/health")
-def health_check():
-    return {"status": "ok"}
-
 # Mount static assets directory explicitly
-if os.path.exists("/app/HypeTrade307/dist/assets"):
-    app.mount("/assets", StaticFiles(directory="/app/HypeTrade307/dist/assets"), name="static")
+dist_path = "/app/HypeTrade307/dist"
+if os.path.exists(f"{dist_path}/assets"):
+    app.mount("/assets", StaticFiles(directory=f"{dist_path}/assets"), name="static")
 
-# Handle specific files at root level (like favicon.ico, robots.txt, etc.)
+# Handle specific files at root level
 @app.get("/favicon.ico")
 async def favicon():
-    return FileResponse("/app/HypeTrade307/dist/favicon.ico") if os.path.exists("/app/HypeTrade307/dist/favicon.ico") else Response(status_code=404)
+    favicon_path = f"{dist_path}/favicon.ico"
+    return FileResponse(favicon_path) if os.path.exists(favicon_path) else Response(status_code=404)
 
-# Any other specific static files should be added here...
-
-# Catch-all route handler must be at the end
-@app.get("/{path:path}")
-async def serve_spa(path: str, request: Request):
-    # Don't interfere with API routes
-    if path.startswith("api/"):
-        # This request will be handled by the API routers
+# Catch-all route for SPA - MUST be last
+@app.get("/{full_path:path}")
+async def serve_spa(full_path: str, request: Request):
+    # Don't handle API routes here
+    if full_path.startswith("api/"):
         return Response(status_code=404)
 
-    # Try to serve static file directly if it exists
-    file_path = f"/app/HypeTrade307/dist/{path}"
+    # Try to serve the requested path directly if it exists
+    file_path = f"{dist_path}/{full_path}"
     if os.path.exists(file_path) and not os.path.isdir(file_path):
         return FileResponse(file_path)
 
-    # Fall back to index.html for all other routes (to be handled by React Router)
-    return FileResponse("/app/HypeTrade307/dist/index.html")
+    # Fall back to index.html for client-side routing
+    index_path = f"{dist_path}/index.html"
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+
+    return Response(status_code=404)
+
 # Entry point
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv("PORT", 8080))  # Cloud Run requires PORT env var
+    port = int(os.getenv("PORT", 8080))
     uvicorn.run(app, host="0.0.0.0", port=port)
