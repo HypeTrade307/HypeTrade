@@ -18,7 +18,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src/ ./src/
 COPY alembic/ ./alembic/
 COPY alembic.ini ./
-COPY main.py ./  # Make sure to copy your main.py if it's in the root
+COPY main.py ./
+# Make sure to copy your main.py if it's in the root
 
 # Copy built frontend (from builder)
 COPY --from=frontend-builder /app/dist ./frontend
