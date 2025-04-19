@@ -5,3 +5,7 @@ src/db/database.py
 HypeTrade307/package-lock.json
 HypeTrade307/package.json
 .gitignore
+/venv/
+/.venv/
+
+node_modules

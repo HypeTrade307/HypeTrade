@@ -125,14 +125,17 @@ const Navbar = () => {
             window.location.href = `/forum`;
         } else if (pageName === "Chat") {
             window.location.href = `/chat`;
-        } else {
+        } else if (pageName === "Help") {
+            window.location.href = `/help`;
+        }
+        else {
             try {
                 // TODO: Update once we have login working with database
             } catch {
                 alert("Error!");
             }
         }
-    }
+    };
 
     return (
         <AppBar
@@ -154,7 +157,9 @@ const Navbar = () => {
                         <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                             {pages.map((page) => (
                                 <Button
-                                    variant="text" color="info" size="small"
+                                    variant="text"
+                                    color="info"
+                                    size="small"
                                     key={page}
                                     onClick={() => handleMenuClick(page)}
                                 >
@@ -215,12 +220,7 @@ const Navbar = () => {
                             }}
                         >
                             <Box sx={{ p: 2, backgroundColor: 'background.default' }}>
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        justifyContent: 'flex-end',
-                                    }}
-                                >
+                                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                                     <IconButton onClick={toggleDrawer(false)}>
                                         <CloseRoundedIcon />
                                     </IconButton>
@@ -280,6 +280,6 @@ const Navbar = () => {
             </Container>
         </AppBar>
     );
-}
+};
 
 export default Navbar;

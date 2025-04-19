@@ -4,6 +4,13 @@ import axios from "axios";
 import Navbar from "../components/NavbarSection/Navbar";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Button
+} from "@mui/material";
+import { Box, Paper } from "@mui/material";
 import "./Post.css";
 import { API_BASE_URL } from '../config';
 
@@ -54,18 +61,37 @@ function PostViewer() {
     const [showCommentForm, setShowCommentForm] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
-    // Fetch user ID from local storage on component mount
-    useEffect(() => {
-        const userData = localStorage.getItem("user");
-        if (userData) {
-            try {
-                const parsedUser = JSON.parse(userData);
-                setUserId(parsedUser.user_id);
-            } catch (err) {
-                console.error("Error parsing user data:", err);
-            }
-        }
-    }, []);
+  // Tutorial state
+  const [tutorialOpen, setTutorialOpen] = useState(false);
+  const [step, setStep] = useState(0);
+
+  const tutorialSteps = [
+    { title: "Welcome to the Post Page", description: "Here you can view a post and all its comments." },
+    { title: "Interacting", description: "You can like posts and comments, and add your own." },
+    { title: "Navigation", description: "Use the back button to return to the thread at any time." },
+    { title: "You're Ready!", description: "Start exploring and engaging in discussions." }
+  ];
+
+  const nextStep = () => {
+    if (step < tutorialSteps.length - 1) {
+      setStep(step + 1);
+    } else {
+      setTutorialOpen(false);
+    }
+  };
+
+  // Fetch user ID from local storage
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        setUserId(parsedUser.user_id);
+      } catch (err) {
+        console.error("Error parsing user data:", err);
+      }
+    }
+  }, []);
 
     // Fetch post details
     useEffect(() => {
@@ -112,10 +138,18 @@ function PostViewer() {
         fetchComments();
     }, [postId]);
 
-    // Handle comment creation
-    const handleCreateComment = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!commentContent.trim()) return;
+  // Tutorial trigger
+  useEffect(() => {
+    const tutorialMode = JSON.parse(localStorage.getItem("tutorialMode") || "false");
+    if (tutorialMode) {
+      setTutorialOpen(true);
+    }
+  }, []);
+
+  // Create comment
+  const handleCreateComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!commentContent.trim()) return;
 
         setSubmitting(true);
         try {
@@ -171,7 +205,7 @@ function PostViewer() {
             await axios.get(`${API_BASE_URL}/post/${postId}/comments`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-
+            navigate(`/thread/${threadId}`);
         } catch (err: any) {
             console.error("Error creating comment:", err);
             setError(err.response?.data?.detail || "Failed to delete post");
@@ -403,6 +437,31 @@ function PostViewer() {
                     <div className="not-found">Post not found</div>
                 )}
             </div>
+            {/* Tutorial Dialog */}
+                  {tutorialOpen && (
+              <Box
+                sx={{
+                  position: 'fixed',
+                  top: 100,
+                  left: 40,
+                  zIndex: 1301,
+                  pointerEvents: 'auto', // allow this box to be clickable
+                }}
+              >
+                <Paper elevation={3} sx={{ p: 2, width: 300 }}>
+                  <h2 style={{ margin: 0 }}>{tutorialSteps[step].title}</h2>
+                  <p>{tutorialSteps[step].description}</p>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    sx={{ mt: 2 }}
+                    onClick={nextStep}
+                  >
+                    {step < tutorialSteps.length - 1 ? "Next" : "Finish"}
+                  </Button>
+                </Paper>
+              </Box>
+            )}
         </AppTheme>
     );
 }
