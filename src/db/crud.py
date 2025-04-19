@@ -988,13 +988,18 @@ def send_friend_request(db: Session, sender_id: int, receiver_id: int) -> bool:
                 detail="User not found"
             )
             
-        # Check if request already exists
-        existing_request = db.query(models.user_friends).filter(
+        # Check if request already exists in either direction
+        existing_request1 = db.query(models.user_friends).filter(
             models.user_friends.c.user_id == sender_id,
             models.user_friends.c.friend_id == receiver_id
         ).first()
         
-        if existing_request:
+        existing_request2 = db.query(models.user_friends).filter(
+            models.user_friends.c.user_id == receiver_id,
+            models.user_friends.c.friend_id == sender_id
+        ).first()
+        
+        if existing_request1 or existing_request2:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Friend request already exists"
@@ -1178,17 +1183,29 @@ def get_friends(db: Session, user_id: int) -> list[models.User]:
                 detail="User not found"
             )
             
-        # Get all accepted friend relationships
+        # Get all accepted friend relationships in both directions
         friends = []
-        for friend in user.friends:
-            # Check if the friendship is accepted
-            friendship = db.query(models.user_friends).filter(
-                models.user_friends.c.user_id == user_id,
-                models.user_friends.c.friend_id == friend.user_id,
-                models.user_friends.c.status == "accepted"
-            ).first()
-            
-            if friendship:
+        
+        # First direction: user_id -> friend_id
+        friendships1 = db.query(models.user_friends).filter(
+            models.user_friends.c.user_id == user_id,
+            models.user_friends.c.status == "accepted"
+        ).all()
+        
+        for friendship in friendships1:
+            friend = db.query(models.User).filter(models.User.user_id == friendship.friend_id).first()
+            if friend:
+                friends.append(friend)
+        
+        # Second direction: friend_id -> user_id
+        friendships2 = db.query(models.user_friends).filter(
+            models.user_friends.c.friend_id == user_id,
+            models.user_friends.c.status == "accepted"
+        ).all()
+        
+        for friendship in friendships2:
+            friend = db.query(models.User).filter(models.User.user_id == friendship.user_id).first()
+            if friend and friend not in friends:  # Avoid duplicates
                 friends.append(friend)
                 
         return friends
@@ -1213,26 +1230,41 @@ def remove_friend(db: Session, user_id: int, friend_id: int) -> bool:
         True if the friend was removed successfully, False otherwise
     """
     try:
-        # Check if the friendship exists
-        friendship = db.query(models.user_friends).filter(
+        # Check if the friendship exists in either direction
+        friendship1 = db.query(models.user_friends).filter(
             models.user_friends.c.user_id == user_id,
             models.user_friends.c.friend_id == friend_id,
             models.user_friends.c.status == "accepted"
         ).first()
         
-        if not friendship:
+        friendship2 = db.query(models.user_friends).filter(
+            models.user_friends.c.user_id == friend_id,
+            models.user_friends.c.friend_id == user_id,
+            models.user_friends.c.status == "accepted"
+        ).first()
+        
+        if not friendship1 and not friendship2:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Friendship not found"
             )
             
-        # Delete the friendship
-        db.execute(
-            models.user_friends.delete().where(
-                models.user_friends.c.user_id == user_id,
-                models.user_friends.c.friend_id == friend_id
+        # Delete the friendship in both directions
+        if friendship1:
+            db.execute(
+                models.user_friends.delete().where(
+                    models.user_friends.c.user_id == user_id,
+                    models.user_friends.c.friend_id == friend_id
+                )
             )
-        )
+            
+        if friendship2:
+            db.execute(
+                models.user_friends.delete().where(
+                    models.user_friends.c.user_id == friend_id,
+                    models.user_friends.c.friend_id == user_id
+                )
+            )
         
         db.commit()
         return True
@@ -1258,34 +1290,38 @@ def check_friendship_status(db: Session, user_id: int, other_user_id: int) -> st
         The friendship status: "friends", "pending", or "none"
     """
     try:
-        # Check if they are friends
-        friendship = db.query(models.user_friends).filter(
+        # Check if they are friends in either direction
+        # First check: user_id -> other_user_id
+        friendship1 = db.query(models.user_friends).filter(
             models.user_friends.c.user_id == user_id,
             models.user_friends.c.friend_id == other_user_id,
             models.user_friends.c.status == "accepted"
         ).first()
         
-        if friendship:
+        # Second check: other_user_id -> user_id
+        friendship2 = db.query(models.user_friends).filter(
+            models.user_friends.c.user_id == other_user_id,
+            models.user_friends.c.friend_id == user_id,
+            models.user_friends.c.status == "accepted"
+        ).first()
+        
+        if friendship1 or friendship2:
             return "friends"
             
-        # Check if there's a pending request
-        request = db.query(models.user_friends).filter(
+        # Check if there's a pending request in either direction
+        request1 = db.query(models.user_friends).filter(
             models.user_friends.c.user_id == user_id,
             models.user_friends.c.friend_id == other_user_id,
             models.user_friends.c.status == "pending"
         ).first()
         
-        if request:
-            return "pending"
-            
-        # Check if the other user sent a request
-        other_request = db.query(models.user_friends).filter(
+        request2 = db.query(models.user_friends).filter(
             models.user_friends.c.user_id == other_user_id,
             models.user_friends.c.friend_id == user_id,
             models.user_friends.c.status == "pending"
         ).first()
         
-        if other_request:
+        if request1 or request2:
             return "pending"
             
         return "none"

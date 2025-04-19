@@ -14,8 +14,15 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ColorModeIconDropdown from '../shared-theme/ColorModeIconDropdown.tsx';
 import Sitemark from '../SitemarkIcon';
 import UserSearchBar from './UserSearchBar';
-import FriendRequestNotification from '../FriendRequestNotification';
 import type {} from '@mui/material/themeCssVarsAugmentation';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import Typography from '@mui/material/Typography';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // used for the generic user icon
+
+const API_BASE_URL = 'http://localhost:8080';
 
 const pages = ['Home', 'ViewStock', 'Portfolio', 'Profile', 'Search', 'Friends', 'Chat', 'Forum'];
 
@@ -27,9 +34,6 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
     borderRadius: `calc(${theme.shape.borderRadius}px + 8px)`,
     backdropFilter: 'blur(24px)',
     border: '1px solid',
-    // borderColor: theme.palette.divider,
-    // backgroundColor: alpha(theme.palette.background.default, 0.4),
-    // boxShadow: theme.shadows[1],
     borderColor: (theme.vars || theme).palette.divider,
     backgroundColor: theme.vars
         ? `rgba(${theme.vars.palette.background.defaultChannel} / 0.4)`
@@ -38,11 +42,67 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
     padding: '8px 12px',
 }));
 
+// Styled username display
+const UsernameDisplay = styled(Box)(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '4px 12px',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha(theme.palette.primary.main, 0.1),
+    border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+    color: theme.palette.primary.main,
+    fontWeight: 600,
+    fontSize: '0.9rem',
+    marginRight: '8px',
+}));
+
 const Navbar = () => {
     const [open, setOpen] = React.useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [username, setUsername] = useState('');
+    const navigate = useNavigate();
+
+    // Check authentication status on component mount
+    useEffect(() => {
+        const checkAuth = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setIsAuthenticated(false);
+                return;
+            }
+
+            try {
+                const response = await axios.get(`${API_BASE_URL}/users/me`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                
+                if (response.data) {
+                    setIsAuthenticated(true);
+                    setUsername(response.data.username);
+                } else {
+                    setIsAuthenticated(false);
+                }
+            } catch (error) {
+                console.error('Error checking authentication:', error);
+                setIsAuthenticated(false);
+                localStorage.removeItem('token');
+            }
+        };
+
+        checkAuth();
+    }, []);
 
     const toggleDrawer = (newOpen: boolean) => () => {
         setOpen(newOpen);
+    };
+
+    const handleSignOut = () => {
+        localStorage.removeItem('token');
+        setIsAuthenticated(false);
+        setUsername('');
+        toast.success('Signed out successfully');
+        navigate('/');
     };
 
     // Navigation for menu items
@@ -50,7 +110,7 @@ const Navbar = () => {
         if (pageName === "Home") {
             window.location.href = `/`;
         } else if (pageName === "Portfolio") {
-            // window.location.href = `/`;
+            window.location.href = `/portfolio`;
         } else if (pageName === "Profile") {
             window.location.href = `/profile`;
         } else if (pageName === "Login") {
@@ -61,8 +121,6 @@ const Navbar = () => {
             window.location.href = `/friends`;
         } else if (pageName === "ViewStock") {
             window.location.href = `/stock`;
-        } else if (pageName === "Portfolio") {
-            window.location.href = `/portfolio/:friendID`;
         } else if (pageName === "Forum") {
             window.location.href = `/forum`;
         } else if (pageName === "Chat") {
@@ -84,10 +142,11 @@ const Navbar = () => {
                 boxShadow: 0,
                 bgcolor: 'transparent',
                 backgroundImage: 'none',
-                mt: 'calc(var(--template-frame-height, 0px) + 28px)',
+                mt: 0,
+                width: '100%',
             }}
         >
-            <Container maxWidth="lg">
+            <Container maxWidth="xl">
                 <StyledToolbar variant="dense" disableGutters>
                     <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0 }}>
                         <Sitemark />
@@ -109,19 +168,35 @@ const Navbar = () => {
                             display: { xs: 'none', md: 'flex' },
                             gap: 1,
                             alignItems: 'center',
+                            ml: 'auto',
                         }}
                     >
-                        <FriendRequestNotification />
-                        <Button color="primary" variant="text" size="small"
-                                onClick={() => handleMenuClick("Login")}
-                        >
-                            Sign in
-                        </Button>
-                        <Button color="primary" variant="contained" size="small"
-                                onClick={() => handleMenuClick("Login")}
-                        >
-                            Sign up
-                        </Button>
+                        {isAuthenticated ? (
+                            <>
+                                <UsernameDisplay>
+                                    <AccountCircleIcon fontSize="small" />
+                                    <Typography variant="body2">{username}</Typography>
+                                </UsernameDisplay>
+                                <Button color="primary" variant="contained" size="small"
+                                        onClick={handleSignOut}
+                                >
+                                    Sign out
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <Button color="primary" variant="text" size="small"
+                                        onClick={() => handleMenuClick("Login")}
+                                >
+                                    Sign in
+                                </Button>
+                                <Button color="primary" variant="contained" size="small"
+                                        onClick={() => handleMenuClick("Login")}
+                                >
+                                    Sign up
+                                </Button>
+                            </>
+                        )}
                         <ColorModeIconDropdown />
                     </Box>
                     <Box sx={{ display: { xs: 'flex', md: 'none' }, gap: 1 }}>
@@ -135,7 +210,7 @@ const Navbar = () => {
                             onClose={toggleDrawer(false)}
                             PaperProps={{
                                 sx: {
-                                    top: 'var(--template-frame-height, 0px)',
+                                    top: 0,
                                 },
                             }}
                         >
@@ -161,22 +236,43 @@ const Navbar = () => {
                                 ))}
 
                                 <Divider sx={{ my: 3 }} />
-                                <MenuItem>
-                                    <Button
-                                        color="primary" variant="contained" fullWidth
-                                        onClick={() => handleMenuClick("Login")}
-                                    >
-                                        Sign up
-                                    </Button>
-                                </MenuItem>
-                                <MenuItem>
-                                    <Button
-                                        color="primary" variant="outlined" fullWidth
-                                        onClick={() => handleMenuClick("Login")}
-                                    >
-                                        Sign in
-                                    </Button>
-                                </MenuItem>
+                                {isAuthenticated ? (
+                                    <>
+                                        <Box sx={{ p: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                            <AccountCircleIcon color="primary" />
+                                            <Typography variant="body1" fontWeight="bold" color="primary">
+                                                {username}
+                                            </Typography>
+                                        </Box>
+                                        <MenuItem>
+                                            <Button
+                                                color="primary" variant="contained" fullWidth
+                                                onClick={handleSignOut}
+                                            >
+                                                Sign out
+                                            </Button>
+                                        </MenuItem>
+                                    </>
+                                ) : (
+                                    <>
+                                        <MenuItem>
+                                            <Button
+                                                color="primary" variant="contained" fullWidth
+                                                onClick={() => handleMenuClick("Login")}
+                                            >
+                                                Sign up
+                                            </Button>
+                                        </MenuItem>
+                                        <MenuItem>
+                                            <Button
+                                                color="primary" variant="outlined" fullWidth
+                                                onClick={() => handleMenuClick("Login")}
+                                            >
+                                                Sign in
+                                            </Button>
+                                        </MenuItem>
+                                    </>
+                                )}
                             </Box>
                         </Drawer>
                     </Box>

@@ -181,7 +181,7 @@
 .close-button {
   background: none;
   border: none;
-  color: var(--mui-palette-text-secondary);
+  color: red;
   font-size: 24px;
   cursor: pointer;
   padding: 0;

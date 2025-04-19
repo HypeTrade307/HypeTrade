@@ -146,15 +146,13 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
         // Check if users are friends - using the available endpoint
         if (isAuthenticated && currentUserId) {
           try {
-            const friendsResponse = await axios.post(
-              `${API_BASE_URL}/check_friends`,
-              { 
-                current_user: currentUserId.toString(), 
-                requested_user: userId 
-              },
+            const friendsResponse = await axios.get(
+              `${API_BASE_URL}/friendship_status/${userId}`,
               { headers }
             );
-            setIsFriend(friendsResponse.data.friends && friendsResponse.data.friends.length > 0);
+            console.log('Friendship status response:', friendsResponse.data);
+            setIsFriend(friendsResponse.data.status === "friends");
+            console.log('Setting isFriend to:', friendsResponse.data.status === "friends");
           } catch (friendsError: any) {
             console.error('Error checking friendship:', friendsError);
             // Don't set error here, just log it and continue
@@ -270,7 +268,7 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
       toast.success('Friend request sent successfully!');
       
       // Refresh the page to update the UI
-      window.location.reload();
+      // window.location.reload();
     } catch (error: any) {
       console.error('Error sending friend request:', error);
       console.error('Error response:', error.response?.data);
@@ -306,13 +304,9 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
         remove_user: userId
       });
 
-      // Use the available endpoint for removing friends
-      await axios.post(
-        `${API_BASE_URL}/remove_friend`,
-        { 
-          current_user: currentUserId?.toString(), 
-          remove_user: userId 
-        },
+      // Use the correct endpoint for removing friends
+      await axios.delete(
+        `${API_BASE_URL}/remove_friend/${userId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

@@ -17,17 +17,17 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    /*min-height: 100vh;
+    min-height: 100vh;
     overflow-y: auto;
     position: relative;
     box-sizing: border-box;
-    margin-top: 64px; /* Height of the navbar */
+    margin-top: 100px; /* Height of the navbar + extra spacing */
   }
   
   /* Page title */
   .title {
     text-align: center;
-    color: #333;
+    color: #4CAF50;
     margin: 20px 0 40px;
     font-size: 28px;
     font-weight: 600;
@@ -40,7 +40,7 @@
     position: absolute;
     width: 100px;
     height: 3px;
-    background-color: #2196F3;
+    background-color: darkgreen;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
@@ -306,7 +306,7 @@
 
 .notification-container { 
     right: 20px; 
-    top: 100px; 
+    top: 100px;
     position: fixed;
     background-color: black; 
     z-index: 1000;
@@ -361,3 +361,161 @@
 .notification-time { color: white; font-size: 12px; }
 
 .no-notifications { padding: 20px; text-align: center; color: lightslategrey; }
+
+/* 100% height for layout parents */
+html, body, #root {
+  height: 100%;
+  min-height: 100%;
+  overflow-y: auto;
+}*/
+
+/* Fix stock grid container overflow */
+.stocks-grid {
+  flex-grow: 1;
+  align-items: stretch;
+}
+
+/* Prevent parent constraints */
+.stock-page-container {
+  min-height: 100vh;
+  height: auto;
+  overflow: visible !important;
+}
+
+/* Search results styles */
+.search-results {
+  background-color: black;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.search-result-item {
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #333;
+}
+
+.search-result-item:hover {
+  background-color: #444444; /* Medium gray instead of white */
+}
+
+.search-ticker {
+  font-weight: bold;
+  color: white;
+}
+
+.search-name {
+  color: #cccccc;
+}
+
+.break {
+  color: #666666;
+  margin: 0 5px;
+}
+
+.add-to-portfolio-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.add-to-portfolio-btn:hover {
+  background-color: #45a049;
+}
+
+.no-search-results {
+  padding: 15px;
+  text-align: center;
+  color: #cccccc;
+  background-color: black;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+/* Friend request actions in notifications */
+.notification-content {
+    flex: 1;
+    cursor: pointer;
+}
+
+.friend-request-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.friend-request-actions button {
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.friend-request-actions .accept-button {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.friend-request-actions .accept-button:hover {
+    background-color: #45a049;
+}
+
+.friend-request-actions .decline-button {
+    background-color: #f44336;
+    color: white;
+}
+
+.friend-request-actions .decline-button:hover {
+    background-color: #d32f2f;
+}
+
+/* Friend request status indicators */
+.friend-request-status {
+    margin-top: 8px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.friend-request-status.accepted {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+}
+
+.friend-request-status.declined {
+    background-color: rgba(244, 67, 54, 0.2);
+    color: #f44336;
+}
+
+/* Update notification item to accommodate friend request actions */
+.notification-item {
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    border-bottom: 1px solid #333;
+    transition: background-color 0.2s;
+}
+
+.notification-item:hover {
+    background-color: #222;
+}
+
+.notification-item.unread {
+    background-color: #1a1a1a;
+}

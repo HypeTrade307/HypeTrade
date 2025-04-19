@@ -8,6 +8,7 @@ import axios from "axios";
 import MarketValue from "../assets/basic_Graph.tsx";
 import AreaGraph from "@/assets/area_Graph.tsx";
 import { API_BASE_URL } from "../config";
+import { toast } from "react-toastify";
 
 interface Stock {
     stock_id: number;
@@ -26,6 +27,7 @@ interface Notification {
     created_at: string;
     sender_id: number;
     receiver_id: number;
+    type?: string; // Add type field to identify friend request notifications
 }
 
 interface Portfolio {
@@ -219,6 +221,146 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
         }
     };
     
+    // Handle accepting a friend request
+    const handleAcceptFriendRequest = async (senderId: number, notificationId: number) => {
+        if (!isAuthenticated) return;
+        
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.error("No authentication token found");
+                return;
+            }
+            
+            // Find the notification to check if it's a pending friend request
+            const notification = notifications.find(n => n.notification_id === notificationId);
+            if (!notification || notification.type !== 'friend_request') {
+                console.error("Not a pending friend request");
+                return;
+            }
+            
+            // Optimistically update UI first
+            setNotifications(notifications.map(notification => 
+                notification.notification_id === notificationId 
+                    ? {...notification, type: 'accepted_friend_request'} 
+                    : notification
+            ));
+            
+            const response = await axios.post(
+                `${API_BASE_URL}/accept_friend_request/${senderId}`,
+                {},
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+            
+            if (response.status === 200) {
+                // Mark notification as read
+                markAsRead(notificationId);
+                
+                // Remove the notification from the list after a short delay
+                setTimeout(() => {
+                    setNotifications(notifications.filter(notification => 
+                        notification.notification_id !== notificationId
+                    ));
+                }, 1000);
+                
+                toast.success('Friend request accepted');
+            }
+        } catch (err: any) {
+            // Revert the optimistic update if the request failed
+            setNotifications(notifications.map(notification => 
+                notification.notification_id === notificationId 
+                    ? {...notification, type: 'friend_request'} 
+                    : notification
+            ));
+            
+            console.error("Failed to accept friend request:", err);
+            toast.error(err.response?.data?.detail || 'Failed to accept friend request');
+        }
+    };
+    
+    // Handle declining a friend request
+    const handleDeclineFriendRequest = async (senderId: number, notificationId: number) => {
+        if (!isAuthenticated) return;
+        
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.error("No authentication token found");
+                return;
+            }
+            
+            // Find the notification to check if it's a pending friend request
+            const notification = notifications.find(n => n.notification_id === notificationId);
+            if (!notification || notification.type !== 'friend_request') {
+                console.error("Not a pending friend request");
+                return;
+            }
+            
+            // Optimistically update UI first
+            setNotifications(notifications.map(notification => 
+                notification.notification_id === notificationId 
+                    ? {...notification, type: 'declined_friend_request'} 
+                    : notification
+            ));
+            
+            const response = await axios.post(
+                `${API_BASE_URL}/decline_friend_request/${senderId}`,
+                {},
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+            
+            if (response.status === 200) {
+                // Mark notification as read
+                markAsRead(notificationId);
+                
+                // Remove the notification from the list after a short delay
+                setTimeout(() => {
+                    setNotifications(notifications.filter(notification => 
+                        notification.notification_id !== notificationId
+                    ));
+                }, 1000);
+                
+                toast.success('Friend request declined');
+            }
+        } catch (err: any) {
+            // Revert the optimistic update if the request failed
+            setNotifications(notifications.map(notification => 
+                notification.notification_id === notificationId 
+                    ? {...notification, type: 'friend_request'} 
+                    : notification
+            ));
+            
+            console.error("Failed to decline friend request:", err);
+            toast.error(err.response?.data?.detail || 'Failed to decline friend request');
+        }
+    };
+    
+    // Check if a notification is a friend request
+    const isFriendRequest = (message: string): boolean => {
+        // Only return true for pending friend requests, not for accepted/declined notifications
+        return message.toLowerCase().includes('sent you a friend request');
+    };
+
+    // Check if a notification is about an accepted friend request
+    const isAcceptedFriendRequest = (message: string): boolean => {
+        return message.toLowerCase().includes('accepted your friend request');
+    };
+
+    // Check if a notification is about a declined friend request
+    const isDeclinedFriendRequest = (message: string): boolean => {
+        return message.toLowerCase().includes('declined your friend request');
+    };
+
     // Fetch notifications from backend
     const fetchNotifications = useCallback(async () => {
         if (!isAuthenticated) return;
@@ -243,7 +385,19 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
             );
             
             if (response.status === 200) {
-                setNotifications(response.data);
+                // Add type field to identify different types of friend request notifications
+                const notificationsWithType = response.data.map((notification: Notification) => {
+                    if (isFriendRequest(notification.message)) {
+                        return { ...notification, type: 'friend_request' };
+                    } else if (isAcceptedFriendRequest(notification.message)) {
+                        return { ...notification, type: 'accepted_friend_request' };
+                    } else if (isDeclinedFriendRequest(notification.message)) {
+                        return { ...notification, type: 'declined_friend_request' };
+                    } else {
+                        return { ...notification, type: 'general' };
+                    }
+                });
+                setNotifications(notificationsWithType);
             }
         } catch (err) {
             console.error("Failed to fetch notifications:", err);
@@ -649,6 +803,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
             <AppTheme {...props}>
                 <CssBaseline enableColorScheme />
                 <Navbar />
+                
 
                 <div className="stock-page-container">
                     {/* Notification Button */}
@@ -682,10 +837,43 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                                             <div 
                                                 key={notification.notification_id} 
                                                 className={`notification-item ${!notification.is_read ? 'unread' : ''}`}
-                                                onClick={() => markAsRead(notification.notification_id)}
                                             >
-                                                <p className="notification-message">{notification.message}</p>
-                                                <span className="notification-time">{formatNotificationTime(notification.created_at)}</span>
+                                                <div className="notification-content" onClick={() => markAsRead(notification.notification_id)}>
+                                                    <p className="notification-message">{notification.message}</p>
+                                                    <span className="notification-time">{formatNotificationTime(notification.created_at)}</span>
+                                                </div>
+                                                
+                                                {/* Only show action buttons for pending friend requests */}
+                                                {notification.type === 'friend_request' && (
+                                                    <div className="friend-request-actions">
+                                                        <button
+                                                            className="accept-button"
+                                                            onClick={() => handleAcceptFriendRequest(notification.sender_id, notification.notification_id)}
+                                                        >
+                                                            Accept
+                                                        </button>
+                                                        <button
+                                                            className="decline-button"
+                                                            onClick={() => handleDeclineFriendRequest(notification.sender_id, notification.notification_id)}
+                                                        >
+                                                            Decline
+                                                        </button>
+                                                    </div>
+                                                )}
+                                                
+                                                {/* Show status for accepted friend requests */}
+                                                {notification.type === 'accepted_friend_request' && (
+                                                    <div className="friend-request-status accepted">
+                                                        Friend request accepted
+                                                    </div>
+                                                )}
+                                                
+                                                {/* Show status for declined friend requests */}
+                                                {notification.type === 'declined_friend_request' && (
+                                                    <div className="friend-request-status declined">
+                                                        Friend request declined
+                                                    </div>
+                                                )}
                                             </div>
                                         ))
                                     ) : (
@@ -925,22 +1113,8 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
 
                                 <div className="chart-container">
                                     <h3 className="chart-title">{getGraph()}</h3>
-                                    {loadingSentiment ? (
-                                        <div className="chart-loading">
-                                            Loading sentiment data...
-                                        </div>
-                                    ) : sentimentData.length > 0 ? (
-                                        <div className="chart-placeholder">
-                                            Sentiment data: {sentimentData.join(', ')}
-                                            {/* You could add a real chart library here like Recharts */}
-                                        </div>
-                                    ) : (
-                                        <div className="chart-placeholder">
-                                            No sentiment data available
-                                        </div>
-                                    )}
-                                    <MarketValue file={pickStock.ticker} />
-                                    <AreaGraph file={pickStock.ticker}/>
+                                        <MarketValue file={pickStock.ticker} />
+                                        <AreaGraph file={pickStock.ticker}/>
                                 </div>
                             </div>
                         </div>
