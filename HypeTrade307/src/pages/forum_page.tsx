@@ -70,7 +70,7 @@ function Forum() {
                 //     return;
                 // }
 
-                const response = await axios.get("http://127.0.0.1:8000/threads", {
+                const response = await axios.get(`${API_BASE_URL}/threads`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
