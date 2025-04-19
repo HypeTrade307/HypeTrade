@@ -1,13 +1,8 @@
 #!/bin/bash
 
-# Start frontend in background
-cd /app/HypeTrade307
-npm run build  # Build the frontend for production
+# Run database migrations if needed
+alembic upgrade head
 
-# For production, we'll serve the built files using a simple server
-npm install -g serve
-serve -s dist -l 5173 &
-
-# Go back to main directory and start the backend
-cd /app
+# Start the FastAPI application
+# This will serve both the API and the static frontend files
 python -m src.main

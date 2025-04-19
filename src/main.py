@@ -23,6 +23,8 @@ from src.processing.stock_processing import seed_stocks
 from src.processing import scraping as sc
 
 app = FastAPI()
+# The path should match where the Dockerfile is copying the frontend files
+frontend_path = "/app/frontend"
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
