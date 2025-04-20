@@ -16,7 +16,7 @@ export default function BasicPage(props: {disableCustomTheme?: boolean }) {
         setResponseData(null);
 
         try {
-            const response = await fetch("http://localhost:8080/api/process", {
+            const response = await fetch("https://hypet-145797464141.us-central1.run.app/api/api/process", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ text: inputText }),

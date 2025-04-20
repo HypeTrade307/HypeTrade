@@ -43,7 +43,7 @@ export default function PortfolioPage() {
           setLoading(false);
           return;
         }
-        const response = await axios.get(`http://localhost:8080/api/portfolios/${id}`, {
+        const response = await axios.get(`https://hypet-145797464141.us-central1.run.app/api/api/portfolios/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setPortfolio(response.data);
@@ -64,7 +64,7 @@ export default function PortfolioPage() {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        const response = await axios.get("http://localhost:8080/api/stocks", {
+        const response = await axios.get("https://hypet-145797464141.us-central1.run.app/api/api/stocks", {
           headers: { Authorization: `Bearer ${token}` }
         });
         setAvailableStocks(response.data);
@@ -96,7 +96,7 @@ export default function PortfolioPage() {
       if (!token || !portfolio) return;
 
       const response = await axios.post(
-        `http://localhost:8080/api/portfolios/${portfolio.portfolio_id}/stocks/${stock_id}`,
+        `https://hypet-145797464141.us-central1.run.app/api/api/portfolios/${portfolio.portfolio_id}/stocks/${stock_id}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -117,7 +117,7 @@ export default function PortfolioPage() {
       if (!token || !portfolio) return;
 
       const response = await axios.delete(
-        `http://localhost:8080/api/portfolios/${portfolio.portfolio_id}/stocks/${stock_id}`,
+        `https://hypet-145797464141.us-central1.run.app/api/api/portfolios/${portfolio.portfolio_id}/stocks/${stock_id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setPortfolio(response.data);
@@ -141,7 +141,7 @@ export default function PortfolioPage() {
         if (!token || !portfolio) return;
 
         const response = await axios.post(
-            `http://localhost:8080/api/portfolios/${portfolio.portfolio_id}/upload`, formData,
+            `https://hypet-145797464141.us-central1.run.app/api/api/portfolios/${portfolio.portfolio_id}/upload`, formData,
             {
               headers: {
                 "Content-Type": "multipart/form-data",

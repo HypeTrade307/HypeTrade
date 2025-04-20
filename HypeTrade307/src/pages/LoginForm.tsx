@@ -62,7 +62,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
 
         try {
             const response = await axios.post(
-                "http://localhost:8080/api/auth/send_confirmation_code",
+                "https://hypet-145797464141.us-central1.run.app/api/api/auth/send_confirmation_code",
                 { email: newUser.email },
                 { headers: { "Content-Type": "application/json" } }
             );
@@ -95,7 +95,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
 
         try {
             const response = await axios.post(
-                "http://localhost:8080/api/auth/signup",
+                "https://hypet-145797464141.us-central1.run.app/api/api/auth/signup",
                 {
                     email: newUser.email,
                     username: newUser.username,
@@ -122,7 +122,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
         e.preventDefault();
         try {
             const response = await axios.post(
-                "http://localhost:8080/api/auth/login",
+                "https://hypet-145797464141.us-central1.run.app/api/api/auth/login",
                 loginUser
             );
             localStorage.setItem("token", response.data.access_token);

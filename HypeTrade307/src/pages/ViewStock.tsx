@@ -10,7 +10,7 @@ import axios from "axios";
 import MarketValue from "../assets/basic_Graph.tsx";
 import AreaGraph from "../assets/area_Graph.tsx";
 // Define API base URL to fetch data in mySQL 
-const API_BASE_URL = "http://localhost:8080/api";
+const API_BASE_URL = "https://hypet-145797464141.us-central1.run.app/api/api";
 
 interface Stock {
     stock_id: number;
@@ -77,7 +77,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                 }
 
                 // below basically checks if there is a current user, if not, notis and portfolios are not
-                const response = await axios.get("http://localhost:8080/api/notifications/user/", {
+                const response = await axios.get("https://hypet-145797464141.us-central1.run.app/api/api/notifications/user/", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
