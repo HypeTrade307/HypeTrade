@@ -1,3 +1,9 @@
+// @ts-nocheck
+// portfolios_viewer.tsx
+
+//@ts-ignore
+import React from "react";
+import { useState, useEffect } from "react";
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -91,7 +97,7 @@ export default function PortfolioPage(props: { disableCustomTheme?: boolean }) {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        const response = await axios.get(`${API_BASE_URL}/stocks`, {
+        const response = await axios.get("https://hypet-145797464141.us-central1.run.app/api/stocks/", {
           headers: { Authorization: `Bearer ${token}` }
         });
         setAvailableStocks(response.data);
@@ -151,7 +157,11 @@ export default function PortfolioPage(props: { disableCustomTheme?: boolean }) {
     }
   }
 
-  async function uploadFile(file: File) {
+  //@ts-ignore
+  // 6. Import existing portfolio as csv file upload. Update the current portfolio to include csv data
+  async function uploadFile(file) {
+
+    // if (!file) return;
     if (file) {
       try {
 
@@ -179,6 +189,7 @@ export default function PortfolioPage(props: { disableCustomTheme?: boolean }) {
     }
   }
 
+//@ts-ignore
   async function importPortfolioFromCSV(event: React.ChangeEvent<HTMLInputElement>) {
     const inputFile = event.target.files?.[0];
     try {

@@ -60,3 +60,19 @@ Step 9: run "alembic upgrade head"
 
 Step 10: Everything should hopefully be okay now, run "uvicorn src.main:app --reload" from the directory that contains HypeTrade307 and src. 
 
+deploy:
+docker buildx build \
+--platform=linux/amd64 \
+--cache-from=type=local,src=.build-cache \
+--cache-to=type=local,dest=.build-cache \
+-t us-central1-docker.pkg.dev/basic-formula-451520-c0/hypetrade-repo/hypetrade-app:ADD v<x> \
+--push .
+
+gcloud:
+gcloud run deploy hypetrade \
+--image=us-central1-docker.pkg.dev/basic-formula-451520-c0/hypetrade-repo/hypetrade-app:v6 \
+--platform=managed \
+--region=us-central1 \
+--allow-unauthenticated \
+--env-vars-file .env.yaml \
+--add-cloudsql-instances=basic-formula-451520-c0:us-central1:hypetrade-db

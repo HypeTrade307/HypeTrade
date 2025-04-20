@@ -70,7 +70,7 @@ function Forum() {
                 //     return;
                 // }
 
-                const response = await axios.get(`${API_BASE_URL}/threads`, {
+                const response = await axios.get("https://hypet-145797464141.us-central1.run.app/api/threads/", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 

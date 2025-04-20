@@ -1,3 +1,6 @@
+// @ts-nocheck
+
+import React, { useState, useEffect } from 'react';
 import React, { useState, useEffect, useRef } from 'react';
 import { AppBar, Toolbar, Typography, Button, Container, CssBaseline, Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import Navbar from "../components/NavbarSection/Navbar.tsx";

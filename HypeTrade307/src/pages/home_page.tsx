@@ -60,7 +60,7 @@ function Home(props: {disableCustomTheme?: boolean }) {
                         count is {count}
                     </button>
                     <p>
-                        Edit <code>src/App.tsx</code> and save to test HMR
+                        Edit <code>src/App.tsx</code> and save to test HMR. this sources from repo
                     </p>
                     <ThemeToggle/>
                 </div>
