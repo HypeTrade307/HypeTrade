@@ -18,8 +18,8 @@ import Thread_page from "./pages/thread_viewer.tsx";
 import Post_page from "./pages/post_viewer.tsx";
 import PortfolioPage from './pages/Portfoilos_viewer.tsx';
 import Specific_Stock from './pages/specific_stock_request.tsx'
-import ViewStockPage from "@/pages/ViewStockPage.tsx";
-import HelpPage from "@/pages/HelpPage.tsx";
+import ViewStockPage from "./pages/ViewStockPage.tsx";
+import HelpPage from "./pages/HelpPage.tsx";
 
 function App() {
     return (
