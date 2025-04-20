@@ -57,6 +57,7 @@
                             {/* Main Content - Portfolios */}
                             <div className="main-content">
                                 {showPortfolioViewer ? (
+                                    //@ts-ignore
                                     <PortfolioViewer />
                                 ) : (
                                     <>
