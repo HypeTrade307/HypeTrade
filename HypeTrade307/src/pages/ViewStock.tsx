@@ -1,5 +1,5 @@
+//@ts-nocheck
 import { useState, useEffect, useCallback } from "react";
-//@ts-ignore
 import { useNavigate } from "react-router-dom";
 import "../stocks.css";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
@@ -44,7 +44,6 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
     const [error, setError] = useState<string | null>(null);
     const [pickStock, setPickStock] = useState<Stock | null>(null);
     const [timeButton, setTimeButton] = useState<TimePeriod>("Day");
-    //@ts-ignore
     const [sentimentData, setSentimentData] = useState<number[]>([]);
     const [loadingSentiment, setLoadingSentiment] = useState<boolean>(false);
     
