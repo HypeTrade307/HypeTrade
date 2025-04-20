@@ -22,7 +22,7 @@ import { toast } from 'react-toastify';
 import Typography from '@mui/material/Typography';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // used for the generic user icon
 
-const API_BASE_URL = 'http://localhost:8080';
+import { API_BASE_URL } from "../../config";
 
 const pages = ['Home', 'ViewStock', 'Portfolio', 'Profile', 'Search', 'Friends', 'Chat', 'Forum'];
 

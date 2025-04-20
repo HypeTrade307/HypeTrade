@@ -69,8 +69,28 @@ docker buildx build \
 --push .
 
 gcloud:
-gcloud run deploy hypetrade \
---image=us-central1-docker.pkg.dev/basic-formula-451520-c0/hypetrade-repo/hypetrade-app:v6 \
+gcloud run deploy hypet \
+--image=us-central1-docker.pkg.dev/basic-formula-451520-c0/hypetrade-repo/hypetrade-app:latest \
+--platform=managed \
+--region=us-central1 \
+--allow-unauthenticated \
+--env-vars-file .env.yaml \
+--add-cloudsql-instances=basic-formula-451520-c0:us-central1:hypetrade-db
+
+
+updated:
+DOCKER_BUILDKIT=1 docker build \
+--cache-from=type=registry,ref=$IMAGE_NAME:latest \
+--cache-to=type=inline \
+-t $IMAGE_NAME:$SHORT_SHA \
+-t $IMAGE_NAME:latest \
+. \
+&& \
+docker push $IMAGE_NAME:$SHORT_SHA && \
+docker push $IMAGE_NAME:latest \
+&& \
+gcloud run deploy hypet \
+--image=us-central1-docker.pkg.dev/basic-formula-451520-c0/hypetrade-repo/hypetrade-app:latest \
 --platform=managed \
 --region=us-central1 \
 --allow-unauthenticated \

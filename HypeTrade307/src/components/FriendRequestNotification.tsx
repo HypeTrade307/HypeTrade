@@ -39,7 +39,7 @@ const FriendRequestNotification: React.FC = () => {
     if (!isAuthenticated) return;
 
     try {
-      const response = await axios.get('/api/users/friend_requests', {
+      const response = await axios.get(`${API_BASE_URL}/users/friend_requests`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }

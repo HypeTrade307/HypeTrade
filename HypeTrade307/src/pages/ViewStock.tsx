@@ -7,7 +7,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme.tsx";
 import axios from "axios";
 import MarketValue from "../assets/basic_Graph.tsx";
-import AreaGraph from "@/assets/area_Graph.tsx";
+import AreaGraph from "../assets/area_Graph.tsx";
 import { API_BASE_URL } from "../config";
 import { toast } from "react-toastify";
 
@@ -449,7 +449,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
             setLoading(true);
             const token = localStorage.getItem("token");
             const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-            
+            console.log(`${API_BASE_URL}`)
             const response = await axios.get(`${API_BASE_URL}/stocks/top/?limit=20`, { headers });
             
             if (response.status === 200) {
