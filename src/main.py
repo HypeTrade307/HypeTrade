@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, Response
 import os
 import sys
-
+print("frontend folder contents:", os.listdir("/app/frontend"))
 # Add current directory to sys path
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
@@ -38,8 +38,8 @@ seed_stocks(db=SessionLocal())
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://*.run.app",  # Cloud Run wildcard
-    # Add any other deployed frontend origins here
+    "https://hypet-145797464141.us-central1.run.app/",  # Cloud Run wildcard
+    "https://hypet-145797464141.us-central1.run.app",  # Cloud Run wildcard
 ]
 
 app.add_middleware(
