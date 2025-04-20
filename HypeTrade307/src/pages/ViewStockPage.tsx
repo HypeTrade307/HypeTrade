@@ -4,7 +4,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../stocks.css";
 
-import { API_BASE_URL } from "../config";
 
 export default function ViewStockPopupPage() {
   const { tkr } = useParams();
