@@ -52,7 +52,7 @@ function Forum() {
                 //     return;
                 // }
 
-                const response = await axios.get("https://hypet-145797464141.us-central1.run.app/api/api/threads/", {
+                const response = await axios.get("https://hypet-145797464141.us-central1.run.app/api/threads/", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -78,7 +78,7 @@ function Forum() {
                 //     return;
                 // }
 
-                const response = await axios.get("https://hypet-145797464141.us-central1.run.app/api/api/stocks", {
+                const response = await axios.get("https://hypet-145797464141.us-central1.run.app/api/stocks", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -122,7 +122,7 @@ function Forum() {
             // }
 
             const response = await axios.post(
-                "https://hypet-145797464141.us-central1.run.app/api/api/threads/",
+                "https://hypet-145797464141.us-central1.run.app/api/threads/",
                 {
                     title: title,
                     stock_id: selectedStock.stock_id,

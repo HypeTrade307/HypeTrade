@@ -77,7 +77,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                 }
 
                 // below basically checks if there is a current user, if not, notis and portfolios are not
-                const response = await axios.get("https://hypet-145797464141.us-central1.run.app/api/api/notifications/user/", {
+                const response = await axios.get("https://hypet-145797464141.us-central1.run.app/api/notifications/user/", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
