@@ -44,7 +44,7 @@ function SpecificStockRequest() {
                 setLoading(true);
                 const token = localStorage.getItem("token");
 
-                const response = await axios.get("https://hypet-145797464141.us-central1.run.app/api/stocks", {
+                const response = await axios.get("https://hypet-145797464141.us-central1.run.app/api/stocks/", {
                     headers: token ? { Authorization: `Bearer ${token}` } : {}
                 });
 

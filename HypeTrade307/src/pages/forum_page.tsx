@@ -78,7 +78,7 @@ function Forum() {
                 //     return;
                 // }
 
-                const response = await axios.get("https://hypet-145797464141.us-central1.run.app/api/stocks", {
+                const response = await axios.get("https://hypet-145797464141.us-central1.run.app/api/stocks/", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
