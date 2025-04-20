@@ -4,6 +4,7 @@ import Navbar from "../components/NavbarSection/Navbar";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme";
 import "./specific_stock.css";
+//@ts-ignore
 import { API_BASE_URL } from '../config';
 
 // Define interfaces
