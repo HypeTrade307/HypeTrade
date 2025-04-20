@@ -30,7 +30,7 @@ steps:
       - 'gcloud'
       - 'run'
       - 'deploy'
-      - 'hypetrade'
+      - 'hypet'
       - '--image=us-central1-docker.pkg.dev/${PROJECT_ID}/hypetrade-repo/hypetrade-app:${SHORT_SHA}'
       - '--region=us-central1'
       - '--platform=managed'
