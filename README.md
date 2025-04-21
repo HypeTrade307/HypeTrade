@@ -113,15 +113,11 @@ the website w your changes (automatically = ~20 mins). In 99% of cases, if the f
 the GCR build will be successful. In case you want to track progress, the following url contains build history:
 https://console.cloud.google.com/cloud-build/builds?project=basic-formula-451520-c0
 You can open the latest, see if it matches your latest commit id, and check if there were any errors.
-Further, the website logs are here:
-https://console.cloud.google.com/logs/query;query=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22hypet%22%0Aseverity%3E%3DDEFAULT;storageScope=project;cursorTimestamp=2025-04-20T04:39:40.025482Z;duration=P1D?project=basic-formula-451520-c0
-And finally, the actual url (for now) is:
-https://hypet-145797464141.us-central1.run.app
 your isolated url should be diff and at the bottom of the output for aforementioned command
 lmk if anything else
-[Important: need to have docker set up]
+[need to have docker set up]
 
-[Important: add your name in line 139 in place of mine. itll set up a service isolated to you, and you can test, debug and deploy on your own]
+**_[IMPORTANT: add your name in line 139 in place of mine. it'll set up a service isolated to you, and you can test, debug and deploy on your own]_**
 this is your command:
 export IMAGE_NAME=us-central1-docker.pkg.dev/basic-formula-451520-c0/hypetrade-repo/hypetrade-app && \
 export SHORT_SHA=$(git rev-parse --short HEAD) && \
@@ -146,6 +142,15 @@ gcloud run deploy hypet-aditya \
 
 (exports latest commit id as an env var, creates a docker build for it, pushes it to a docker repo 
 (95% sure this is automatically set up), and then deploys it to a url that will be at the bottom of the output)
+
+Notes:
+Further, the website logs are here:
+https://console.cloud.google.com/logs/query;query=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22hypet%22%0Aseverity%3E%3DDEFAULT;storageScope=project;cursorTimestamp=2025-04-20T04:39:40.025482Z;duration=P1D?project=basic-formula-451520-c0
+And finally, the actual url (for now) is:
+https://hypet-145797464141.us-central1.run.app
+Cloud SQL, you can view, edit and run commands for the db here:
+https://console.cloud.google.com/sql/instances/hypetrade-db/studio?project=basic-formula-451520-c0
+db is hypetrade-db, user should be the first one (hypetrade-user), pw is my_db_pw
 --------------------------------------------------------------------------------------------
 docker faq courtesy of chad
 -----------------------------
@@ -159,7 +164,7 @@ Common Issues
   → Make sure you've run `gcloud auth configure-docker` and have permission on the GCP project.
 
 - Docker build is very slow:
-  → Consider using build cache, multi-stage builds, and pruning unused layers.
+  → Consider using build cache, multi-stage builds, and pruning unused layers. --> WE DO THIS LOCALLY
 
 -----------------------------
 Docker Commands Cheat Sheet
