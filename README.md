@@ -78,10 +78,11 @@ gcloud run deploy hypet \
 --add-cloudsql-instances=basic-formula-451520-c0:us-central1:hypetrade-db
 
 RUN BEFORE (every time you use in a new terminal):
-export IMAGE_NAME=us-central1-docker.pkg.dev/basic-formula-451520-c0/hypetrade-repo/hypetrade-app
-export SHORT_SHA=$(git rev-parse --short HEAD)
+
 
 updated:
+export IMAGE_NAME=us-central1-docker.pkg.dev/basic-formula-451520-c0/hypetrade-repo/hypetrade-app && \
+export SHORT_SHA=$(git rev-parse --short HEAD) && \
 DOCKER_BUILDKIT=1 docker build \
 --platform=linux/amd64 \
 --cache-from=type=local,src=.build-cache \
