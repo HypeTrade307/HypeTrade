@@ -98,7 +98,7 @@ To verify creds:
 gcloud auth configure-docker us-central1-docker.pkg.dev
 
 For testing your code:
-Commit changes, then run the following unified command.
+Commit changes, then run the following unified command. I recommend waiting till the end of your session to push.
 It will take ~20 mins the first time, but after that, it'll take a lot lesser, ~3 mins.
 If any of the following commands break, you don't need to run each of them again,
 you can just run the one that broke and onwards.
