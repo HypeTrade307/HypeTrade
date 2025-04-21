@@ -77,10 +77,44 @@ gcloud run deploy hypet \
 --env-vars-file .env.yaml \
 --add-cloudsql-instances=basic-formula-451520-c0:us-central1:hypetrade-db
 
-RUN BEFORE (every time you use in a new terminal):
+----------------------------------------------------------------------------------------------
 
+Set up docker:
+install app from https://www.docker.com/products/docker-desktop/
+start the app (whenever the app is running, docker is running, so if you close the app, docker will not run)
+test with these commands:
+docker --version
+docker run hello-world
 
-updated:
+docker faq at bottom of page
+Note: you will periodically need to go into the docker desktop app to delete old builds to save space.
+
+-----------------------------------------------------------------------
+Set up gcli credentials (run one by one):
+gcloud auth login
+gcloud config set project basic-formula-451520-c0
+
+To verify creds:
+gcloud auth configure-docker us-central1-docker.pkg.dev
+
+For testing your code:
+Commit changes, then run the following unified command.
+It will take ~20 mins the first time, but after that, it'll take a lot lesser, ~3 mins.
+If any of the following commands break, you don't need to run each of them again,
+you can just run the one that broke and onwards.
+Whenever you're ready, feel free to push your changes. If on main, GCR will automatically update
+the website w your changes (automatically = ~20 mins). In 99% of cases, if the following worked,
+the GCR build will be successful. In case you want to track progress, the following url contains build history:
+https://console.cloud.google.com/cloud-build/builds?project=basic-formula-451520-c0
+You can open the latest, see if it matches your latest commit id, and check if there were any errors.
+Further, the website logs are here:
+https://console.cloud.google.com/logs/query;query=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22hypet%22%0Aseverity%3E%3DDEFAULT;storageScope=project;cursorTimestamp=2025-04-20T04:39:40.025482Z;duration=P1D?project=basic-formula-451520-c0
+And finally, the actual url (for now) is:
+https://hypet-145797464141.us-central1.run.app
+lmk if anything else
+[Important: need to have docker set up]
+
+this is your command:
 export IMAGE_NAME=us-central1-docker.pkg.dev/basic-formula-451520-c0/hypetrade-repo/hypetrade-app && \
 export SHORT_SHA=$(git rev-parse --short HEAD) && \
 DOCKER_BUILDKIT=1 docker build \
@@ -101,3 +135,43 @@ gcloud run deploy hypet \
 --allow-unauthenticated \
 --env-vars-file .env.yaml \
 --add-cloudsql-instances=basic-formula-451520-c0:us-central1:hypetrade-db
+
+(exports latest commit id as an env var, creates a docker build for it, pushes it to a docker repo 
+(95% sure this is automatically set up), and then deploys it to a url that will be at the bottom of the output)
+--------------------------------------------------------------------------------------------
+docker faq courtesy of chad
+-----------------------------
+Common Issues
+-----------------------------
+
+- Docker says "Cannot connect to the Docker daemon":
+  → Make sure Docker Desktop is running.
+
+- You get permission errors when pushing:
+  → Make sure you've run `gcloud auth configure-docker` and have permission on the GCP project.
+
+- Docker build is very slow:
+  → Consider using build cache, multi-stage builds, and pruning unused layers.
+
+-----------------------------
+Docker Commands Cheat Sheet
+-----------------------------
+
+- Build an image:
+  docker build -t my-image-name .
+
+- Tag an image:
+  docker tag my-image-name registry/image-name:tag
+
+- List images:
+  docker images
+
+- Remove an image:
+  docker rmi image-id
+
+- Run a container:
+  docker run -it my-image-name
+
+- Stop a container:
+  docker ps
+  docker stop container-id
