@@ -2,7 +2,7 @@ import './App.css';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-
+import StartupRedirect from "./StartupRedirect";
 import Page_Not_found from "./pages/Page_Not_found.tsx";
 import Home from "./pages/home_page.tsx";
 import Profile_page from "./pages/Profile_Page.tsx";
@@ -24,6 +24,7 @@ import HelpPage from "@/pages/HelpPage.tsx";
 function App() {
     return (
         <Router>
+            <StartupRedirect />
             <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
             <Routes>
                 <Route path="/" element={<Home />} />
