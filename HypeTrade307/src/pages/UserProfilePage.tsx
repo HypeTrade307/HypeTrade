@@ -7,6 +7,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../components/shared-theme/AppTheme';
 import './UserProfilePage.css';
 import { API_BASE_URL } from '../config';
+import {Box, Button, Stack} from "@mui/material";
+import Grid from "@mui/material/Grid";
 
 interface User {
   user_id: number;
@@ -435,11 +437,88 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
         
         <div className="user-profile-content">
           <div className="user-info-section">
-            <h2>User Information</h2>
-            <div className="user-info-item">
-              <span className="info-label">Username:</span>
-              <span className="info-value">{user.username}</span>
-            </div>
+
+            <Stack direction="column"
+                // justifyContent="center"
+                   alignItems="flex-start"
+                   spacing={2}
+            >
+              <Box
+                  component="img"
+                  sx={{
+                    height: 233,
+                    width: 350,
+                    maxHeight: { xs: 233, md: 167 },
+                    maxWidth: { xs: 350, md: 250 },
+                    borderRadius: '10px',
+                  }}
+                  src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&w=350&dpr=2"
+                  // src={profilePic}
+              />
+
+              <Grid
+                  // Name and Follow Button
+                  container
+                  item
+                  direction="column"
+                  justifyContent="flex-start"
+                  alignItems="flex-start"
+                  sx={{
+                    '@media screen and (max-width: 768px)': {
+                      alignItems: "center",
+                      marginY: "10px"
+                    },
+                  }}
+              >
+                <div className="user-info-item">
+                  <h2>{user.username}</h2>
+                </div>
+
+                <Grid
+                    // Follow Button container
+                    container
+                    item
+                    direction="column"
+                    justifyContent="flex-start"
+                    alignItems="flex-start"
+                    sx={{
+                      '@media screen and (max-width: 768px)': {
+                        alignItems: "center",
+                        marginTop: "10px"
+                      },
+                    }}
+                >
+
+                  <Grid
+                      // Follow Button container
+                      container
+                      direction="column"
+                      justifyContent="flex-start"
+                      alignItems="flex-start"
+                      sx={{
+                        '@media screen and (max-width: 768px)': {
+                          alignItems: "center",
+                          marginTop: "10px"
+                        },
+                      }}
+                  >
+                    <div>
+                      <Button
+                          disableRipple
+                          variant="outlined"
+                          style={{color:'lightblue'}}
+                          // onClick={followUser}
+                      >
+                        Follow
+                      </Button>
+                    </div>
+
+                  </Grid>
+
+                </Grid>
+              </Grid>
+
+            </Stack>
           </div>
           
           <div className="user-portfolios-section">

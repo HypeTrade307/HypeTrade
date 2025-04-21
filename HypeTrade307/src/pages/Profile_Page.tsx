@@ -217,8 +217,6 @@ function Profile_page(props: { disableCustomTheme?: boolean }) {
                                                     direction="column"
                                                     justifyContent="center"
                                                     alignItems="center"
-                                                    // fullWidth={true}
-
                                                     variant="outlined"
                                                     style={{color:'lightblue'}}
                                                     // onClick={followUser}
