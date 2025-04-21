@@ -77,10 +77,14 @@ gcloud run deploy hypet \
 --env-vars-file .env.yaml \
 --add-cloudsql-instances=basic-formula-451520-c0:us-central1:hypetrade-db
 
+RUN BEFORE (every time you use in a new terminal):
+export IMAGE_NAME=us-central1-docker.pkg.dev/basic-formula-451520-c0/hypetrade-repo/hypetrade-app
+export SHORT_SHA=$(git rev-parse --short HEAD)
 
 updated:
 DOCKER_BUILDKIT=1 docker build \
---cache-from=type=registry,ref=$IMAGE_NAME:latest \
+--platform=linux/amd64 \
+--cache-from=type=local,src=.build-cache \
 --cache-to=type=inline \
 -t $IMAGE_NAME:$SHORT_SHA \
 -t $IMAGE_NAME:latest \
@@ -90,7 +94,7 @@ docker push $IMAGE_NAME:$SHORT_SHA && \
 docker push $IMAGE_NAME:latest \
 && \
 gcloud run deploy hypet \
---image=us-central1-docker.pkg.dev/basic-formula-451520-c0/hypetrade-repo/hypetrade-app:latest \
+--image=us-central1-docker.pkg.dev/basic-formula-451520-c0/hypetrade-repo/hypetrade-app:$SHORT_SHA \
 --platform=managed \
 --region=us-central1 \
 --allow-unauthenticated \
