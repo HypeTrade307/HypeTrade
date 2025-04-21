@@ -51,7 +51,7 @@ const AreaGraph: React.FC<AreaGraphProps> = ({ file }) => {
             console.error("Error fetching data:", error);
             check = 0;
             return [];
-        }
+        }   
     };
 
     useEffect(() => {
