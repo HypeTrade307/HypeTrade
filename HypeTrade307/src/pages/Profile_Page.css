@@ -9,6 +9,52 @@
     font-family: Arial, sans-serif;
 }
 
+.profile-container2 {
+    display: flex;
+    padding: 80px;
+    /*align-items: center;*/
+    height: 100%;
+    background: #121212;
+    /*margin: 80px auto 0 auto;*/
+    /*max-width: 1200px;*/
+    @media screen and (max-width: 768px) {
+    //width: 90%;
+        padding: 0px;
+    }
+}
+
+.NameStatusIconContainer {
+    display: flex;
+    /*align-items: center;*/
+    height: 100%;
+    /*background: #121212;*/
+    /*margin: 80 px auto 0 auto;*/
+    /*max-width: 1200 px;*/
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 5px 0px;
+    }
+}
+
+.userName {
+    {/*display: flex;
+      flex-direction: row;
+      justify-content: center;
+    */}
+    /*width: 23vw;*/
+    color: black;
+    font-size: 4rem;
+    font-weight: bold;
+    @media screen and (max-width: 768px) {
+        font-size: 2rem;
+    }
+}
+
 /* Top navigation bar */
 .top-navigation {
     display: flex;
