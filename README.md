@@ -60,6 +60,7 @@ Step 9: run "alembic upgrade head"
 
 Step 10: Everything should hopefully be okay now, run "uvicorn src.main:app --reload" from the directory that contains HypeTrade307 and src. 
 
+IGNORE (DEPRECATED) (SCROLL FURTHER DOWN):
 deploy:
 docker buildx build \
 --platform=linux/amd64 \
@@ -68,6 +69,7 @@ docker buildx build \
 -t us-central1-docker.pkg.dev/basic-formula-451520-c0/hypetrade-repo/hypetrade-app:ADD v<x> \
 --push .
 
+IGNORE (DEPRECATED) (SCROLL FURTHER DOWN):
 gcloud:
 gcloud run deploy hypet \
 --image=us-central1-docker.pkg.dev/basic-formula-451520-c0/hypetrade-repo/hypetrade-app:latest \
@@ -79,6 +81,7 @@ gcloud run deploy hypet \
 
 ----------------------------------------------------------------------------------------------
 
+step 1:
 Set up docker:
 install app from https://www.docker.com/products/docker-desktop/
 start the app (whenever the app is running, docker is running, so if you close the app, docker will not run)
@@ -90,6 +93,7 @@ docker faq at bottom of page
 Note: you will periodically need to go into the docker desktop app to delete old builds to save space.
 
 -----------------------------------------------------------------------
+step 2:
 Set up gcli credentials (run one by one):
 gcloud auth login
 gcloud config set project basic-formula-451520-c0
@@ -97,6 +101,8 @@ gcloud config set project basic-formula-451520-c0
 To verify creds:
 gcloud auth configure-docker us-central1-docker.pkg.dev
 
+-----------------------------------------------------------------------
+step 3:
 For testing your code:
 Commit changes, then run the following unified command. I recommend waiting till the end of your session to push.
 It will take ~20 mins the first time, but after that, it'll take a lot lesser, ~3 mins.
@@ -111,9 +117,11 @@ Further, the website logs are here:
 https://console.cloud.google.com/logs/query;query=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22hypet%22%0Aseverity%3E%3DDEFAULT;storageScope=project;cursorTimestamp=2025-04-20T04:39:40.025482Z;duration=P1D?project=basic-formula-451520-c0
 And finally, the actual url (for now) is:
 https://hypet-145797464141.us-central1.run.app
+your isolated url should be diff and at the bottom of the output for aforementioned command
 lmk if anything else
 [Important: need to have docker set up]
 
+[Important: add your name in line 139 in place of mine. itll set up a service isolated to you, and you can test, debug and deploy on your own]
 this is your command:
 export IMAGE_NAME=us-central1-docker.pkg.dev/basic-formula-451520-c0/hypetrade-repo/hypetrade-app && \
 export SHORT_SHA=$(git rev-parse --short HEAD) && \
@@ -128,7 +136,7 @@ DOCKER_BUILDKIT=1 docker build \
 docker push $IMAGE_NAME:$SHORT_SHA && \
 docker push $IMAGE_NAME:latest \
 && \
-gcloud run deploy hypet \
+gcloud run deploy hypet-aditya \
 --image=us-central1-docker.pkg.dev/basic-formula-451520-c0/hypetrade-repo/hypetrade-app:$SHORT_SHA \
 --platform=managed \
 --region=us-central1 \
