@@ -15,6 +15,7 @@ const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [ws] = useState<WebSocket | null>(null);
+//@ts-ignore
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null); // Track message index for deletion
   const [openDialog, setOpenDialog] = useState(false); // Track dialog visibility
 

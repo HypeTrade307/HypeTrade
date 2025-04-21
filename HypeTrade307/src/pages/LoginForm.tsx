@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useState } from "react";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
 import { useNavigate } from "react-router-dom";

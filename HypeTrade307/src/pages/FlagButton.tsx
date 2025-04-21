@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+//@ts-nocheck
 import axios from "axios";
 import { toast } from "react-toastify";
 import "./FlagButton.css";

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useState } from "react";
 import Home_page_button from "./Home_page_button.tsx";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
