@@ -94,32 +94,24 @@ def get_comments_by_post_id(db: Session, post_id: int):
             "created_at": comment.created_at,
             "author": {
                 "id": comment.author.user_id,
-                "username": comment.author.username
+                "username": comment.author.username,
             } if comment.author else None
         }
         for comment in comments
     ]
 
 def create_comment(db: Session, content: str, author_id: int, post_id: int):
-    """
-    Create a new comment.
-    """
-    comment = {
-        "content": content,  # Ensure this field exists
-        "post_id": post_id,
-        "author_id": author_id,
-        "created_at": datetime.datetime.now()
-    }
-    comment = models.Comment(content=content,
-    post_id= post_id,
-    author_id= author_id)
+    """Create a new comment."""
+    comment = models.Comment(
+        content=content,
+        post_id=post_id,
+        author_id=author_id
+    )
     db.add(comment)
     db.commit()
     db.refresh(comment)
-
-    # Format the author and liked_by information for the response
-    comment.liked_by = []
-
+    
+    # Return the comment directly - FastAPI will handle the response formatting
     return comment
 
 def update_comment(db: Session, comment_id: int, comment_data: dict):
@@ -493,6 +485,12 @@ def get_thread_by_title_stock(db: Session, title: str, stock_id: int) -> models.
         .where(models.Thread.stock_id == stock_id)
         .first()
     )
+def delete_thread(db: Session, thread_id: int) -> None:
+    thread = db.query(models.Thread).filter(models.Thread.thread_id == thread_id).first()
+    if not thread:
+        raise HTTPException(status_code=404, detail="Thread not found.")
+    db.delete(thread)
+    db.commit()
 # ----------------------------
 # NOTIFICATION CRUD
 # ----------------------------
@@ -828,8 +826,13 @@ def get_sentiment_summary_for_stock_in_range(db: Session, stock_id: int, timefra
 # ----------------------------
 # FLAG CRUD
 # ----------------------------
+class FlagType(str, Enum):
+    user = "user"
+    post = "post"
+    comment = "comment"
+    thread = "thread"
 
-def create_flag(db: Session, user_id: int, flag_type: str, reason: str, target_id: int) -> models.Flag:
+def create_flag(db: Session, user_id: int, flag_type: FlagType, target_id: int, reason: str) -> models.Flag:
     """
     Create a new flag for a post or comment.
     
@@ -843,13 +846,14 @@ def create_flag(db: Session, user_id: int, flag_type: str, reason: str, target_i
     Returns:
         The created flag object
     """
+    print(f"Creating flag: user_id={user_id}, flag_type={flag_type}, reason={reason}, target_id={target_id}")
     try:
         new_flag = models.Flag(
             created_by=user_id,
             flag_type=flag_type,
             reason=reason,
             target_id=target_id,
-            created_at=datetime.now()
+            created_at=datetime.datetime.now()
         )
         
         db.add(new_flag)
@@ -863,11 +867,7 @@ def create_flag(db: Session, user_id: int, flag_type: str, reason: str, target_i
             detail=f"Failed to create flag: {str(e)}"
         )
 
-class FlagType(str, Enum):
-    user = "user"
-    post = "post"
-    comment = "comment"
-    thread = "thread"
+
 
 def check_flagged(db: Session, target_id: int, flag_type: FlagType) -> bool:
     """
@@ -960,6 +960,7 @@ def get_all_flags(db: Session) -> list[models.Flag]:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve flags: {str(e)}"
         )
+
 
 # ----------------------------
 # FRIEND REQUEST CRUD

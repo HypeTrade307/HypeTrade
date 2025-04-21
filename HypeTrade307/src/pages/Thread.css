@@ -1,5 +1,7 @@
 .thread-container {
-    max-width: 1200px;
+    max-width: 1500px;
+    position: relative;
+    z-index: 1;
     margin: 2rem auto;
     padding: 0 1rem;
 }
@@ -7,14 +9,61 @@
 .thread-header {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #e0e0e0;
+    gap: 20px;
+    padding: 20px 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #333;
 }
 
 .thread-header h1 {
-    margin-bottom: 0.5rem;
+    margin: 0;
+    font-size: 24px;
+    color: white;
+    width: 100%;
+}
+
+/* Remove this conflicting style */
+.thread-header > .button-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0;
+    align-items: center;
+}
+
+/* Update button group styles */
+.button-group {
+    display: flex;
+    flex-direction: row !important; /* Force horizontal alignment */
+    align-items: center;
+    gap: 12px;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+/* Override FlagButton styles */
+.button-group .flag-button {
+    position: static !important; /* Override absolute positioning */
+    margin: 0;
+    height: 36px;
+    padding: 0 16px;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button-group .create-post-button {
+    height: 36px;
+    padding: 0 16px;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flag-button:hover {
+    background-color: #e04446;
+    border-radius: 4px;
 }
 
 .thread-stock-info {
@@ -31,19 +80,15 @@
 }
 
 .create-post-button {
-    background-color: #4CAF50;
+    background-color: #1976d2;
     color: white;
     border: none;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    border-radius: 4px;
     cursor: pointer;
-    margin-top: 1rem;
-    align-self: flex-end;
+    transition: background-color 0.2s;
 }
 
 .create-post-button:hover {
-    background-color: #45a049;
+    background-color: #1565c0;
 }
 
 /* Posts List */
@@ -216,4 +261,19 @@
 
 .error-message {
     color: #d32f2f;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .thread-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .button-group {
+        flex-direction: row;
+        width: 100%;
+        justify-content: flex-end;
+    }
 }

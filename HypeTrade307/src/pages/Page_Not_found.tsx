@@ -1,5 +1,5 @@
 
-import AppTheme from "@/components/shared-theme/AppTheme.tsx";
+import AppTheme from "../components/shared-theme/AppTheme.tsx";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
 import '../index.css'
 import './Page_Not_found.css';

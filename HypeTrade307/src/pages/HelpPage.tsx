@@ -1,3 +1,4 @@
+//@ts-ignore
 import React, { useState, useEffect } from 'react';
 import { CssBaseline, Container, Typography, Switch, FormControlLabel, Box } from '@mui/material';
 import Navbar from "../components/NavbarSection/Navbar.tsx";

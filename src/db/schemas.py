@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import List, Optional, Literal
 from datetime import datetime
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 # ------------------
 #  FLAG SCHEMAS
@@ -23,14 +23,16 @@ class FlagCreate(BaseModel):
 
 class FlagResponse(BaseModel):
     flag_id: int
-    user_id: int
-    flag_type: FlagType
-    target_id : int
-    reason: Optional[str] = None  # Optional reason for the flag
+    created_by: int
+    flag_type: str
+    target_id: int
+    reason: Optional[str]
     created_at: datetime
+    thread_id: Optional[int] = None
+    post_id: Optional[int] = None
 
     class Config:
-        from_attributes = True  # If using Pydantic v1; use `from_attributes = True` in v2
+        orm_mode = True
 
 
 # ------------------
@@ -98,8 +100,7 @@ class UserResponse(BaseModel):
     email: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class UserPasswordUpdate(BaseModel):
     old_password: str
@@ -129,14 +130,18 @@ class PostResponse(BaseModel):
         from_attributes = True
 
 class CommentResponse(BaseModel):
-    id: int
-    text: str  # Ensure this matches what's in the database
-    content: str  # If required, add this field
     comment_id: int
+    content: str
     post_id: int
     author_id: int
     created_at: datetime
-    author: Optional[UserResponse]
+    author: Optional[UserResponse] = None  # Assuming UserResponse is defined elsewhere
+    liked_by: Optional[List[UserResponse]] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+class CommentCreate(BaseModel):
+    content: str
 
 # ------------------
 #  STOCK SCHEMAS

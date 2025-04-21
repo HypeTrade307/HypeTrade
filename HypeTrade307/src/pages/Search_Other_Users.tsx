@@ -1,3 +1,4 @@
+//@ts-ignore
 import React, { useState } from "react";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
 import CssBaseline from "@mui/material/CssBaseline";

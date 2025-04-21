@@ -5,6 +5,10 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
+    "noEmit": false,
+    "checkJs": false,
+    "skipLibCheck": true,
+    "isolatedModules": false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
