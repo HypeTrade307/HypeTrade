@@ -1,4 +1,3 @@
-
 from typing import List
 from sqlalchemy.orm import Session
 from src.db import crud, models, schemas
@@ -8,8 +7,10 @@ from src.security import get_current_user
 
 router = APIRouter(prefix="/flag", tags=["Flags"])
 
-@router.post("/", response_model=schemas.FlagResponse, status_code=status.HTTP_201_CREATED)
-def flag(db: Session, flag_data: schemas.FlagCreate, current_user: models.User = Depends(get_current_user)):
+@router.post("/", response_model=schemas.FlagBase, status_code=status.HTTP_201_CREATED)
+def flag(flag_data: schemas.FlagCreate, 
+        db: Session = Depends(get_db),
+        current_user: models.User = Depends(get_current_user)):
     """
     Flag a content with a reason.
     """
@@ -23,8 +24,27 @@ def flag(db: Session, flag_data: schemas.FlagCreate, current_user: models.User =
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Flag creation failed.")
     return flag
 
+@router.get("/all", response_model=List[schemas.FlagResponse])
+def get_all_flags(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    
+    flags = db.query(models.Flag).all()
+    # Enrich flag data with thread_id and post_id
+    for flag in flags:
+        if flag.flag_type == "post":
+            post = db.query(models.Post).filter(models.Post.post_id == flag.target_id).first()
+            if post:
+                flag.thread_id = post.thread_id
+        elif flag.flag_type == "comment":
+            comment = db.query(models.Comment).filter(models.Comment.comment_id == flag.target_id).first()
+            if comment:
+                flag.thread_id = comment.post.thread_id
+                flag.post_id = comment.post_id
+    return flags
+
 @router.delete("/{flag_id}", status_code=status.HTTP_204_NO_CONTENT)
-def remove_flag(db: Session, flag_data: schemas.FlagBase, current_user: models.User = Depends(get_current_user)):
+def remove_flag(flag_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     """
     Remove a flag from the content.
     """
@@ -34,21 +54,38 @@ def remove_flag(db: Session, flag_data: schemas.FlagBase, current_user: models.U
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to remove flags.")
     
     # Remove the flag
-    crud.remove_flag(db, flag_id = flag_data.flag_id)
+    crud.remove_flag(db, flag_id = flag_id)
     return status.HTTP_200_OK
 
-@router.get("/", response_model=List[schemas.FlagResponse])
-def get_flags(db: Session, current_user: models.User = Depends(get_current_user)):
-    """
-    Get all flags
-    """
-    #check if user is authorized
-    admin = crud.get_user_by_id(db, user_id = current_user.user_id)
-    if not admin.is_admin:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to view flags.")
-    
-    # Get all flags
-    flags = crud.get_all_flags(db)
-    return flags
+@router.delete("/{flag_id}/remove_with_content", status_code=status.HTTP_200_OK)
+def resolve_and_delete_content(
+    flag_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    print("Resolving and deleting content for flag ID:", flag_id)
+    flag = db.query(models.Flag).filter(models.Flag.flag_id == flag_id).first()
+    if not flag:
+        raise HTTPException(status_code=404, detail="Flag not found")
 
-    
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Only admins can perform this action")
+
+    # Delete the content
+    if flag.flag_type == "post":
+        crud.delete_post(db, flag.target_id)
+    elif flag.flag_type == "comment":
+        crud.delete_comment(db, flag.target_id)
+    elif flag.flag_type == "thread":
+        crud.delete_thread(db, flag.target_id)
+    elif flag.flag_type == "user":
+        crud.delete_user(db, flag.target_id)
+    else:
+        raise HTTPException(status_code=400, detail="Invalid flag type")
+    # Delete the flag
+    crud.remove_flag(db, flag.flag_id)
+
+    return {"message": f"{flag.flag_type.capitalize()} and flag removed successfully"}
+
+
+

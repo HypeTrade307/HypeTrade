@@ -20,6 +20,7 @@ import PortfolioPage from './pages/Portfoilos_viewer.tsx';
 import Specific_Stock from './pages/specific_stock_request.tsx'
 import ViewStockPage from "./pages/ViewStockPage.tsx";
 import HelpPage from "./pages/HelpPage.tsx";
+import AdminPanel from './pages/AdminPanel.tsx';
 
 function App() {
     return (
@@ -33,6 +34,7 @@ function App() {
                 <Route path="/search" element={<Search_other_users />} />
                 <Route path="/friends" element={<FriendRemove />} />
                 <Route path="/stock" element={<ViewStock />} />
+                <Route path="/admin" element={<AdminPanel />} />
                 <Route path="/PortView/:friendID" element={<PortView />} />
                 <Route path="/portfolios/:id" element={<PortfolioPage />} />
                 <Route path="/chat" element={<ChatPage />} />

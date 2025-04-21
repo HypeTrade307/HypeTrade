@@ -6,6 +6,7 @@ import Navbar from '../components/NavbarSection/Navbar';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../components/shared-theme/AppTheme';
 import './UserProfilePage.css';
+import FlagButton from './FlagButton';
 import { API_BASE_URL } from '../config';
 
 interface User {
@@ -376,12 +377,18 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
           <h1>{user.username}'s Profile</h1>
           
           {isAuthenticated && !isCurrentUser && !isFriend && (
-            <button 
-              className="add-friend-button"
-              onClick={handleAddFriend}
-            >
-              Add Friend
-            </button>
+            <div className="actions">
+              <button 
+                className="add-friend-button"
+                onClick={handleAddFriend}
+              >
+                Add Friend
+              </button>
+              <FlagButton
+                target_id={user.user_id}
+                flag_type="user"
+              /> 
+            </div>
           )}
           
           {isAuthenticated && !isCurrentUser && isFriend && (
@@ -526,4 +533,4 @@ function getSentimentClass(sentiment: number | undefined): string {
   if (sentiment > 0.5) return 'positive';
   if (sentiment < -0.5) return 'negative';
   return 'neutral';
-} 
+}

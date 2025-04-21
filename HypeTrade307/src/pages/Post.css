@@ -68,11 +68,25 @@
 .post-content-section {
     background-color: black;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);   
     padding: 2rem;
     margin-bottom: 2rem;
+    position: relative;
 }
-
+.flag-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: #ff4d4f;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
 .post-content-main {
     line-height: 1.6;
     color: #747bff;
@@ -200,6 +214,32 @@
     border-radius: 6px;
     background-color: lavenderblush;
     transition: transform 0.1s, box-shadow 0.1s;
+    position: relative; /* Add this to help with flag button positioning */
+}
+
+/* Add these new styles */
+.comment-item .flag-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    background-color: #ff4d4f;
+    opacity: 0.8;
+    transform: scale(0.8);
+}
+
+.comment-item .flag-button:hover {
+    opacity: 1;
+    transform: scale(0.85);
+}
+
+/* Adjust comment content to prevent overlap */
+.comment-item .comment-content {
+    margin-right: 60px; /* Make room for the flag button */
+    line-height: 1.5;
+    color: #333;
+    margin-bottom: 0.75rem;
 }
 
 .comment-item:hover {
