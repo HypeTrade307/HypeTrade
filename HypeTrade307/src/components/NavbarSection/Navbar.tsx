@@ -149,6 +149,7 @@ const Navbar = () => {
                 width: '100%',
             }}
         >
+            <div style={{ height: '15px' }} /> {/* adds white space */}
             <Container maxWidth="xl">
                 <StyledToolbar variant="dense" disableGutters>
                     <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0 }}>
