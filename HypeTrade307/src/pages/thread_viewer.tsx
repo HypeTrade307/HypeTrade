@@ -81,7 +81,7 @@ function ThreadViewer() {
                 // }
                 console.log(`something something and my id is ${threadId}`);
 
-                const response = await axios.get(`${API_BASE_URL}/threads/${threadId}`, {
+                const response = await axios.get(`${API_BASE_URL}/thread/${threadId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 console.log("Data sent to API:", { response });
@@ -104,13 +104,12 @@ function ThreadViewer() {
             try {
                 const token = localStorage.getItem("token");
 
-                console.log(`creating post`);
-                const response = await axios.get(`${API_BASE_URL}/threads/${threadId}/posts`, {
+                console.log(`fetch posts`);
+                const response = await axios.get(`${API_BASE_URL}/thread/${threadId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                console.log(`created post`);
-
                 setPosts(response.data);
+
             } catch (err: any) {
                 console.error("Error fetching posts:", err);
                 setError(err.response?.data?.detail || "Failed to load posts");
@@ -136,13 +135,16 @@ function ThreadViewer() {
 
         try {
             const token = localStorage.getItem("token");
+            console.log("Token being sent:", token);
+
             if (!token) {
+                console.log("No token");
                 setError("Not authenticated");
                 return;
             }
 
             await axios.post(
-                `${API_BASE_URL}/threads/${threadId}/posts`,
+                `${API_BASE_URL}/thread/${threadId}/posts`,
                 {
                     title: title,
                     content: content
@@ -156,11 +158,11 @@ function ThreadViewer() {
             handleCloseModal();
 
             // Fetch updated posts
-            const response = await axios.get(`${API_BASE_URL}/threads/${threadId}/posts`, {
+            const response = await axios.get(`${API_BASE_URL}/thread/${threadId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-
             setPosts(response.data);
+
         } catch (err: any) {
             console.error("Error creating post:", err);
             setError(err.response?.data?.detail || "Failed to create post");
