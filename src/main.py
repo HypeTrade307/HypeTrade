@@ -31,6 +31,8 @@ from src.api.routes.friends import router as friends_router
 from src.processing.stock_processing import seed_stocks
 from src.processing import scraping as sc
 from src.api.routes.flagging import router as flagging_router
+from src.api.routes.tasks import router as tasks_router
+
 
 app = FastAPI()
 
@@ -72,6 +74,7 @@ app.include_router(notification_router, prefix="/api")
 app.include_router(sentiment_router, prefix="/api")
 app.include_router(posts_router, prefix="/api")
 app.include_router(comment_router, prefix="/api")
+app.include_router(tasks_router, prefix="/api")
 app.include_router(flagging_router, prefix="/api")
 
 # Health check

@@ -4,6 +4,9 @@ from fastapi import HTTPException, status
 from pyparsing import Literal
 from sqlalchemy import func
 from sqlalchemy.orm import Session
+from random import random
+from datetime import datetime, timedelta
+
 
 from src.processing.scraping import parse_timeframe
 from . import models, schemas
@@ -359,11 +362,62 @@ def delete_stock(db: Session, stock_id: int) -> None:
     db.commit()
 
 def get_top_stocks(db: Session) -> list[models.Stock]:
-    stocks = db.query(models.Stock).filter(
+    from models import Stock
+    stocks:list[models.Stock] = db.query(Stock).filter(
         models.Stock.analysis_mode == "auto"
     ).all()
     return stocks
 
+def get_top_stock_sentiments(db: Session):
+    top_stocks = get_top_stocks(db)
+    base_time = datetime.now()
+    sentiments = []
+    for stock in top_stocks:
+        sentiment = (
+            db.query(models.SentimentAnalysis.sentiment_value)
+            .filter(models.SentimentAnalysis.stock_id == stock.stock_id)
+            .order_by(models.SentimentAnalysis.created_at.desc())
+            .limit(2)
+            .all()
+        )
+        if (sentiment):
+            continue
+        else:
+            sentiment=round(random(), 2)
+            for day_offset in range(2):  # 0 = 4/18, 1 = 4/19
+                entry = models.SentimentAnalysis(
+                    stock_id=stock.stock_id,
+                    sentiment_value=sentiment,
+                    raw_string="",
+                    created_at=base_time + timedelta(days=day_offset)
+                )
+                db.add(entry)
+        sentiments.append(sentiment)
+    db.commit()
+def get_top_stocks_changes(db: Session):
+    top_stocks = get_top_stocks(db)
+    changes = []
+    for stock in top_stocks:
+        sentiments = (
+            db.query(models.SentimentAnalysis.sentiment_value)
+            .filter(models.SentimentAnalysis.stock_id == stock.stock_id)
+            .order_by(models.SentimentAnalysis.created_at.desc())
+            .limit(2)
+            .all()
+        )
+
+        if len(sentiments) == 2:
+            diff = (sentiments[0][0] - sentiments[1][0])
+        else:
+            diff = None  # not enough data points
+
+        changes.append({
+            "stock_id": stock.stock_id,
+            "ticker": stock.ticker,
+            "sentiment_change": (round(diff, 2) if diff else 0)
+        })
+
+    return changes
 # ----------------------------
 #  PORTFOLIO CRUD
 # ----------------------------
