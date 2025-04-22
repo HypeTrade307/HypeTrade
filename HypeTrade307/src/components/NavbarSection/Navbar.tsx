@@ -24,7 +24,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // used for t
 
 const API_BASE_URL = 'http://localhost:8080';
 
-const pages = ['Home', 'ViewStock', 'Portfolio', 'Profile', 'Search', 'Friends', 'Chat', 'Forum'];
+const pages = ['Home', 'ViewStock', 'Portfolio', 'Profile', 'Search', 'Friends', 'Chat', 'Forum', 'Help'];
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
     display: 'flex',

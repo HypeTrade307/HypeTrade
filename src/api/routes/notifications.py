@@ -82,6 +82,33 @@ def mark_all_notifications_read(
     crud.mark_all_notifications_as_read(db, current_user.user_id)
     return {"success": True, "message": "All notifications marked as read"}
 
+@router.delete("/notifications/{notification_id}")
+def delete_notification(
+    notification_id: int,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Delete a notification by its ID.
+    """
+    # Get the notification first
+    notification = db.query(models.Notification).filter(
+        models.Notification.notification_id == notification_id
+    ).first()
+    
+    if not notification:
+        raise HTTPException(status_code=404, detail="Notification not found")
+        
+    # Security check - users can only delete their own notifications
+    if notification.receiver_id != current_user.user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this notification")
+    
+    success = crud.delete_notification(db, notification_id)
+    if success:
+        return {"success": True, "message": "Notification deleted successfully"}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to delete notification")
+
 @router.post("/notifications/create", response_model=schemas.Notification)
 def create_notification(
     notification_data: schemas.NotificationCreate,

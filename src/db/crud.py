@@ -623,6 +623,32 @@ def create_notification(db: Session, sender_id: int, receiver_id: int, message: 
             detail=f"Failed to create notification: {str(e)}"
         )
 
+def delete_notification(db: Session, notification_id: int) -> bool:
+    """
+    Delete a notification by its ID.
+    
+    Args:
+        db: Database session
+        notification_id: ID of the notification to delete
+        
+    Returns:
+        True if the notification was deleted successfully, False otherwise
+    """
+    try:
+        notification = db.query(models.Notification).filter(models.Notification.notification_id == notification_id).first()
+        if not notification:
+            return False
+            
+        db.delete(notification)
+        db.commit()
+        return True
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete notification: {str(e)}"
+        )
+
 # ----------------------------
 # SENTIMENT CRUD
 # ----------------------------
@@ -1102,6 +1128,20 @@ def accept_friend_request(db: Session, receiver_id: int, sender_id: int) -> bool
             ).values(status="accepted")
         )
         
+        # Find and delete the original friend request notification
+        sender = db.query(models.User).filter(models.User.user_id == sender_id).first()
+        if sender:
+            # Find the notification about the friend request
+            notification = db.query(models.Notification).filter(
+                models.Notification.sender_id == sender_id,
+                models.Notification.receiver_id == receiver_id,
+                models.Notification.message.like(f"%{sender.username} sent you a friend request%")
+            ).first()
+            
+            if notification:
+                # Delete the notification
+                db.delete(notification)
+        
         # Create a notification for the sender
         receiver = db.query(models.User).filter(models.User.user_id == receiver_id).first()
         if receiver:
@@ -1152,6 +1192,20 @@ def decline_friend_request(db: Session, receiver_id: int, sender_id: int) -> boo
                 models.user_friends.c.friend_id == receiver_id
             )
         )
+        
+        # Find and delete the original friend request notification
+        sender = db.query(models.User).filter(models.User.user_id == sender_id).first()
+        if sender:
+            # Find the notification about the friend request
+            notification = db.query(models.Notification).filter(
+                models.Notification.sender_id == sender_id,
+                models.Notification.receiver_id == receiver_id,
+                models.Notification.message.like(f"%{sender.username} sent you a friend request%")
+            ).first()
+            
+            if notification:
+                # Delete the notification
+                db.delete(notification)
         
         db.commit()
         return True
