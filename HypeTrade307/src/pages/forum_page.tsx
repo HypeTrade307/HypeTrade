@@ -6,7 +6,7 @@ import Navbar from "../components/NavbarSection/Navbar";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme";
 import "./Forum.css";
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, API_LOCAL_URL } from '../config';
 import {
   Dialog,
   DialogTitle,
@@ -71,7 +71,7 @@ function Forum() {
                 //     return;
                 // }
 
-                const response = await axios.get("https://hypet-145797464141.us-central1.run.app/api/threads/", {
+                const response = await axios.get(`${API_BASE_URL}/threads/`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 

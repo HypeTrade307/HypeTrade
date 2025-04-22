@@ -14,6 +14,7 @@ import {
 import { Box, Paper } from "@mui/material";
 import "./Post.css";
 import { API_BASE_URL } from '../config';
+import FlagButton from "./FlagButton";
 
 // Define interfaces
 interface Comment {
@@ -285,186 +286,186 @@ function PostViewer() {
 
     return (
         <AppTheme>
-            <CssBaseline enableColorScheme />
-            <Navbar />
-            <div className="post-container">
-                {loading ? (
-                    <div className="loading-indicator">Loading post...</div>
-                ) : error ? (
-                    <div className="error-message">{error}</div>
-                ) : post ? (
-                    <>
-                        {/* Post Header */}
-                        <div className="post-header-section">
-                            <div className="navigation-links">
-                                <button onClick={() => navigate(`/thread/${threadId}`)} className="back-button">
-                                    ← Back to Thread
-                                </button>
-                                {post.thread && post.thread.stock_ref && (
-                                    <span className="stock-badge">
-                                        {post.thread.stock_ref.ticker} - {post.thread.stock_ref.stock_name}
-                                    </span>
-                                )}
-                            </div>
-                            <h1 className="post-title-main">{post.title}</h1>
-                            <div className="post-meta">
-                                <span className="post-author-info">
-                                    Posted by {post.author?.username} on {formatDate(post.created_at)}
-                                </span>
-                                {post.updated_at !== post.created_at && (
-                                    <span className="post-edited-info">
-                                        (edited on {formatDate(post.updated_at)})
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Post Content */}
-                        <div className="post-content-section">
-                            <div className="post-content-main">
-                                {post.content}
-                            </div>
-                            <div className="post-actions">
-                                <button
-                                    className={`like-button ${post.liked_by?.some(like => like.user_id === userId) ? 'liked' : ''}`}
-                                    onClick={handleLikePost}
-                                >
-                                    {post.liked_by?.length || 0} Likes
-                                </button>
-                                <button
-                                    className="comment-button"
-                                    onClick={() => setShowCommentForm(!showCommentForm)}
-                                >
-                                    Add Comment
-                                </button>
-                                <button
-                                    className="delete-button"
-                                    onClick={() => myFunction()}
-                                    >
-                                    Delete Post
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Comment Form */}
-                        {showCommentForm && (
-                            <div className="comment-form-section">
-                                <form onSubmit={handleCreateComment}>
-                                    <div className="form-group">
-                                        <label htmlFor="comment-content">Your Comment:</label>
-                                        <textarea
-                                            id="comment-content"
-                                            value={commentContent}
-                                            onChange={(e) => setCommentContent(e.target.value)}
-                                            placeholder="Write your comment here..."
-                                            className="comment-content-input"
-                                            rows={4}
-                                            disabled={submitting}
-                                        />
-                                    </div>
-                                    <div className="form-actions">
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowCommentForm(false)}
-                                            className="cancel-button"
-                                            disabled={submitting}
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            className="submit-button"
-                                            disabled={!commentContent.trim() || submitting}
-                                        >
-                                            {submitting ? "Submitting..." : "Submit Comment"}
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        )}
-
-                        {/* Comments Section */}
-                        <div className="comments-section">
-                            <h2 className="comments-header">
-                                Comments ({comments.length})
-                            </h2>
-
-                            {comments.length > 0 ? (
-                                <div className="comments-list">
-                                    {comments.map((comment) => (
-                                        <div key={comment.comment_id} className="comment-item">
-                                            <div className="comment-content">
-                                                {comment.content}
-                                            </div>
-                                            <div className="comment-footer">
-                                                <div className="comment-meta">
-                                                    <span className="comment-author">
-                                                        {comment.author?.username}
-                                                    </span>
-                                                    <span className="comment-date">
-                                                        {formatDate(comment.created_at)}
-                                                    </span>
-                                                </div>
-                                                <button
-                                                    className={`comment-like-button ${comment.liked_by?.some(like => like.user_id === userId) ? 'liked' : ''}`}
-                                                    onClick={() => handleLikeComment(
-                                                        comment.comment_id,
-                                                        !!comment.liked_by?.some(like => like.user_id === userId)
-                                                    )}
-                                                >
-                                                    {comment.liked_by?.length || 0} Likes
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="no-comments">
-                                    No comments yet. Be the first to comment!
-                                </div>
-                            )}
-
-                            {!showCommentForm && (
-                                <button
-                                    className="add-comment-button"
-                                    onClick={() => setShowCommentForm(true)}
-                                >
-                                    Add a Comment
-                                </button>
-                            )}
-                        </div>
-                    </>
-                ) : (
-                    <div className="not-found">Post not found</div>
+          <CssBaseline enableColorScheme />
+          <Navbar />
+          <div className="post-container">
+            {loading ? (
+              <div className="loading-indicator">Loading post...</div>
+            ) : error ? (
+              <div className="error-message">{error}</div>
+            ) : post ? (
+              <>
+                {/* Post Header */}
+                <div className="post-header-section">
+                  <div className="post-header-flag-wrapper">
+                    <FlagButton flag_type="post" target_id={post.post_id} />
+                  </div>
+      
+                  <div className="navigation-links">
+                    <button
+                      onClick={() => navigate(`/thread/${threadId}`)}
+                      className="back-button"
+                    >
+                      ← Back to Thread
+                    </button>
+                    {post.thread?.stock_ref && (
+                      <span className="stock-badge">
+                        {post.thread.stock_ref.ticker} - {post.thread.stock_ref.stock_name}
+                      </span>
+                    )}
+                  </div>
+                  <h1 className="post-title-main">{post.title}</h1>
+                  <div className="post-meta">
+                    <span className="post-author-info">
+                      Posted by {post.author?.username} on {formatDate(post.created_at)}
+                    </span>
+                    {post.updated_at !== post.created_at && (
+                      <span className="post-edited-info">
+                        (edited on {formatDate(post.updated_at)})
+                      </span>
+                    )}
+                  </div>
+                </div>
+      
+                {/* Post Content */}
+                <div className="post-content-section">
+                  <div className="post-content-main">{post.content}</div>
+                  <div className="post-actions">
+                    <button
+                      className={`like-button ${
+                        post.liked_by?.some((like) => like.user_id === userId) ? "liked" : ""
+                      }`}
+                      onClick={handleLikePost}
+                    >
+                      {post.liked_by?.length || 0} Likes
+                    </button>
+                    <button
+                      className="comment-button"
+                      onClick={() => setShowCommentForm(!showCommentForm)}
+                    >
+                      Add Comment
+                    </button>
+                    <button className="delete-button" onClick={() => myFunction()}>
+                      Delete Post
+                    </button>
+                  </div>
+                </div>
+      
+                {/* Comment Form */}
+                {showCommentForm && (
+                  <div className="comment-form-section">
+                    <form onSubmit={handleCreateComment}>
+                      <div className="form-group">
+                        <label htmlFor="comment-content">Your Comment:</label>
+                        <textarea
+                          id="comment-content"
+                          value={commentContent}
+                          onChange={(e) => setCommentContent(e.target.value)}
+                          placeholder="Write your comment here..."
+                          className="comment-content-input"
+                          rows={4}
+                          disabled={submitting}
+                        />
+                      </div>
+                      <div className="form-actions">
+                        <button
+                          type="button"
+                          onClick={() => setShowCommentForm(false)}
+                          className="cancel-button"
+                          disabled={submitting}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="submit-button"
+                          disabled={!commentContent.trim() || submitting}
+                        >
+                          {submitting ? "Submitting..." : "Submit Comment"}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
                 )}
-            </div>
-            {/* Tutorial Dialog */}
-                  {tutorialOpen && (
-              <Box
-                sx={{
-                  position: 'fixed',
-                  top: 100,
-                  left: 40,
-                  zIndex: 1301,
-                  pointerEvents: 'auto', // allow this box to be clickable
-                }}
-              >
-                <Paper elevation={3} sx={{ p: 2, width: 300 }}>
-                  <h2 style={{ margin: 0 }}>{tutorialSteps[step].title}</h2>
-                  <p>{tutorialSteps[step].description}</p>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    sx={{ mt: 2 }}
-                    onClick={nextStep}
-                  >
-                    {step < tutorialSteps.length - 1 ? "Next" : "Finish"}
-                  </Button>
-                </Paper>
-              </Box>
+      
+                {/* Comments Section */}
+                <div className="comments-section">
+                  <h2 className="comments-header">Comments ({comments.length})</h2>
+      
+                  {comments.length > 0 ? (
+                    <div className="comments-list">
+                      {comments.map((comment) => (
+                        <div key={comment.comment_id} className="comment-item">
+                          {/* Flag button on each comment */}
+                          <FlagButton flag_type="comment" target_id={comment.comment_id} />
+      
+                          <div className="comment-content">{comment.content}</div>
+                          <div className="comment-footer">
+                            <div className="comment-meta">
+                              <span className="comment-author">{comment.author?.username}</span>
+                              <span className="comment-date">{formatDate(comment.created_at)}</span>
+                            </div>
+                            <button
+                              className={`comment-like-button ${
+                                comment.liked_by?.some((like) => like.user_id === userId)
+                                  ? "liked"
+                                  : ""
+                              }`}
+                              onClick={() =>
+                                handleLikeComment(
+                                  comment.comment_id,
+                                  !!comment.liked_by?.some((like) => like.user_id === userId)
+                                )
+                              }
+                            >
+                              {comment.liked_by?.length || 0} Likes
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="no-comments">No comments yet. Be the first to comment!</div>
+                  )}
+      
+                  {!showCommentForm && (
+                    <button
+                      className="add-comment-button"
+                      onClick={() => setShowCommentForm(true)}
+                    >
+                      Add a Comment
+                    </button>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div className="not-found">Post not found</div>
             )}
+          </div>
+      
+          {/* Tutorial Dialog */}
+          {tutorialOpen && (
+            <Box
+              sx={{
+                position: "fixed",
+                top: 100,
+                left: 40,
+                zIndex: 1301,
+                pointerEvents: "auto",
+              }}
+            >
+              <Paper elevation={3} sx={{ p: 2, width: 300 }}>
+                <h2 style={{ margin: 0 }}>{tutorialSteps[step].title}</h2>
+                <p>{tutorialSteps[step].description}</p>
+                <Button fullWidth variant="contained" sx={{ mt: 2 }} onClick={nextStep}>
+                  {step < tutorialSteps.length - 1 ? "Next" : "Finish"}
+                </Button>
+              </Paper>
+            </Box>
+          )}
         </AppTheme>
-    );
+      );
+      
 }
 
 export default PostViewer;

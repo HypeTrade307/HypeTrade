@@ -91,6 +91,7 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    color: #333;
 }
 
 .flag-table th,
@@ -101,8 +102,11 @@
 }
 
 .flag-table th {
-    background-color: #f5f5f5;
-    font-weight: 600;
+  background-color: #f5f5f5 !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  font-size: 0.95rem !important;
+  text-transform: capitalize;
 }
 
 .action-buttons {

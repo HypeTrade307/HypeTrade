@@ -6,13 +6,27 @@
 
 /* Post Header Section */
 .post-header-section {
+    position: relative; /* So the flag button can be absolutely placed */
     display: flex;
     flex-direction: column;
     margin-bottom: 2rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid #e0e0e0;
-}
-
+  }
+  
+  /* Wrapper for flag button in the top right corner */
+  .post-header-flag-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  
+  /* Optionally reduce padding if the flag is too tight */
+  .post-header-flag-wrapper .flag-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  
 .navigation-links {
     display: flex;
     justify-content: space-between;

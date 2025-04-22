@@ -95,7 +95,7 @@ export default function PortfolioPage(props: { disableCustomTheme?: boolean }) {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        const response = await axios.get("https://hypet-145797464141.us-central1.run.app/api/stocks/", {
+        const response = await axios.get(`${API_BASE_URL}/stocks/`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setAvailableStocks(response.data);

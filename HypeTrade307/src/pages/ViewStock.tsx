@@ -1089,13 +1089,16 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                                 </button>
                                 
                                 <div className="stock-detail-header">
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                                     <h2>
                                         {pickStock.stock_name} ({pickStock.ticker})
                                     </h2>
-                                    <div className="detail-change">
-                                        ${pickStock.value?.toLocaleString()}
-                                    </div>
                                 </div>
+                                <div className="detail-change">
+                                    ${pickStock.value?.toLocaleString()}
+                                </div>
+                                </div>
+
                                 
                                 <div className="stock-info-grid">
                                     <div className="info-item">

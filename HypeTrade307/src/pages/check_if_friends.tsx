@@ -7,7 +7,7 @@ export default function FriendCheck() {
   const [friends, setFriends] = useState<string[] | null>(null);
 
   const checkFriendship = async () => {
-    const response = await fetch("https://hypet-145797464141.us-central1.run.app/api/check_friends", {
+    const response = await fetch(`${API_BASE_URL}/check_friends`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ current_user: currentUser, requested_user: requestedUser }),
@@ -18,7 +18,7 @@ export default function FriendCheck() {
   };
 
   const handleAddFriend = async () => {
-    await fetch("https://hypet-145797464141.us-central1.run.app/api/add_friend", {
+    await fetch(`${API_BASE_URL}/add_friend`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ current_user: currentUser, add_user: requestedUser }),
@@ -28,7 +28,7 @@ export default function FriendCheck() {
   };
 
   const handleRemoveFriend = async () => {
-    await fetch("https://hypet-145797464141.us-central1.run.app/api/remove_friend", {
+    await fetch(`${API_BASE_URL}/remove_friend`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ current_user: currentUser, remove_user: requestedUser }),
