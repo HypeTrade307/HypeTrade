@@ -5,7 +5,6 @@ from transformers import BertTokenizer
 
 def process_text(input_text):
     tokenizer = BertTokenizer.from_pretrained('yiyanghkust/finbert-tone')
-    input_text = "Example financial news sentence."
     inputs = tokenizer.encode_plus(
         input_text,
         add_special_tokens=True,
