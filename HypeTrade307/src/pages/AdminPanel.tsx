@@ -5,6 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "./AdminPanel.css"; // optional styling
+import { API_BASE_URL } from '../config';
 
 interface Flag {
     flag_id: number;
@@ -40,7 +41,7 @@ export default function AdminPanel() {
             navigate("/login");
             return;
         }
-        axios.get("http://localhost:8080/flag/all", {
+        axios.get(`${API_BASE_URL}/flag/all`, {
             headers: { Authorization: `Bearer ${token}` },
         })
             .then((res) => setFlags(res.data))
@@ -53,7 +54,7 @@ export default function AdminPanel() {
     const handleRemove = async (flag_id: number) => {
         const token = localStorage.getItem("token");
         try {
-            await axios.delete(`http://localhost:8080/flag/${flag_id}`, {
+            await axios.delete(`${API_BASE_URL}/flag/${flag_id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             toast.success("Flag removed");
@@ -66,7 +67,7 @@ export default function AdminPanel() {
     const handleRemoveContent = async (flag_id: number) => {
         const token = localStorage.getItem("token");
         try {
-            await axios.delete(`http://localhost:8080/flag/${flag_id}/remove_with_content`, {
+            await axios.delete(`${API_BASE_URL}/flag/${flag_id}/remove_with_content`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             toast.success("Content and flag removed");
@@ -87,7 +88,7 @@ export default function AdminPanel() {
                 case "post":
                     try {
                         const response = await axios.get(
-                            `http://localhost:8080/posts/${flag.thread_id}/${flag.target_id}`,
+                            `${API_BASE_URL}/posts/${flag.thread_id}/${flag.target_id}`,
                             { headers: { Authorization: `Bearer ${token}` } }
                         );
                         flaggedContent = {
@@ -109,7 +110,7 @@ export default function AdminPanel() {
                 case "comment":
                     try {
                         const response = await axios.get(
-                            `http://localhost:8080/thread/${flag.thread_id}/posts/${flag.post_id}`,
+                            `${API_BASE_URL}/thread/${flag.thread_id}/posts/${flag.post_id}`,
                             { headers: { Authorization: `Bearer ${token}` } }
                         );
                         flaggedContent = {
@@ -129,7 +130,7 @@ export default function AdminPanel() {
                 case "thread":
                     try {
                         const response = await axios.get(
-                            `http://localhost:8080/threads/${flag.target_id}`,
+                            `${API_BASE_URL}/threads/${flag.target_id}`,
                             { headers: { Authorization: `Bearer ${token}` } }
                         );
                         flaggedContent = {
@@ -150,7 +151,7 @@ export default function AdminPanel() {
                 case "user":
                     try {
                         const response = await axios.get(
-                            `http://localhost:8080/users/${flag.target_id}`,
+                            `${API_BASE_URL}/users/${flag.target_id}`,
                             { headers: { Authorization: `Bearer ${token}` } }
                         );
                         flaggedContent = {

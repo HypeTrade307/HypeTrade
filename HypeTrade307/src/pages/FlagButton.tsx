@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "./FlagButton.css";
+import { API_BASE_URL } from '../config';
 
 interface FlagButtonProps {
   target_id: number;
@@ -21,7 +22,7 @@ const FlagButton: React.FC<FlagButtonProps> = ({ target_id, flag_type }) => {
     }
     try {
       await axios.post(
-        "http://localhost:8080/flag/",
+          `${API_BASE_URL}/flag/`,
         {
           flag_type,
           target_id,

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme.tsx";
 import axios from "axios";
+import { API_BASE_URL } from '../config';
 import { toast } from "react-toastify";
 
 interface User {
@@ -130,7 +131,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
             toast.success("Login successful!");
 
             // Now fetch user details to check admin status
-            const profileRes = await axios.get("http://localhost:8080/users/me", {
+            const profileRes = await axios.get(`${API_BASE_URL}/users/me`, {
                 headers: { Authorization: `Bearer ${response.data.access_token}` },
             });
 
