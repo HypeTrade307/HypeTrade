@@ -33,9 +33,7 @@ from src.processing import scraping as sc
 from src.api.routes.flagging import router as flagging_router
 from src.api.routes.tasks import router as tasks_router
 
-
 app = FastAPI()
-
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
