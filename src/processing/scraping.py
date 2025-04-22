@@ -10,6 +10,8 @@ import praw
 from flask.cli import load_dotenv
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+
+from services.finbert_request import get_financial_sentiment
 # Import your DB models and session
 from src.db.database import SessionLocal
 from src.db import models
@@ -45,7 +47,8 @@ def scrape_subreddit_posts(db: Session, subreddit_name: str, keyword: str, stock
     subreddit = reddit.subreddit(subreddit_name)
     # Simple approach: search() or new/hot. Let's do a search by keyword
     # For advanced usage, see PRAW docs for more methods (e.g. new, hot, etc.).
-    for submission in subreddit.search(keyword, sort="new", limit=3):
+    search_res = subreddit.search(keyword, sort="new", limit=3)
+    for submission in search_res:
         # Check if we already have this post in DB
         existing = db.query(models.ScrapedRedditEntry).filter_by(reddit_id=f"t3_{submission.id}").first()
         if existing:
@@ -65,7 +68,6 @@ def scrape_subreddit_posts(db: Session, subreddit_name: str, keyword: str, stock
             created_utc=datetime.datetime.utcfromtimestamp(submission.created_utc),
             created_at=datetime.datetime.utcnow(),
         )
-
         # If you want to store multiple stock mentions, you could parse the text for more tickers
         # but for now, we just link to the single "stock_id" if provided
         db.add(new_entry)
@@ -78,6 +80,7 @@ def scrape_subreddit_posts(db: Session, subreddit_name: str, keyword: str, stock
         try:
             db.commit()
         except IntegrityError:
+            print("IntegrityError")
             db.rollback()
         sleep(1)
 
@@ -145,8 +148,8 @@ def process_unprocessed_entries(db: Session, stock_id: int):
         # sentiment_score = run_finbert_sentiment(entry.title + " " + (entry.content or ""))
         print("Processing entry: ", entry.reddit_id)
         print("Content: ", entry.content)
-        sentiment_score = fake_sentiment(entry.content)
-        print("RANDOM, FAKE Sentiment score: ", sentiment_score)
+        sentiment_score = fake_sentiment(entry)
+        print("Sentiment score: ", sentiment_score)
         # Insert a row in 'sentiment_analysis'
         sentiment_row = models.SentimentAnalysis(
             stock_id=stock_id,
@@ -167,8 +170,10 @@ def fake_sentiment(entry: models.ScrapedRedditEntry) -> float:
     A fake function that returns a random sentiment in [-10, 10].
     Replace with your FinBERT pipeline or other real logic.
     """
-    import random
-    return round(random.uniform(-10.0, 10.0), 2)
+    content = f"Subreddit: {entry.subreddit}, Title: {entry.title}\nContent: {entry.content}"
+    return get_financial_sentiment(content)
+    # import random
+    # return round(random.uniform(-10.0, 10.0), 2)
 
 def test_reddit_connection():
     reddit = get_reddit_instance()
