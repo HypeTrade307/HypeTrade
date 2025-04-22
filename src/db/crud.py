@@ -907,7 +907,7 @@ def create_flag(db: Session, user_id: int, flag_type: FlagType, target_id: int, 
             flag_type=flag_type,
             reason=reason,
             target_id=target_id,
-            created_at=datetime.datetime.now()
+            created_at=datetime.now()
         )
         
         db.add(new_flag)
