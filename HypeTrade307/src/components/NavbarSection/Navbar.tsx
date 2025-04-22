@@ -153,7 +153,7 @@ const Navbar = () => {
             <Container maxWidth="xl">
                 <StyledToolbar variant="dense" disableGutters>
                     <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0 }}>
-                        <Sitemark />
+                        <img src="HypeTradeNAVBAR.png" alt="Logo" style={{ height: '26px', marginRight: '12px' }} />
                         <UserSearchBar />
                         <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                             {pages.map((page) => (
