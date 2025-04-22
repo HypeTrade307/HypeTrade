@@ -24,7 +24,6 @@ import HelpPage from "@/pages/HelpPage.tsx";
 function App() {
     return (
         <Router>
-            <StartupRedirect />
             <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
             <Routes>
                 <Route path="/" element={<Home />} />

@@ -9,7 +9,7 @@ import MarketValue from "../assets/basic_Graph.tsx";
 import AreaGraph from "@/assets/area_Graph.tsx";
 import { API_BASE_URL } from "../config";
 import { toast } from "react-toastify";
-
+import "./ViewStock.css";
 interface Stock {
     stock_id: number;
     stock_name: string;
@@ -824,24 +824,24 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
     };
 
     return (
-        <>
+        <div className="viewstock-scroll-lock">
             <AppTheme {...props}>
                 <CssBaseline enableColorScheme />
                 <Navbar />
-                
+
 
                 <div className="stock-page-container">
                     {/* Notification Button */}
                     {isAuthenticated && (
                         <div className="notification-container">
-                        <button 
-                            className="notification-button" 
+                        <button
+                            className="notification-button"
                             onClick={toggleNotifications}
                         >
                             🔔
                             {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
                         </button>
-                        
+
                         {/* notification dropdown */}
                         {showNotifications && (
                             <div className="notification-dropdown">
@@ -853,21 +853,21 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                                         </button>
                                     )}
                                 </div>
-                                
+
                                 <div className="notification-list">
                                     {loadingNotifications ? (
                                         <p className="notification-loading">Loading notifications...</p>
                                     ) : notifications.length > 0 ? (
                                         notifications.map((notification) => (
-                                            <div 
-                                                key={notification.notification_id} 
+                                            <div
+                                                key={notification.notification_id}
                                                 className={`notification-item ${!notification.is_read ? 'unread' : ''}`}
                                             >
                                                 <div className="notification-content" onClick={() => markAsRead(notification.notification_id)}>
                                                     <p className="notification-message">{notification.message}</p>
                                                     <span className="notification-time">{formatNotificationTime(notification.created_at)}</span>
                                                 </div>
-                                                
+
                                                 {/* Only show action buttons for pending friend requests */}
                                                 {notification.type === 'friend_request' && (
                                                     <div className="friend-request-actions">
@@ -885,14 +885,14 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                                                         </button>
                                                     </div>
                                                 )}
-                                                
+
                                                 {/* Show status for accepted friend requests */}
                                                 {notification.type === 'accepted_friend_request' && (
                                                     <div className="friend-request-status accepted">
                                                         Friend request accepted
                                                     </div>
                                                 )}
-                                                
+
                                                 {/* Show status for declined friend requests */}
                                                 {notification.type === 'declined_friend_request' && (
                                                     <div className="friend-request-status declined">
@@ -912,25 +912,25 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
 
                     {/* Main Display stuff */}
                     <h1 className="title">Top 20 S&P 500 Stocks</h1>
-                    
+
                     {loading && (
                         <div className="loading-container">
                             Loading stocks...
                         </div>
                     )}
-                    
+
                     {error && (
                         <div className="error-container">
                             {error}
                         </div>
                     )}
-                    
+
                     {/* Portfolio Selection */}
                     {isAuthenticated && (
                         <div className="portfolio-section">
                             <div className="portfolio-selection">
                                 <label htmlFor="portfolio-select">Select Portfolio:</label>
-                                <select 
+                                <select
                                     id="portfolio-select"
                                     value={selectedPortfolio?.portfolio_id || ""}
                                     onChange={(e) => {
@@ -953,12 +953,12 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                                     ))}
                                 </select>
                             </div>
-                            
+
                             {/* Stock Search for Portfolio (only visible when a portfolio is selected) */}
                             {selectedPortfolio && (
                                 <div className="stock-search-section">
                                     <div className="search-container">
-                                        <input 
+                                        <input
                                             type="text"
                                             placeholder="Search for stocks to add..."
                                             value={searchQuery}
@@ -967,12 +967,12 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                                         />
                                         {loadingSearch && <span className="search-loading">Searching...</span>}
                                     </div>
-                                    
+
                                     {showSearchResults && searchResults.length > 0 && (
                                         <div className="search-results">
                                             {searchResults.map((stock) => (
-                                                <div 
-                                                    key={stock.stock_id} 
+                                                <div
+                                                    key={stock.stock_id}
                                                     className="search-result-item"
                                                     onClick={() => addStockToPortfolio(stock.stock_id)}
                                                 >
@@ -984,7 +984,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                                             ))}
                                         </div>
                                     )}
-                                    
+
                                     {showSearchResults && searchResults.length === 0 && searchQuery.trim() !== "" && (
                                         <div className="no-search-results">
                                             No stocks found matching "{searchQuery}"
@@ -994,55 +994,22 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                             )}
                         </div>
                     )}
-                    
+
                     {/* S&P 500 Top Stocks */}
                     {!loading && !error && (
                         <div className="stocks-section">
                             <h2 className="section-title">S&P 500 Top Stocks</h2>
-                            <div className="stocks-grid">
-                                {stockList.map((stock) => (
-                                    <div 
-                                        className="stock-card" 
-                                        key={`top-${stock.ticker}`}
-                                        onClick={() => setPickStock(stock)}
-                                    >
-                                        <div className="stock-header">
-                                            <span className="stock-abbr">{stock.ticker}</span>
-                                            <span 
-                                                className="stock-sentiment"
-                                                style={{ backgroundColor: getSentimentColor(stock.sentiment) }}
-                                            >
-                                                {stock.sentiment}
-                                            </span>
-                                        </div>
-                                        <div className="stock-name">{stock.stock_name}</div>
-                                        <div className="stock-value">${stock.value?.toLocaleString()}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                    
-                    {/* Portfolio Stocks Section */}
-                    {isAuthenticated && selectedPortfolio && (
-                        <div className="portfolio-stocks-section">
-                            <h2 className="section-title">{selectedPortfolio.portfolio_name} Stocks</h2>
-                            
-                            {loadingPortfolioStocks ? (
-                                <div className="loading-container">
-                                    Loading portfolio stocks...
-                                </div>
-                            ) : portfolioStocks.length > 0 ? (
+                            <div className="stocks-section-scrollable">
                                 <div className="stocks-grid">
-                                    {portfolioStocks.map((stock) => (
-                                        <div 
-                                            className="stock-card" 
-                                            key={`portfolio-${stock.ticker}`}
+                                    {stockList.map((stock) => (
+                                        <div
+                                            className="stock-card"
+                                            key={`top-${stock.ticker}`}
                                             onClick={() => setPickStock(stock)}
                                         >
                                             <div className="stock-header">
                                                 <span className="stock-abbr">{stock.ticker}</span>
-                                                <span 
+                                                <span
                                                     className="stock-sentiment"
                                                     style={{ backgroundColor: getSentimentColor(stock.sentiment) }}
                                                 >
@@ -1051,7 +1018,42 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                                             </div>
                                             <div className="stock-name">{stock.stock_name}</div>
                                             <div className="stock-value">${stock.value?.toLocaleString()}</div>
-                                            <button 
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Portfolio Stocks Section */}
+                    {isAuthenticated && selectedPortfolio && (
+                        <div className="portfolio-stocks-section">
+                            <h2 className="section-title">{selectedPortfolio.portfolio_name} Stocks</h2>
+
+                            {loadingPortfolioStocks ? (
+                                <div className="loading-container">
+                                    Loading portfolio stocks...
+                                </div>
+                            ) : portfolioStocks.length > 0 ? (
+                                <div className="stocks-grid">
+                                    {portfolioStocks.map((stock) => (
+                                        <div
+                                            className="stock-card"
+                                            key={`portfolio-${stock.ticker}`}
+                                            onClick={() => setPickStock(stock)}
+                                        >
+                                            <div className="stock-header">
+                                                <span className="stock-abbr">{stock.ticker}</span>
+                                                <span
+                                                    className="stock-sentiment"
+                                                    style={{ backgroundColor: getSentimentColor(stock.sentiment) }}
+                                                >
+                                                    {stock.sentiment}
+                                                </span>
+                                            </div>
+                                            <div className="stock-name">{stock.stock_name}</div>
+                                            <div className="stock-value">${stock.value?.toLocaleString()}</div>
+                                            <button
                                                 className="remove-from-portfolio-btn"
                                                 onClick={(e) => {
                                                     e.stopPropagation(); // Prevent opening stock details
@@ -1086,7 +1088,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                                 >
                                     x
                                 </button>
-                                
+
                                 <div className="stock-detail-header">
                                     <h2>
                                         {pickStock.stock_name} ({pickStock.ticker})
@@ -1095,7 +1097,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                                         ${pickStock.value?.toLocaleString()}
                                     </div>
                                 </div>
-                                
+
                                 <div className="stock-info-grid">
                                     <div className="info-item">
                                         <span className="info-label">Analysis Mode</span>
@@ -1103,7 +1105,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                                     </div>
                                     <div className="info-item">
                                         <span className="info-label">Sentiment</span>
-                                        <span 
+                                        <span
                                             className="sentiment-badge"
                                             style={{ backgroundColor: getSentimentColor(pickStock.sentiment) }}
                                         >
@@ -1172,7 +1174,8 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                   </div>
                 )}
             </AppTheme>
-        </>
+        </div>
+
     )
 }
 
