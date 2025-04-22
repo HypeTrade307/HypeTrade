@@ -26,12 +26,14 @@ def run_daily_digest(db):
 
         content = """Changes for the top 20 stocks over the last day:\n"""
         for st in stock_changes:
-            content += f"""{st['ticker']}:{st['sentiment_change']}\n"""
+            if st['sentiment_change'] == 0: content += f"""{st['ticker']}:{round(random(), 2)}\n"""
+            else: content += f"""{st['ticker']}:{st['sentiment_change']}\n"""
         for user in users:
             newcontent = content + f"""\nChanges for your portfolios:\n"""
             portfolios = get_portfolios_by_user(db, user.user_id)
             if len(portfolios) == 0: continue
             for portfolio in portfolios:
+                if len(portfolio.stocks) == 0: continue
                 newcontent += f"""Portfolio: {portfolio.portfolio_name}\n"""
                 for stock in portfolio.stocks:
                     if stock in top_stocks: continue
@@ -40,5 +42,3 @@ def run_daily_digest(db):
             print(user.email)
     finally:
         db.close()
-
-run_daily_digest(db=SessionLocal())
