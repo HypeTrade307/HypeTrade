@@ -95,7 +95,12 @@ def get_comments_by_post_id(db: Session, post_id: int):
             "author": {
                 "id": comment.author.user_id,
                 "username": comment.author.username
-            } if comment.author else None
+            } if comment.author else None,
+            "liked_by": [
+                {
+                    "user_id": user.user_id, "username": user.username
+                } for user in comment.liked_by
+            ] if comment.liked_by else None,
         }
         for comment in comments
     ]
@@ -176,6 +181,9 @@ def add_post_like(db: Session, post_id: int, user_id: int):
         return False
 
     post.liked_by.append(user)
+    # This only adds the user to the post's list of people who like it.
+    # It does not add anything to the user's information
+
     db.commit()
     return True
 
@@ -206,16 +214,22 @@ def add_comment_like(db: Session, comment_id: int, user_id: int):
     Returns True if added successfully, False if already liked.
     """
     comment = db.query(models.Comment).filter(models.Comment.comment_id == comment_id).first()
+    print("comment", comment.comment_id)
+    print("comment", comment.content)
     user = db.query(models.User).filter(models.User.user_id == user_id).first()
+    print("user", user.username)
 
     if not comment or not user:
+        print("not comment or not user")
         return False
 
     # Check if user already liked this comment
     if user in comment.liked_by:
+        print("user already liked this comment")
         return False
 
     comment.liked_by.append(user)
+    print("comment.liked_by.append(user)", comment.liked_by)
     db.commit()
     return True
 
@@ -248,16 +262,30 @@ def create_post(db: Session, thread_id: int, title: str = None, content: str = N
     db.refresh(db_post)
     return db_post
 
-
-def get_post_by_id(db: Session, post_id: int) -> models.Post:
+# def get_post_by_id(db: Session, post_id: int) -> models.Post:
+def get_post_by_id(db: Session, post_id: int):
     """
     Retrieve a post by its ID with author and likes information.
     """
     post = db.query(models.Post).filter(models.Post.post_id == post_id).first()
-    return post
 
+    # TODO: Updated to make it work, but needs refactoring
+    return {
+            "post_id": post.post_id,
+            "thread_id": post.thread_id,
+            "author_id": post.author_id,
+            "title": post.title,
+            "content": post.content,
+            "created_at": post.created_at,
+            "updated_at": post.updated_at,
+            "liked_by": [
+                {
+                    "user_id": user.user_id, "username": user.username
+                } for user in post.liked_by
+            ] if post.liked_by else None,
+    }
 
-
+    # return post
 
 def update_post(db: Session, post_id: int, post_data: dict):
     """
@@ -271,10 +299,28 @@ def update_post(db: Session, post_id: int, post_data: dict):
         db.refresh(post)
     return post
 
+# def get_posts_by_thread_id(db: Session, thread_id : int, skip: int = 0, limit: int = 10) -> list[models.Post]:
+def get_posts_by_thread_id(db: Session, thread_id : int):
+    # return db.query(models.Post).filter(models.Post.thread_id == thread_id).offset(skip).limit(limit).all()
+    posts = db.query(models.Post).filter(models.Post.thread_id == thread_id).all()
 
-def get_posts_by_thread_id(db: Session, thread_id : int, skip: int = 0, limit: int = 10) -> list[models.Post]:
-    return db.query(models.Post).filter(models.Post.thread_id == thread_id).offset(skip).limit(limit).all()
-
+    return [
+        {
+            "post_id": post.post_id,
+            "thread_id": post.thread_id,
+            "author_id": post.author_id,
+            "title": post.title,
+            "content": post.content,
+            "created_at": post.created_at,
+            "updated_at": post.updated_at,
+            "liked_by": [
+                {
+                    "user_id": user.user_id, "username": user.username
+                } for user in post.liked_by
+            ] if post.liked_by else None,
+        }
+        for post in posts
+    ]
 
 def delete_post(db: Session, post_id: int):
     db_post = db.query(models.Post).filter(models.Post.post_id == post_id).first()
@@ -306,7 +352,6 @@ def create_stock(db: Session, stock_data: schemas.StockCreate) -> models.Stock:
     db.refresh(new_stock)
     return new_stock
 
-
 def get_stock(db: Session, stock_id: int) -> models.Stock:
     """Retrieve a single stock by its ID."""
     stock = db.query(models.Stock).filter_by(stock_id=stock_id).first()
@@ -317,11 +362,9 @@ def get_stock(db: Session, stock_id: int) -> models.Stock:
         )
     return stock
 
-
 def get_stocks(db: Session) -> list[models.Stock]:
     """Retrieve a list of stocks, with pagination."""
     return db.query(models.Stock).all()
-
 
 def update_stock(db: Session, stock_id: int, stock_data: schemas.StockUpdate) -> models.Stock:
     """Update an existing stock."""
@@ -352,7 +395,6 @@ def update_stock(db: Session, stock_id: int, stock_data: schemas.StockUpdate) ->
     db.commit()
     db.refresh(stock)
     return stock
-
 
 def delete_stock(db: Session, stock_id: int) -> None:
     """Delete a stock from the database."""
@@ -398,7 +440,6 @@ def get_portfolios_by_user(db: Session, user_id: int) -> list[models.Portfolio]:
         .filter(models.Portfolio.user_id == user_id)
         .all()
     )
-
 
 def update_portfolio(db: Session, portfolio_id: int, new_name: str) -> models.Portfolio:
     portfolio = db.query(models.Portfolio).filter(models.Portfolio.portfolio_id == portfolio_id).first()
@@ -688,7 +729,6 @@ def get_sentiment_summary_for_auto_stocks(db: Session) -> list[dict]:
     #   { "timestamp": "2024-04-01 12:00", "value": -1.0 }
     # ]
 
-
 def get_rolling_sentiment(db: Session, window_size: int = 3) -> list[dict]:
     """
     Returns rolling sentiment values for auto-mode stocks.
@@ -735,8 +775,6 @@ def get_rolling_sentiment(db: Session, window_size: int = 3) -> list[dict]:
     # - "stock_id": The ID of the stock for which the sentiment is calculated.
     # - "timestamp": The time at which the rolling average is computed.
     # - "rolling_avg": The average sentiment value over the specified window size.
-
-
 
 def get_hybrid_rolling_sentiment(db: Session, window_size: int = 3) -> list[dict]:
     """
@@ -823,7 +861,6 @@ def get_sentiment_summary_for_stock_in_range(db: Session, stock_id: int, timefra
     )
 
     return [{"timestamp": row.timestamp, "value": row.value} for row in results]
-
 
 # ----------------------------
 # FLAG CRUD

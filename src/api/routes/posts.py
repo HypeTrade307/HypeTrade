@@ -23,6 +23,7 @@ class CommentResponse(CommentBase):
     comment_id: int
     post_id: int
     author_id: int
+    content: str
     created_at: datetime
     author: Optional[dict] = None
     liked_by: Optional[List[dict]] = None
@@ -131,9 +132,7 @@ def unlike_post(
 @router.get("/{post_id}/comments", response_model=List[CommentResponse])
 def get_post_comments(post_id: int, db: Session = Depends(get_db)):
     # Get all comments for the post
-    print(4)
     comments = crud.get_comments_by_post_id(db, post_id)
-    print(5)
     return comments
 
 # Create a new comment on a post
@@ -215,13 +214,17 @@ def like_comment(
 ):
     # Get the existing comment
     comment = crud.get_comment_by_id(db, comment_id)
+    print("comment", comment)
     if not comment:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Comment with id {comment_id} not found")
 
     # Add like
     result = crud.add_comment_like(db, comment_id, current_user.user_id)
+    print("crud result", result)
     if not result:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You have already liked this comment")
+        result = crud.remove_comment_like(db, comment_id, current_user.user_id)
+        if not result:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You have already liked this comment")
 
     return {"message": "Comment liked successfully"}
 
@@ -240,6 +243,8 @@ def unlike_comment(
     # Remove like
     result = crud.remove_comment_like(db, comment_id, current_user.user_id)
     if not result:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You haven't liked this comment")
+        result = crud.add_comment_like(db, comment_id, current_user.user_id)
+        if not result:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You haven't liked this comment")
 
     return {"message": "Comment unliked successfully"}

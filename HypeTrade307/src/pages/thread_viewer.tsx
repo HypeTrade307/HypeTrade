@@ -82,7 +82,10 @@ function ThreadViewer() {
                 console.log(`something something and my id is ${threadId}`);
 
                 const response = await axios.get(`${API_BASE_URL}/thread/${threadId}`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: {
+                        "Content-Type": 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
                 });
                 console.log("Data sent to API:", { response });
 
@@ -106,8 +109,16 @@ function ThreadViewer() {
 
                 console.log(`fetch posts`);
                 const response = await axios.get(`${API_BASE_URL}/thread/${threadId}`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: {
+                        "Content-Type": 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
                 });
+
+                console.log("fetch_posts_response", response);
+                console.log("fetch_posts_response.data", response.data);
+                console.log("fetch_posts_response.data.json", response.data.json);
+
                 setPosts(response.data);
 
             } catch (err: any) {

@@ -23,7 +23,9 @@ interface Comment {
     author?: {
         username: string;
     };
-    liked_by?: { user_id: number }[];
+    liked_by?: {
+        user_id: number
+    }[];
 }
 
 interface Post {
@@ -61,9 +63,9 @@ function PostViewer() {
     const [showCommentForm, setShowCommentForm] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
-  // Tutorial state
-  const [tutorialOpen, setTutorialOpen] = useState(false);
-  const [step, setStep] = useState(0);
+    // Tutorial state
+    const [tutorialOpen, setTutorialOpen] = useState(false);
+    const [step, setStep] = useState(0);
 
   const tutorialSteps = [
     { title: "Welcome to the Post Page", description: "Here you can view a post and all its comments." },
@@ -72,7 +74,7 @@ function PostViewer() {
     { title: "You're Ready!", description: "Start exploring and engaging in discussions." }
   ];
 
-  const nextStep = () => {
+    const nextStep = () => {
     if (step < tutorialSteps.length - 1) {
       setStep(step + 1);
     } else {
@@ -80,18 +82,18 @@ function PostViewer() {
     }
   };
 
-  // Fetch user ID from local storage
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      try {
-        const parsedUser = JSON.parse(userData);
-        setUserId(parsedUser.user_id);
-      } catch (err) {
-        console.error("Error parsing user data:", err);
-      }
-    }
-  }, []);
+    // Fetch user ID from local storage
+    useEffect(() => {
+        const userData = localStorage.getItem("user");
+        if (userData) {
+            try {
+                const parsedUser = JSON.parse(userData);
+                setUserId(parsedUser.user_id);
+            } catch (err) {
+                console.error("Error parsing user data:", err);
+            }
+        }
+    }, []);
 
     // Fetch post details
     useEffect(() => {
@@ -101,8 +103,14 @@ function PostViewer() {
                 if (!postId) return;
 
                 const response = await axios.get(`${API_BASE_URL}/post/${postId}`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: {
+                        "Content-Type": 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
                 });
+
+                console.log("fetch_post_response", response);
+                console.log("fetch_post_response.data", response.data);
 
                 setPost(response.data);
             } catch (err: any) {
@@ -138,13 +146,13 @@ function PostViewer() {
         fetchComments();
     }, [postId]);
 
-  // Tutorial trigger
-  useEffect(() => {
+    // Tutorial trigger
+    useEffect(() => {
     const tutorialMode = JSON.parse(localStorage.getItem("tutorialMode") || "false");
     if (tutorialMode) {
       setTutorialOpen(true);
     }
-  }, []);
+    }, []);
 
   // Create comment
   const handleCreateComment = async (e: React.FormEvent) => {
@@ -214,28 +222,50 @@ function PostViewer() {
         }
     };
 
+    // onClick={() => handleLikePost(
+    //     post.post_id,
+    //     post.liked_by?.some(like => like.user_id === userId) ? true : false
+    // )}
+
     // Handle post like/unlike
-    const handleLikePost = async () => {
-        if (!post || !userId) return;
+    const handleLikePost = async (postId: number, isLiked: boolean) => {
+    // const handleLikePost = async () => {
+    //     console.log("inside handleLikePost");
+    //
+    //     console.log("post", post);
+    //     console.log("userId", userId);
+
+        // if (!post || !userId) return;
 
         try {
             const token = localStorage.getItem("token");
+
+            console.log("postId:", postId);
+            console.log("token:", token);
+            console.log("isliked:", isLiked);
+
             if (!token) {
                 setError("Not authenticated");
                 return;
             }
 
-            const isLiked = post.liked_by?.some(like => like.user_id === userId);
+            // const isLiked = post.liked_by?.some(like => like.user_id === userId);
+            console.log("isLiked", isLiked);
             const endpoint = `${API_BASE_URL}/post/${postId}/${isLiked ? 'unlike' : 'like'}`;
+            console.log("endpoint", endpoint);
 
-            await axios.post(endpoint, {}, {
+            const post_response = await axios.post(endpoint, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
+            console.log("post_response", post_response);
+            console.log("post_response.data", post_response.data);
 
             // Update post with new like status
             const response = await axios.get(`${API_BASE_URL}/post/${postId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
+            console.log("response", response);
+            console.log("response.data", response.data);
 
             setPost(response.data);
         } catch (err: any) {
@@ -248,21 +278,32 @@ function PostViewer() {
     const handleLikeComment = async (commentId: number, isLiked: boolean) => {
         try {
             const token = localStorage.getItem("token");
+
+            console.log("commendId:", commentId);
+            console.log("token:", token);
+            console.log("isliked:", isLiked);
+
             if (!token) {
                 setError("Not authenticated");
                 return;
             }
 
+            /*TODO:  Update this like the post-like function to account for a user's likes */
             const endpoint = `${API_BASE_URL}/comment/${commentId}/${isLiked ? 'unlike' : 'like'}`;
 
-            await axios.post(endpoint, {}, {
+            const like_response = await axios.post(endpoint, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
+            console.log("post_response", like_response);
+            console.log("post_response.data", like_response.data);
 
             // Refresh comments
             const response = await axios.get(`${API_BASE_URL}/post/${postId}/comments`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
+
+            console.log("response", response);
+            console.log("response.data", response.data);
 
             setComments(response.data);
         } catch (err: any) {
@@ -325,11 +366,36 @@ function PostViewer() {
                             </div>
                             <div className="post-actions">
                                 <button
-                                    className={`like-button ${post.liked_by?.some(like => like.user_id === userId) ? 'liked' : ''}`}
-                                    onClick={handleLikePost}
+                                    className={
+                                        `like-button ${
+                                            post.liked_by?.some(like => like.user_id === userId) ? 'liked' : ''
+                                        }`
+                                    }
+                                    onClick={() => handleLikePost(
+                                        post.post_id,
+                                        post.liked_by?.some(like => like.user_id === userId) ? true : false
+                                    )}
                                 >
                                     {post.liked_by?.length || 0} Likes
                                 </button>
+
+                                {/*<button*/}
+                                {/*    // className="comment-like-button"*/}
+                                {/*    className={*/}
+                                {/*        `comment-like-button ${*/}
+                                {/*            comment.liked_by?.some(like => like.user_id === userId) ? 'liked' : ''*/}
+                                {/*        }`*/}
+                                {/*    }*/}
+                                {/*    onClick={() => handleLikeComment(*/}
+                                {/*        comment.comment_id,*/}
+                                {/*        // !!comment.liked_by?.some(like => like.user_id === userId)*/}
+                                {/*        // !!comment.liked_by?.some(like => like.user_id === userId)*/}
+                                {/*        comment.liked_by?.some(like => like.user_id === userId) ? true : false*/}
+                                {/*    )}*/}
+                                {/*>*/}
+                                {/*    {comment.liked_by?.length || 0} Likes*/}
+                                {/*</button>*/}
+
                                 <button
                                     className="comment-button"
                                     onClick={() => setShowCommentForm(!showCommentForm)}
@@ -405,10 +471,17 @@ function PostViewer() {
                                                     </span>
                                                 </div>
                                                 <button
-                                                    className={`comment-like-button ${comment.liked_by?.some(like => like.user_id === userId) ? 'liked' : ''}`}
+                                                    // className="comment-like-button"
+                                                    className={
+                                                        `comment-like-button ${
+                                                            comment.liked_by?.some(like => like.user_id === userId) ? 'liked' : ''
+                                                        }`
+                                                    }
                                                     onClick={() => handleLikeComment(
                                                         comment.comment_id,
-                                                        !!comment.liked_by?.some(like => like.user_id === userId)
+                                                        // !!comment.liked_by?.some(like => like.user_id === userId)
+                                                        // !!comment.liked_by?.some(like => like.user_id === userId)
+                                                        comment.liked_by?.some(like => like.user_id === userId) ? true : false
                                                     )}
                                                 >
                                                     {comment.liked_by?.length || 0} Likes
