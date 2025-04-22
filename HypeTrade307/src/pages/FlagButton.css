@@ -1,4 +1,4 @@
-/* Flag Button Styling */
+  /* Flag Button Styling */
 .flag-button-container {
     display: inline-flex;
     align-items: center;
@@ -10,10 +10,8 @@
     background-color: #ff4d4f;
     color: white;
     border: none;
-    padding: 6px 12px;
-    border-radius: 8px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 0.9rem;
     font-weight: 500;
     transition: background-color 0.2s ease;
   }
@@ -33,11 +31,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 999;
+    z-index: 3000;
   }
   
   /* Modal Box */
   .flag-modal {
+    z-index: 1000;
     background-color: white;
     padding: 2rem;
     border-radius: 12px;
@@ -45,6 +44,7 @@
     max-width: 90%;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
     text-align: center;
+    color: #333; /* Add this to ensure all text is visible */
   }
   
   /* Modal Title */
@@ -52,6 +52,13 @@
     margin-bottom: 1rem;
     font-size: 1.25rem;
     color: #222;
+  }
+
+  /* Modal Title and Text */
+  .flag-modal h3 {
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    color: #333; /* Dark text color for visibility */
   }
   
   /* Text Area */
@@ -64,6 +71,8 @@
     border: 1px solid #ccc;
     resize: none;
     margin-bottom: 1rem;
+    color: #333; /* Dark text for input */
+    background-color: white; /* Ensure input background is white */
   }
   
   /* Buttons in Modal */
@@ -100,4 +109,3 @@
   .flag-modal-buttons .submit-button:hover {
     background-color: #d73738;
   }
-  

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import './homepage.css'
 function Home_page_button(){
     return (

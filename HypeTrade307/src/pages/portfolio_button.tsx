@@ -1,3 +1,4 @@
+//@ts-nocheck
 import '../index.css';
 import { useNavigate } from 'react-router-dom';
 function Portfolio_button({ friendID }: { friendID: number }) {

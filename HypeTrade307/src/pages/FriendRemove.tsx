@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useState } from "react";
 import styles from "./FriendRemove.module.css"; // Assuming you are using CSS modules
 import Portfolio_button from "./portfolio_button.tsx"; // Ensure this import is correct

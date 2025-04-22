@@ -8,6 +8,8 @@
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/HypeTrade307/.build-cache" />
+      <excludeFolder url="file://$MODULE_DIR$/HypeTrade307/node_modules" />
     </content>
     <content url="file://$MODULE_DIR$/HypeTrade307/node_modules" />
     <orderEntry type="jdk" jdkName="Python 3.11 virtualenv at ~/Development/HypeTrade/.venv" jdkType="Python SDK" />

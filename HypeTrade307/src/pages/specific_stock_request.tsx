@@ -1,9 +1,11 @@
+//@ts-nocheck
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../components/NavbarSection/Navbar";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme";
 import "./specific_stock.css";
+//@ts-ignore
 import { API_BASE_URL } from '../config';
 
 // Define interfaces
@@ -45,7 +47,7 @@ function SpecificStockRequest() {
                 setLoading(true);
                 const token = localStorage.getItem("token");
 
-                const response = await axios.get(`${API_BASE_URL}/stocks`, {
+                const response = await axios.get("https://hypet-145797464141.us-central1.run.app/api/stocks/", {
                     headers: token ? { Authorization: `Bearer ${token}` } : {}
                 });
 

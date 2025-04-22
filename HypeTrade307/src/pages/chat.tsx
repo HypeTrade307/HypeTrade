@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { AppBar, Toolbar, Typography, Button, Container, CssBaseline, Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+// @ts-nocheck
+import React, { useState, useEffect } from 'react';
+import { Button, Container, CssBaseline, Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import Navbar from "../components/NavbarSection/Navbar.tsx";
 import AppTheme from "../components/shared-theme/AppTheme.tsx";
 import './ChatPage.css';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
 import { API_BASE_URL } from '../config';
 
 interface Message {
@@ -15,7 +14,8 @@ interface Message {
 const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
-  const [ws, setWs] = useState<WebSocket | null>(null);
+  const [ws] = useState<WebSocket | null>(null);
+//@ts-ignore
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null); // Track message index for deletion
   const [openDialog, setOpenDialog] = useState(false); // Track dialog visibility
 

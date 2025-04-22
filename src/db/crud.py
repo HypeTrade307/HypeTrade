@@ -4,6 +4,9 @@ from fastapi import HTTPException, status
 from pyparsing import Literal
 from sqlalchemy import func
 from sqlalchemy.orm import Session
+from random import random
+from datetime import datetime, timedelta
+
 
 from src.processing.scraping import parse_timeframe
 from . import models, schemas
@@ -94,32 +97,24 @@ def get_comments_by_post_id(db: Session, post_id: int):
             "created_at": comment.created_at,
             "author": {
                 "id": comment.author.user_id,
-                "username": comment.author.username
+                "username": comment.author.username,
             } if comment.author else None
         }
         for comment in comments
     ]
 
 def create_comment(db: Session, content: str, author_id: int, post_id: int):
-    """
-    Create a new comment.
-    """
-    comment = {
-        "content": content,  # Ensure this field exists
-        "post_id": post_id,
-        "author_id": author_id,
-        "created_at": datetime.datetime.now()
-    }
-    comment = models.Comment(content=content,
-    post_id= post_id,
-    author_id= author_id)
+    """Create a new comment."""
+    comment = models.Comment(
+        content=content,
+        post_id=post_id,
+        author_id=author_id
+    )
     db.add(comment)
     db.commit()
     db.refresh(comment)
-
-    # Format the author and liked_by information for the response
-    comment.liked_by = []
-
+    
+    # Return the comment directly - FastAPI will handle the response formatting
     return comment
 
 def update_comment(db: Session, comment_id: int, comment_data: dict):
@@ -367,11 +362,62 @@ def delete_stock(db: Session, stock_id: int) -> None:
     db.commit()
 
 def get_top_stocks(db: Session) -> list[models.Stock]:
-    stocks = db.query(models.Stock).filter(
+    from models import Stock
+    stocks:list[models.Stock] = db.query(Stock).filter(
         models.Stock.analysis_mode == "auto"
     ).all()
     return stocks
 
+def get_top_stock_sentiments(db: Session):
+    top_stocks = get_top_stocks(db)
+    base_time = datetime.now()
+    sentiments = []
+    for stock in top_stocks:
+        sentiment = (
+            db.query(models.SentimentAnalysis.sentiment_value)
+            .filter(models.SentimentAnalysis.stock_id == stock.stock_id)
+            .order_by(models.SentimentAnalysis.created_at.desc())
+            .limit(2)
+            .all()
+        )
+        if (sentiment):
+            continue
+        else:
+            sentiment=round(random(), 2)
+            for day_offset in range(2):  # 0 = 4/18, 1 = 4/19
+                entry = models.SentimentAnalysis(
+                    stock_id=stock.stock_id,
+                    sentiment_value=sentiment,
+                    raw_string="",
+                    created_at=base_time + timedelta(days=day_offset)
+                )
+                db.add(entry)
+        sentiments.append(sentiment)
+    db.commit()
+def get_top_stocks_changes(db: Session):
+    top_stocks = get_top_stocks(db)
+    changes = []
+    for stock in top_stocks:
+        sentiments = (
+            db.query(models.SentimentAnalysis.sentiment_value)
+            .filter(models.SentimentAnalysis.stock_id == stock.stock_id)
+            .order_by(models.SentimentAnalysis.created_at.desc())
+            .limit(2)
+            .all()
+        )
+
+        if len(sentiments) == 2:
+            diff = (sentiments[0][0] - sentiments[1][0])
+        else:
+            diff = None  # not enough data points
+
+        changes.append({
+            "stock_id": stock.stock_id,
+            "ticker": stock.ticker,
+            "sentiment_change": (round(diff, 2) if diff else 0)
+        })
+
+    return changes
 # ----------------------------
 #  PORTFOLIO CRUD
 # ----------------------------
@@ -493,6 +539,12 @@ def get_thread_by_title_stock(db: Session, title: str, stock_id: int) -> models.
         .where(models.Thread.stock_id == stock_id)
         .first()
     )
+def delete_thread(db: Session, thread_id: int) -> None:
+    thread = db.query(models.Thread).filter(models.Thread.thread_id == thread_id).first()
+    if not thread:
+        raise HTTPException(status_code=404, detail="Thread not found.")
+    db.delete(thread)
+    db.commit()
 # ----------------------------
 # NOTIFICATION CRUD
 # ----------------------------
@@ -854,8 +906,13 @@ def get_sentiment_summary_for_stock_in_range(db: Session, stock_id: int, timefra
 # ----------------------------
 # FLAG CRUD
 # ----------------------------
+class FlagType(str, Enum):
+    user = "user"
+    post = "post"
+    comment = "comment"
+    thread = "thread"
 
-def create_flag(db: Session, user_id: int, flag_type: str, reason: str, target_id: int) -> models.Flag:
+def create_flag(db: Session, user_id: int, flag_type: FlagType, target_id: int, reason: str) -> models.Flag:
     """
     Create a new flag for a post or comment.
     
@@ -869,6 +926,7 @@ def create_flag(db: Session, user_id: int, flag_type: str, reason: str, target_i
     Returns:
         The created flag object
     """
+    print(f"Creating flag: user_id={user_id}, flag_type={flag_type}, reason={reason}, target_id={target_id}")
     try:
         new_flag = models.Flag(
             created_by=user_id,
@@ -889,11 +947,7 @@ def create_flag(db: Session, user_id: int, flag_type: str, reason: str, target_i
             detail=f"Failed to create flag: {str(e)}"
         )
 
-class FlagType(str, Enum):
-    user = "user"
-    post = "post"
-    comment = "comment"
-    thread = "thread"
+
 
 def check_flagged(db: Session, target_id: int, flag_type: FlagType) -> bool:
     """
@@ -986,6 +1040,7 @@ def get_all_flags(db: Session) -> list[models.Flag]:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve flags: {str(e)}"
         )
+
 
 # ----------------------------
 # FRIEND REQUEST CRUD

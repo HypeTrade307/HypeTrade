@@ -10,6 +10,7 @@ from src.db.database import get_db
 from src.db import schemas
 from src.db import crud
 from fastapi.logger import logger
+from fastapi.encoders import jsonable_encoder
 
 
 # Comment schemas
@@ -139,24 +140,18 @@ def get_post_comments(post_id: int, db: Session = Depends(get_db)):
 # Create a new comment on a post
 @router.post("/{post_id}/comments", response_model=CommentResponse, status_code=status.HTTP_201_CREATED)
 def create_comment(
-        post_id: int,
-        comment: CommentCreate,
-        db: Session = Depends(get_db),
-        current_user: models.User = Depends(get_current_user)
+    post_id: int,
+    comment: CommentCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
 ):
-    # Verify post exists
-    post = crud.get_post_by_id(db, post_id)
-    if not post:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id {post_id} not found")
-
-    # Create the new comment
     new_comment = crud.create_comment(
-        db,
-        content=comment.content,
+        db=db,
+        post_id=post_id,
         author_id=current_user.user_id,
-        post_id=post_id
+        content=comment.content
     )
-    return new_comment
+    return jsonable_encoder(new_comment)
 
 
 # Comment routes

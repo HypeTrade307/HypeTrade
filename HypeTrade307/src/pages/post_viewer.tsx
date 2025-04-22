@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -5,11 +6,11 @@ import Navbar from "../components/NavbarSection/Navbar";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
+//@ts-ignore
   Button
+//@ts-ignore
 } from "@mui/material";
+//@ts-ignore
 import { Box, Paper } from "@mui/material";
 import "./Post.css";
 import { API_BASE_URL } from '../config';

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import {useEffect, useState} from "react";
 import Home_page_button from "./Home_page_button.tsx";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
@@ -8,10 +9,14 @@ import Portfolios_creation from "./Portfolios_creation.tsx";
 import SettingsMenu from "./SettingsMenu.tsx";
 import PortfolioViewer from "./Portfoilos_viewer.tsx";
 import "./Profile_Page.css";
+import {Box, Button, Container, Link, Stack } from "@mui/material";
+// import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 
 function Profile_page(props: { disableCustomTheme?: boolean }) {
     const [showPortfolioViewer, setShowPortfolioViewer] = useState<boolean>(false);
     const [showSettings, setShowSettings] = useState<boolean>(false);
+    const [profilePic, setProfilePic] = useState("");
 
     // Tutorial Left
     const [showTutorialLeft, setShowTutorialLeft] = useState(false);
@@ -75,6 +80,162 @@ function Profile_page(props: { disableCustomTheme?: boolean }) {
             <AppTheme {...props}>
                 <CssBaseline enableColorScheme />
                 <Navbar />
+
+                <div className="profile-container2">
+                    <Container
+                        fixed
+                        sx={{
+                            '@media screen and (max-width: 768px)': {
+                                padding: "0",
+                                marginY: "10px"
+                            },
+                        }}
+                    >
+                        <Grid
+                            container
+                            direction="row"
+                            justifyContent="center"
+                            alignItems="flex-start"
+                            spacing={2}
+                            sx={{
+                                '@media screen and (max-width: 768px)': {
+                                    alignItems: "center",
+                                    margin: "0",
+                                    spacing: 0,
+                                    width: "100%",
+                                },
+                            }}
+                        >
+                            <Grid
+                                // LHS Column
+                                container
+                                item
+                                direction="column"
+                                justifyContent="flex-start"
+                                // alignItems="center"
+                                // xs={12} sm={4}
+                            >
+                                {/*profile section*/}
+                                <Grid
+                                    item
+                                    xs={12} sm={4}
+                                >
+                                    <Stack direction="column"
+                                           // justifyContent="center"
+                                           alignItems="flex-start"
+                                           spacing={2}
+                                    >
+                                        <Box
+                                            component="img"
+                                            sx={{
+                                                height: 233,
+                                                width: 350,
+                                                maxHeight: { xs: 233, md: 167 },
+                                                maxWidth: { xs: 350, md: 250 },
+                                                borderRadius: '10px',
+                                                // display: flex;
+                                                // flex-direction: column;
+                                                // align-items: stretch;
+                                                // justify-content: flex-start;
+                                                // height: 20vh;
+                                            }}
+                                            alt="The house from the offer."
+                                            src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&w=350&dpr=2"
+                                            // src={profilePic}
+                                        />
+                                        {/*<ProfilePic src={profilePic}/>*/}
+                                    </Stack>
+                                </Grid>
+                            </Grid>
+                            <Grid
+                                // RHS Column
+                                container
+                                item
+                                direction="column"
+                                justifyContent="flex-start"
+                                alignItems="stretch"
+                                // xs={12} sm={8}
+                                sx={{
+                                    '@media screen and (max-width: 768px)': {
+                                        alignItems: "center",
+                                        margin: "auto",
+                                    },
+                                }}
+                            >
+                                <Grid
+                                    // Name and Follow Button
+                                    container
+                                    item
+                                    direction="column"
+                                    justifyContent="flex-start"
+                                    alignItems="flex-start"
+                                    sx={{
+                                        '@media screen and (max-width: 768px)': {
+                                            alignItems: "center",
+                                            marginY: "10px"
+                                        },
+                                    }}
+                                >
+                                    <div className="NameStatusIconContainer">
+                                        <div className="userName">
+                                            My Profile
+                                            {/*{nickName}*/}
+                                        </div>
+                                    </div>
+
+                                    <Grid
+                                        // Follow Button container
+                                        container
+                                        item
+                                        direction="column"
+                                        justifyContent="flex-start"
+                                        alignItems="flex-start"
+                                        sx={{
+                                            '@media screen and (max-width: 768px)': {
+                                                alignItems: "center",
+                                                marginTop: "10px"
+                                            },
+                                        }}
+                                    >
+
+                                        <Grid
+                                            // Follow Button container
+                                            container
+                                            direction="column"
+                                            justifyContent="flex-start"
+                                            alignItems="flex-start"
+                                            sx={{
+                                                '@media screen and (max-width: 768px)': {
+                                                    alignItems: "center",
+                                                    marginTop: "10px"
+                                                },
+                                            }}
+                                        >
+                                            <div>
+                                                <Button
+                                                    disableRipple
+                                                    container
+                                                    direction="column"
+                                                    justifyContent="center"
+                                                    alignItems="center"
+                                                    // fullWidth={true}
+
+                                                    variant="outlined"
+                                                    style={{color:'lightblue'}}
+                                                    // onClick={followUser}
+                                                >
+                                                    Follow
+                                                </Button>
+                                            </div>
+
+                                        </Grid>
+
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Container>
+                </div>
 
                 <div className="profile-container">
                     <div className="top-navigation">

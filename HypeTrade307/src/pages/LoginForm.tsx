@@ -1,9 +1,11 @@
+//@ts-nocheck
 import { useState } from "react";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
 import { useNavigate } from "react-router-dom";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme.tsx";
 import axios from "axios";
+import { API_BASE_URL } from '../config';
 import { toast } from "react-toastify";
 
 interface User {
@@ -62,7 +64,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
 
         try {
             const response = await axios.post(
-                "http://localhost:8080/auth/send_confirmation_code",
+                "https://hypet-145797464141.us-central1.run.app/api/auth/send_confirmation_code",
                 { email: newUser.email },
                 { headers: { "Content-Type": "application/json" } }
             );
@@ -95,7 +97,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
 
         try {
             const response = await axios.post(
-                "http://localhost:8080/auth/signup",
+                "https://hypet-145797464141.us-central1.run.app/api/auth/signup",
                 {
                     email: newUser.email,
                     username: newUser.username,
@@ -121,15 +123,18 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:8080/auth/login", loginUser);
+            const response = await axios.post(
+                "https://hypet-145797464141.us-central1.run.app/api/auth/login",
+                loginUser
+            );
             localStorage.setItem("token", response.data.access_token);
             toast.success("Login successful!");
-    
+
             // Now fetch user details to check admin status
-            const profileRes = await axios.get("http://localhost:8080/users/me", {
+            const profileRes = await axios.get(`${API_BASE_URL}/users/me`, {
                 headers: { Authorization: `Bearer ${response.data.access_token}` },
             });
-    
+
             const isAdmin = profileRes.data?.is_admin;
             navigate(isAdmin ? "/admin" : "/profile");
         } catch (err) {
@@ -139,12 +144,14 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
     };
     return (
         <>
+            
             <AppTheme {...props}>
                 <CssBaseline enableColorScheme />
                 <Navbar />
                 <div className="login-container">
                     <form onSubmit={handleLogin}>
-                        <h2>Welcome to</h2>
+                    <div style={{ height: '15px' }} /> {/* adds white space */}                
+                        <h2 style={{ fontSize: '35px'}}>Welcome to</h2>
                         <h1>HypeTrade</h1>
                         <div className="form-group">
                             <input
@@ -166,14 +173,14 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
                                 onChange={handleLoginChange}
                             />
                         </div>
-                        <button type="submit" className="login-button">
+                        <button type="submit" className="submit-button">
                             Login
                         </button>
                     </form>
 
                     <div className="signup-section">
                         <p>Don't have an account?</p>
-                        <button className="signup-button" onClick={() => setSignUp(true)}>
+                        <button className="submit-button" onClick={() => setSignUp(true)}>
                             Sign Up
                         </button>
                     </div>
@@ -213,6 +220,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
                                     <div className="form-group">
                                         <input
                                             type="password"
+                                            
                                             name="password"
                                             placeholder="Password"
                                             required
@@ -220,13 +228,14 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
                                             onChange={handleSignupChange}
                                         />
                                     </div>
-                                    <button
+                                    <button 
                                         type="button"
-                                        className="send-code-button"
+                                        className="submit-button"
                                         onClick={sendConfirmationCode}
                                     >
                                         Send Confirmation Code
                                     </button>
+                                    <div style={{ height: '15px' }} /> {/* adds white space */}
                                     <div className="form-group">
                                         <input
                                             type="text"

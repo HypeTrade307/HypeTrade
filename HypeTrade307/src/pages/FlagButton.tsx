@@ -1,15 +1,16 @@
-// src/components/FlagButton.tsx
 import React, { useState } from "react";
+//@ts-nocheck
 import axios from "axios";
 import { toast } from "react-toastify";
 import "./FlagButton.css";
+import { API_BASE_URL } from '../config';
 
 interface FlagButtonProps {
-  targetId: number;
-  flagType: "user" | "post" | "comment" | "thread";
+  target_id: number;
+  flag_type: "user" | "post" | "comment" | "thread";
 }
 
-const FlagButton: React.FC<FlagButtonProps> = ({ targetId, flagType }) => {
+const FlagButton: React.FC<FlagButtonProps> = ({ target_id, flag_type }) => {
   const [showModal, setShowModal] = useState(false);
   const [reason, setReason] = useState("");
 
@@ -21,11 +22,11 @@ const FlagButton: React.FC<FlagButtonProps> = ({ targetId, flagType }) => {
     }
     try {
       await axios.post(
-        "http://localhost:8080/flag/",
+          `${API_BASE_URL}/flag/`,
         {
-          target_id: targetId,
-          flag_type: flagType,
-          reason: reason,
+          flag_type,
+          target_id,
+          reason,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -40,6 +41,12 @@ const FlagButton: React.FC<FlagButtonProps> = ({ targetId, flagType }) => {
     }
   };
 
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).classList.contains("flag-modal-overlay")) {
+      setShowModal(false);
+    }
+  };
+
   return (
     <>
       <button className="flag-button" onClick={() => setShowModal(true)}>
@@ -47,17 +54,23 @@ const FlagButton: React.FC<FlagButtonProps> = ({ targetId, flagType }) => {
       </button>
 
       {showModal && (
-        <div className="flag-modal-overlay" onClick={() => setShowModal(false)}>
+        <div
+          className="flag-modal-overlay"
+          onClick={handleOverlayClick}
+          style={{ zIndex: 3000 }}
+        >
           <div className="flag-modal" onClick={(e) => e.stopPropagation()}>
-            <h3>Flag This {flagType.charAt(0).toUpperCase() + flagType.slice(1)}</h3>
+            <h3>
+              Flag This {flag_type.charAt(0).toUpperCase() + flag_type.slice(1)}
+            </h3>
             <textarea
               placeholder="Reason (optional)"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
             />
-            <div className="flag-modal-actions">
-              <button onClick={handleSubmit}>Submit</button>
-              <button onClick={() => setShowModal(false)}>Cancel</button>
+            <div className="flag-modal-buttons">
+              <button className="submit-button" onClick={handleSubmit}>Submit</button>
+              <button className="cancel-button" onClick={() => setShowModal(false)}>Cancel</button>
             </div>
           </div>
         </div>

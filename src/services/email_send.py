@@ -6,7 +6,7 @@ import brevo_python
 from brevo_python.rest import ApiException
 from pprint import pprint
 
-def send_simple_message(email, code):
+def send_simple_message(email, content):
     """
     uses Brevo API to send a transactional email. api key is in the chat. unless you want to test this particular functionality,
     the code will be printed on the uvicorn terminal after you press 'send code'. only sends stuff from my email for the
@@ -25,16 +25,15 @@ def send_simple_message(email, code):
 
     api_instance = brevo_python.TransactionalEmailsApi(brevo_python.ApiClient(configuration))
     subject = "from the Python SDK!"
-    sender = {"name":"whodis","email":"adityagandhi98101@gmail.com"}
-    html_content = f"<html><body><h1>From HypeTrade: Your code is {code} </h1></body></html>"
+    sender = {"name":"HypeTrade","email":"adityagandhi98101@gmail.com"}
+    html_content = f"<html><body><h1>From HypeTrade:</h1>\n {content}</body></html>"
     to = [{"email":email,"name":"Unspecified"}]
     send_smtp_email = brevo_python.SendSmtpEmail(to=to, html_content=html_content, sender=sender, subject=subject) # SendSmtpEmail | Values to send a transactional email
 
     # The code is printed to uvicorn terminal for easier access. The mail takes 2-3 minutes to be rec'd.
 
-    print(f"Code is {code}. Email may/may not have been sent yet.")
+    # print(f"Code is {code}. Email may/may not have been sent yet.")
     try:
-        api_response = api_instance.send_transac_email(send_smtp_email)
-        pprint(api_response)
+        api_instance.send_transac_email(send_smtp_email)
     except ApiException as e:
         print("Exception when calling TransactionalEmailsApi->send_transac_email: %s\n" % e)
