@@ -97,7 +97,7 @@ function Forum() {
                 //     return;
                 // }
 
-                const response = await axios.get(`${API_BASE_URL}/stocks`, {
+                const response = await axios.get(`${API_BASE_URL}/stocks/`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
