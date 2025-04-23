@@ -87,7 +87,7 @@
 }
 
 .info-value {
-  color: var(--mui-palette-text-primary);
+  color: lightgreen;
 }
 
 .portfolios-grid {

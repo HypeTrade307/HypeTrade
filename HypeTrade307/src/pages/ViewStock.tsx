@@ -1,6 +1,5 @@
-//@ts-nocheck
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import "../stocks.css";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -287,6 +286,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                 // Mark notification as read
                 markAsRead(notificationId);
                 
+                
                 // Remove the notification from the list after a short delay
                 setTimeout(() => {
                     setNotifications(notifications.filter(notification => 
@@ -449,7 +449,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
             setLoading(true);
             const token = localStorage.getItem("token");
             const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-            console.log(`${API_BASE_URL}`)
+            
             const response = await axios.get(`${API_BASE_URL}/stocks/top/?limit=20`, { headers });
             
             if (response.status === 200) {
@@ -476,7 +476,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
             }
             
             const response = await axios.get(
-                `${API_BASE_URL}/portfolios`,
+                `${API_BASE_URL}/portfolios/`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -1089,16 +1089,13 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                                 </button>
                                 
                                 <div className="stock-detail-header">
-                                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                                     <h2>
                                         {pickStock.stock_name} ({pickStock.ticker})
                                     </h2>
+                                    <div className="detail-change">
+                                        ${pickStock.value?.toLocaleString()}
+                                    </div>
                                 </div>
-                                <div className="detail-change">
-                                    ${pickStock.value?.toLocaleString()}
-                                </div>
-                                </div>
-
                                 
                                 <div className="stock-info-grid">
                                     <div className="info-item">

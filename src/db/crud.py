@@ -660,7 +660,7 @@ def create_notification(db: Session, sender_id: int, receiver_id: int, message: 
             receiver_id=receiver_id,
             message=message,
             is_read=False,
-            created_at=datetime.datetime.utcnow()
+            created_at=datetime.now()
         )
         
         # Add to database
@@ -1138,7 +1138,7 @@ def get_friend_requests(db: Session, user_id: int) -> list[dict]:
                     "sender_id": request.user_id,
                     "receiver_id": request.friend_id,
                     "status": request.status,
-                    "created_at": request.created_at if hasattr(request, 'created_at') else datetime.datetime.now(),
+                    "created_at": request.created_at if hasattr(request, 'created_at') else datetime.now(),
                     "sender_username": sender.username
                 })
                 

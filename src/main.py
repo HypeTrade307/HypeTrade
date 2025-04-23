@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, Response
 import os
 import sys
-print("frontend folder contents:", os.listdir("/app/frontend"))
+#print("frontend folder contents:", os.listdir("/app/frontend"))
 # Add current directory to sys path
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 import uvicorn
@@ -32,6 +32,7 @@ from src.processing.stock_processing import seed_stocks
 from src.processing import scraping as sc
 from src.api.routes.flagging import router as flagging_router
 from src.api.routes.tasks import router as tasks_router
+from src.api.routes.friends import router as friends_router
 
 app = FastAPI()
 
@@ -74,6 +75,7 @@ app.include_router(posts_router, prefix="/api")
 app.include_router(comment_router, prefix="/api")
 app.include_router(tasks_router, prefix="/api")
 app.include_router(flagging_router, prefix="/api")
+app.include_router(friends_router, prefix="/api")
 
 # Health check
 @app.get("/api/health")

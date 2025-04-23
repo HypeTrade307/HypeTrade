@@ -2,9 +2,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/NavbarSection/Navbar.tsx";  // Navbar import
-import friendRemoveStyles from "./FriendRemove.module.css"; // Renaming import to avoid conflict
+import friendRemoveStyles from "./FriendList.css"; // Renaming import to avoid conflict
 import AppTheme from "../components/shared-theme/AppTheme.tsx";
 import CssBaseline from "@mui/material/CssBaseline";
+import FriendList from "./FriendList.tsx";
 
 interface Portfolio {
     title: string;
@@ -89,23 +90,23 @@ const PortView: React.FC = () => {
             <Navbar />
 
             {/* Main Content */}
-            <div className={friendRemoveStyles.container}>
-                <div className={friendRemoveStyles.buttonWrapper}>
+            <div className={FriendList.container}>
+                <div className={FriendList.buttonWrapper}>
                     <button onClick={() => navigate("/friends")} style={inlineButtonStyle}>
                         ← Back to Friends
                     </button>
                 </div>
 
-                <div className={friendRemoveStyles.portfolioContainer}>
+                <div className={FriendList.portfolioContainer}>
                     <h1>{friend.name}'s Portfolio</h1>
 
                     {/* Access Control Logic */}
                     {friend.canViewPortfolio ? (
                         <div>
                             <h2>Portfolio List</h2>
-                            <ul className={friendRemoveStyles.portfolioList}>
+                            <ul className={FriendList.portfolioList}>
                                 {friend.portfolios.map((portfolio, index) => (
-                                    <li key={index} className={friendRemoveStyles.portfolioItem}>
+                                    <li key={index} className={FriendList.portfolioItem}>
                                         <h3>{portfolio.title}</h3>
                                         <p>{portfolio.description}</p>
                                     </li>

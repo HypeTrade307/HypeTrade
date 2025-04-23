@@ -1,0 +1,336 @@
+.friend-list-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.friend-list-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: var(--text-primary);
+}
+
+.login-prompt,
+.no-friends {
+  text-align: center;
+  padding: 20px;
+  background-color: var(--background-secondary);
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.login-prompt button,
+.no-friends button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.login-prompt button:hover,
+.no-friends button:hover {
+  background-color: var(--primary-color-dark);
+}
+
+.friends-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.friend-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background-color: var(--background-secondary);
+  border-radius: 8px;
+  transition: transform 0.2s;
+  gap: 10px;
+  min-height: 50px;
+  width: 100%;
+}
+
+.friend-item:hover {
+  transform: translateY(-2px);
+}
+
+.friend-info {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  margin-right: 10px;
+}
+
+.friend-username {
+  font-weight: bold;
+  font-size: 1em;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.friend-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.view-portfolio-button,
+.remove-friend-button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+
+.view-portfolio-button {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.remove-friend-button {
+  background-color: var(--error-color);
+  color: white;
+}
+
+.view-portfolio-button:hover {
+  background-color: var(--primary-color-dark);
+}
+
+.remove-friend-button:hover {
+  background-color: var(--error-color-dark);
+}
+
+/* Confirmation Dialog */
+.confirmation-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.confirmation-content {
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  color: #333;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.confirmation-content h3 {
+  margin-top: 0;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.confirmation-content p {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 1.1em;
+}
+
+.confirmation-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.confirm-button,
+.cancel-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.confirm-button {
+  background-color: var(--error-color);
+  color: white;
+}
+
+.cancel-button {
+  background-color: var(--background-secondary);
+  color: var(--text-primary);
+}
+
+.confirm-button:hover {
+  background-color: var(--error-color-dark);
+}
+
+.cancel-button:hover {
+  background-color: var(--background-tertiary);
+}
+
+/* Portfolio Modal */
+.portfolio-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding-top: 64px;
+}
+
+.portfolio-modal-content {
+  background-color: var(--background-primary);
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 800px;
+  width: 90%;
+  max-height: calc(80vh - 64px);
+  overflow-y: auto;
+  position: relative;
+}
+
+.portfolio-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  position: sticky;
+  top: 0;
+  background-color: var(--background-primary);
+  padding: 10px 0;
+  z-index: 1;
+}
+
+.portfolio-modal-header h2 {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.close-button:hover {
+  color: var(--text-primary);
+}
+
+.stocks-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.stocks-table th,
+.stocks-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.stocks-table th {
+  background-color: var(--background-secondary);
+  font-weight: 600;
+}
+
+.sentiment-indicator {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.sentiment-indicator.positive {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.sentiment-indicator.negative {
+  background-color: var(--error-color);
+  color: white;
+}
+
+.sentiment-indicator.neutral {
+  background-color: var(--background-secondary);
+  color: var(--text-primary);
+}
+
+.no-stocks {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-secondary);
+}
+
+.loading-message {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-secondary);
+}
+
+.portfolio-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+  padding: 10px;
+  background-color: var(--background-secondary);
+  border-radius: 8px;
+}
+
+.nav-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  background-color: var(--primary-color);
+  color: white;
+  transition: background-color 0.2s;
+}
+
+.nav-button:disabled {
+  background-color: var(--background-tertiary);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+.nav-button:not(:disabled):hover {
+  background-color: var(--primary-color-dark);
+}
+
+.portfolio-counter {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.portfolio-description {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: var(--background-secondary);
+  border-radius: 8px;
+}
+
+.portfolio-description p {
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.5;
+} 

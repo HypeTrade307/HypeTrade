@@ -4,11 +4,12 @@ import Home_page_button from "./Home_page_button.tsx";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme.tsx";
-import FriendRemove from "./FriendRemove.tsx";
+import FriendList from "./FriendList.tsx";
 import Portfolios_creation from "./Portfolios_creation.tsx";
 import SettingsMenu from "./SettingsMenu.tsx";
 import PortfolioViewer from "./Portfoilos_viewer.tsx";
 import "./Profile_Page.css";
+import FriendList from "./FriendList.tsx";
 
 function Profile_page(props: { disableCustomTheme?: boolean }) {
     const [showPortfolioViewer, setShowPortfolioViewer] = useState<boolean>(false);
@@ -52,7 +53,7 @@ function Profile_page(props: { disableCustomTheme?: boolean }) {
                         {/* Left Sidebar - Friends List */}
                         <div className="friends-sidebar">
                             <h2>Friends</h2>
-                            <FriendRemove />
+                            <FriendList />
                         </div>
 
                         {/* Main Content - Portfolios */}

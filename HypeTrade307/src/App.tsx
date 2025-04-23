@@ -10,7 +10,7 @@ import Profile_page from "./pages/Profile_Page.tsx";
 import UserProfilePage from "./pages/UserProfilePage.tsx";
 import Search_other_users from "./pages/Search_Other_Users.tsx";
 import LoginForm from "./pages/LoginForm.tsx";
-import FriendRemove from "./pages/FriendRemove.tsx";
+import FriendList from "./pages/FriendList.tsx";
 import ViewStock from "./pages/ViewStock.tsx";
 import PortView from "./pages/Portfolio_friend_view.tsx";
 import ChatPage from "./pages/chat.tsx";
@@ -33,7 +33,7 @@ function App() {
                 <Route path="/profile/:userId" element={<UserProfilePage />} />
                 <Route path="/login" element={<LoginForm />} />
                 <Route path="/search" element={<Search_other_users />} />
-                <Route path="/friends" element={<FriendRemove />} />
+                <Route path="/friends" element={<FriendList />} />
                 <Route path="/stock" element={<ViewStock />} />
                 <Route path="/admin" element={<AdminPanel />} />
                 <Route path="/PortView/:friendID" element={<PortView />} />

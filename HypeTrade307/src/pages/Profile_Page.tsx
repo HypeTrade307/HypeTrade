@@ -4,7 +4,7 @@ import Home_page_button from "./Home_page_button.tsx";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme.tsx";
-import FriendRemove from "./FriendRemove.tsx";
+import FriendList from "./FriendList.tsx";
 import Portfolios_creation from "./Portfolios_creation.tsx";
 import SettingsMenu from "./SettingsMenu.tsx";
 import PortfolioViewer from "./Portfoilos_viewer.tsx";
@@ -12,11 +12,18 @@ import "./Profile_Page.css";
 import {Box, Button, Container, Link, Stack } from "@mui/material";
 // import Grid from "@mui/material/Grid2";
 import Grid from "@mui/material/Grid";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { API_BASE_URL } from "../config";
 
 function Profile_page(props: { disableCustomTheme?: boolean }) {
+    const navigate = useNavigate();
     const [showPortfolioViewer, setShowPortfolioViewer] = useState<boolean>(false);
     const [showSettings, setShowSettings] = useState<boolean>(false);
     const [profilePic, setProfilePic] = useState("");
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
 
     // Tutorial Left
     const [showTutorialLeft, setShowTutorialLeft] = useState(false);
@@ -37,6 +44,40 @@ function Profile_page(props: { disableCustomTheme?: boolean }) {
         { title: "Adding stocks to a portfolio", description: "Click on a portfolio. This will take you to a page where you can add stocks to them." },
         { title: "You're all set", description: "Now you can manage your portfolios!" },
     ];
+
+    // Check authentication
+    useEffect(() => {
+        const checkAuth = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setIsAuthenticated(false);
+                setLoading(false);
+                navigate('/login');
+                return;
+            }
+
+            try {
+                const response = await axios.get(`${API_BASE_URL}/notifications/user/`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (response.data && response.data.length > 0 && response.data[0].receiver_id) {
+                    setIsAuthenticated(true);
+                } else {
+                    setIsAuthenticated(false);
+                    navigate('/login');
+                }
+            } catch (error) {
+                console.error('Error checking authentication:', error);
+                setIsAuthenticated(false);
+                navigate('/login');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        checkAuth();
+    }, [navigate]);
 
     useEffect(() => {
     const tutorialMode = localStorage.getItem("tutorialMode");
@@ -74,6 +115,22 @@ function Profile_page(props: { disableCustomTheme?: boolean }) {
             setShowSettings(false);
         }
     };
+
+    if (loading) {
+        return (
+            <AppTheme {...props}>
+                <CssBaseline enableColorScheme />
+                <Navbar />
+                <div className="profile-container">
+                    <div className="loading-message">Loading profile...</div>
+                </div>
+            </AppTheme>
+        );
+    }
+
+    if (!isAuthenticated) {
+        return null; // Will redirect to login page
+    }
 
     return (
         <>
@@ -249,7 +306,7 @@ function Profile_page(props: { disableCustomTheme?: boolean }) {
                     <div className="profile-content">
                         <div className="friends-sidebar">
                             <h2>Friends</h2>
-                            <FriendRemove />
+                            <FriendList />
                         </div>
 
                         <div className="main-content">
