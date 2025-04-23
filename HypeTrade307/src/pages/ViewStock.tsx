@@ -476,7 +476,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
             }
             
             const response = await axios.get(
-                `${API_BASE_URL}/portfolios`,
+                `${API_BASE_URL}/portfolios/`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`
