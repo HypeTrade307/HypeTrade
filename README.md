@@ -126,10 +126,8 @@ DOCKER_BUILDKIT=1 docker build \
 --cache-from=type=local,src=.build-cache \
 --cache-to=type=inline \
 -t $IMAGE_NAME:$SHORT_SHA \
-. \
-&& \
+. && \
 docker push $IMAGE_NAME:$SHORT_SHA && \
-&& \
 gcloud run deploy hypet-aditya \
 --image=us-central1-docker.pkg.dev/basic-formula-451520-c0/hypetrade-repo/hypetrade-app:$SHORT_SHA \
 --platform=managed \
