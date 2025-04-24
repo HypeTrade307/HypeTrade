@@ -16,7 +16,7 @@ import Collapse from '@mui/material/Collapse';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
-import { API_BASE_URL } from "../../config";
+import { API_BASE_URL } from "../config";
 
 // Chat Container Styling
 const ChatContainer = styled(Paper)(({ theme }) => ({
