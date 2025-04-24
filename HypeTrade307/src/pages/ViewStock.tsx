@@ -4,6 +4,7 @@ import "../stocks.css";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme.tsx";
+import ChatPopup from '../components/generative_chat.tsx'; // Import the new component
 import axios from "axios";
 import MarketValue from "../assets/basic_Graph.tsx";
 import AreaGraph from "../assets/area_Graph.tsx";
@@ -829,6 +830,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
             <AppTheme {...props}>
                 <CssBaseline enableColorScheme />
                 <Navbar />
+                <ChatPopup />
                 
 
                 <div className="stock-page-container">
