@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import MarketValue from "../assets/basic_Graph.tsx";
-import AreaGraph from "@/assets/area_Graph.tsx";
+import AreaGraph from "../assets/area_Graph.tsx";
 import { API_BASE_URL } from "../config";
 import "../stocks.css";
 
