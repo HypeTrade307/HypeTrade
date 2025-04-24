@@ -120,11 +120,12 @@ def flag_message(
             detail="You can only flag messages in your conversations"
         )
     
-    # Flag the message
-    flagged_message = crud.flag_message(
+    # Create a flag record for the message
+    flag = crud.create_flag(
         db=db,
-        message_id=message_id,
-        flagger_id=current_user.user_id,
+        user_id=current_user.user_id,
+        flag_type="message",
+        target_id=message_id,
         reason=flag_data.reason
     )
     
@@ -143,7 +144,7 @@ def flag_message(
     receiver = crud.get_user_by_id(db, message.receiver_id)
     
     # Add usernames to the message response
-    flagged_message.sender_username = sender.username
-    flagged_message.receiver_username = receiver.username
+    message.sender_username = sender.username
+    message.receiver_username = receiver.username
     
-    return flagged_message 
+    return message 

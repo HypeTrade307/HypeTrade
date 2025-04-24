@@ -80,6 +80,11 @@ def resolve_and_delete_content(
         crud.delete_thread(db, flag.target_id)
     elif flag.flag_type == "user":
         crud.delete_user(db, flag.target_id)
+    elif flag.flag_type == "message":
+        message = crud.get_message_by_id(db, flag.target_id)
+        if message:
+            db.delete(message)
+            db.commit()
     else:
         raise HTTPException(status_code=400, detail="Invalid flag type")
     # Delete the flag

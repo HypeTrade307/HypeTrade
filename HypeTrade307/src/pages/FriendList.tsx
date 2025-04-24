@@ -380,7 +380,7 @@ function FriendList(props: { disableCustomTheme?: boolean }) {
             <div className="portfolio-modal-content">
               <div className="portfolio-modal-header">
                 <h2>{selectedFriend.username}'s Portfolio: {selectedPortfolio.portfolio_name}</h2>
-                <button className="close-button" onClick={handleClosePortfolio}>×</button>
+                <button className="portfolio-close-button" onClick={handleClosePortfolio}>×</button>
               </div>
               
               <div className="portfolio-navigation">

@@ -12,47 +12,22 @@
 .profile-container2 {
     display: flex;
     padding: 80px;
-    /*align-items: center;*/
     height: 100%;
     background: #121212;
-    /*margin: 80px auto 0 auto;*/
-    /*max-width: 1200px;*/
-    @media screen and (max-width: 768px) {
-    //width: 90%;
-        padding: 0px;
-    }
 }
 
 .NameStatusIconContainer {
     display: flex;
-    /*align-items: center;*/
     height: 100%;
-    /*background: #121212;*/
-    /*margin: 80 px auto 0 auto;*/
-    /*max-width: 1200 px;*/
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    @media screen and (max-width: 768px) {
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        margin: 5px 0px;
-    }
 }
 
 .userName {
-    {/*display: flex;
-      flex-direction: row;
-      justify-content: center;
-    */}
-    /*width: 23vw;*/
     color: black;
     font-size: 4rem;
     font-weight: bold;
-    @media screen and (max-width: 768px) {
-        font-size: 2rem;
-    }
 }
 
 /* Top navigation bar */
@@ -87,21 +62,88 @@
 .profile-content {
     display: flex;
     gap: 30px;
+    align-items: flex-start;
 }
 
 /* Friends sidebar */
 .friends-sidebar {
-    flex: 0 0 250px;
+    flex: 0 0 300px;
     background-color: lightslategray;
-    padding: 15px;
+    padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
 }
 
 .friends-sidebar h2 {
     margin-top: 0;
     padding-bottom: 10px;
     border-bottom: 1px solid lightslategray;
+    margin-bottom: 15px;
+}
+
+.friend-item {
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    margin-bottom: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+}
+
+.friend-info {
+    margin-bottom: 10px;
+}
+
+.friend-username {
+    font-weight: 600;
+    font-size: 16px;
+    color: white;
+}
+
+.friend-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.friend-actions button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+}
+
+.view-portfolio-button {
+    background-color: #2196f3;
+    color: white;
+}
+
+.view-portfolio-button:hover {
+    background-color: #1976d2;
+}
+
+.chat-button {
+    background-color: #4caf50;
+    color: white;
+}
+
+.chat-button:hover {
+    background-color: #388e3c;
+}
+
+.remove-friend-button {
+    background-color: #f44336;
+    color: white;
+}
+
+.remove-friend-button:hover {
+    background-color: #d32f2f;
 }
 
 /* the general profile page content */
@@ -122,20 +164,6 @@
 
 .portfolio-header h2 {
     margin: 0;
-}
-
-.view-portfolio-button {
-    background-color: deepskyblue;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 8px 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.view-portfolio-button:hover {
-    background-color: deepskyblue;
 }
 
 /* Settings overlay */
@@ -172,6 +200,16 @@
     cursor: pointer;
     color: dimgray;
 }
+.portfolio-close-button {
+    position: absolute;
+    top: 80px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: dimgray;
+}
 
 @media (max-width: 768px) {
     .profile-content {
@@ -182,5 +220,20 @@
         flex: none;
         width: 100%;
         margin-bottom: 20px;
+    }
+    
+    .NameStatusIconContainer {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 5px 0px;
+    }
+    
+    .userName {
+        font-size: 2rem;
+    }
+    
+    .profile-container2 {
+        padding: 0px;
     }
 }

@@ -26,7 +26,7 @@ def send_friend_request(
                 "sender_id": current_user.user_id,
                 "receiver_id": receiver_id,
                 "status": "pending",
-                "created_at": datetime.now(),
+                "created_at": datetime.datetime.now(),
                 "sender_username": current_user.username
             }
     except HTTPException as e:

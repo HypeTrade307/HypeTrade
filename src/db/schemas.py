@@ -15,6 +15,7 @@ class FlagType(str, Enum):
     post = "post"
     comment = "comment"
     thread = "thread"
+    message = "message"
 
 class FlagCreate(BaseModel):
     flag_type: FlagType
@@ -298,9 +299,6 @@ class MessageResponse(MessageBase):
     sender_id: int
     receiver_id: int
     created_at: datetime
-    is_flagged: bool
-    flagged_by: Optional[int] = None
-    flag_reason: Optional[str] = None
     sender_username: str
     receiver_username: str
 

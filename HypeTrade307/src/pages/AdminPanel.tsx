@@ -15,7 +15,7 @@ import { API_BASE_URL } from "../config";
 interface Flag {
   flag_id: number;
   user_id: number;
-  flag_type: "user" | "post" | "comment" | "thread";
+  flag_type: "user" | "post" | "comment" | "thread" | "message";
   target_id: number;
   reason?: string;
   created_at: string;
@@ -128,6 +128,26 @@ export default function AdminPanel() {
           } catch {
             flaggedContent = {
               content: "This comment may have been deleted",
+              author: "Unknown",
+              created_at: flag.created_at,
+            };
+          }
+          break;
+        }
+        case "message": {
+          try {
+            const res = await axios.get(
+              `${API_BASE_URL}/messages/${flag.target_id}`,
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+            flaggedContent = {
+              content: res.data.content || "No content",
+              author: res.data.sender_username || "Unknown sender",
+              created_at: res.data.created_at,
+            };
+          } catch {
+            flaggedContent = {
+              content: "This message may have been deleted",
               author: "Unknown",
               created_at: flag.created_at,
             };

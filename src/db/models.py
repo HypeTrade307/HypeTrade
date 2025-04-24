@@ -57,7 +57,7 @@ class Flag(Base):
     __tablename__ = "flags"
 
     flag_id = Column(Integer, primary_key=True, index=True)
-    flag_type = Column(Enum("post", "comment", "thread", "user", name="flag_type_enum"), nullable=False)
+    flag_type = Column(Enum("post", "comment", "thread", "user", "message", name="flag_type_enum"), nullable=False)
     target_id = Column(Integer, nullable=False)  # Can point to post_id, comment_id, etc.
     reason = Column(Text, nullable=True)
     created_by = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"))
@@ -335,11 +335,7 @@ class Message(Base):
     receiver_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False)
     content = Column(Text, nullable=False)
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
-    is_flagged = Column(Boolean, default=False)
-    flagged_by = Column(Integer, ForeignKey("users.user_id", ondelete="SET NULL"), nullable=True)
-    flag_reason = Column(Text, nullable=True)
 
     # Relationships
     sender = relationship("User", foreign_keys=[sender_id], backref="sent_messages")
     receiver = relationship("User", foreign_keys=[receiver_id], backref="received_messages")
-    flagger = relationship("User", foreign_keys=[flagged_by], backref="flagged_messages")
