@@ -21,6 +21,17 @@ interface Portfolio {
   stocks: any[];
 }
 
+interface Message {
+  message_id: number;
+  sender_id: number;
+  receiver_id: number;
+  content: string;
+  created_at: string;
+  is_flagged: boolean;
+  sender_username: string;
+  receiver_username: string;
+}
+
 function FriendList(props: { disableCustomTheme?: boolean }) {
   const navigate = useNavigate();
   const [friends, setFriends] = useState<Friend[]>([]);
@@ -32,6 +43,12 @@ function FriendList(props: { disableCustomTheme?: boolean }) {
   const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(null);
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
   const [currentPortfolioIndex, setCurrentPortfolioIndex] = useState<number>(0);
+  const [showChat, setShowChat] = useState<boolean>(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [newMessage, setNewMessage] = useState<string>("");
+  const [showFlagDialog, setShowFlagDialog] = useState<boolean>(false);
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [flagReason, setFlagReason] = useState<string>("");
 
   // Check authentication and get current user ID
   useEffect(() => {
@@ -84,6 +101,37 @@ function FriendList(props: { disableCustomTheme?: boolean }) {
 
     fetchFriends();
   }, [isAuthenticated]);
+
+  // Fetch messages when a friend is selected
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (!selectedFriend || !isAuthenticated) return;
+
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await axios.get(
+          `${API_BASE_URL}/messages/chat/${selectedFriend.user_id}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        setMessages(response.data);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+        toast.error('Failed to load messages');
+      }
+    };
+
+    // Initial fetch
+    fetchMessages();
+
+    // Set up polling if chat is open
+    if (showChat) {
+      const intervalId = setInterval(fetchMessages, 3000); // Poll every 3 seconds
+      return () => clearInterval(intervalId); // Clean up on unmount or when chat closes
+    }
+  }, [selectedFriend, isAuthenticated, showChat]);
 
   const handleRemoveFriend = async (friendId: number) => {
     if (!isAuthenticated) {
@@ -168,6 +216,66 @@ function FriendList(props: { disableCustomTheme?: boolean }) {
     setSelectedFriend(null);
   };
 
+  const handleSendMessage = async () => {
+    if (!selectedFriend || !newMessage.trim() || !isAuthenticated) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Authentication error. Please log in again.');
+        navigate('/login');
+        return;
+      }
+
+      const response = await axios.post(
+        `${API_BASE_URL}/messages/`,
+        {
+          receiver_id: selectedFriend.user_id,
+          content: newMessage
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setMessages([response.data, ...messages]);
+      setNewMessage("");
+    } catch (error: any) {
+      console.error('Error sending message:', error);
+      toast.error(error.response?.data?.detail || 'Failed to send message');
+    }
+  };
+
+  const handleFlagMessage = async () => {
+    if (!selectedMessage || !flagReason.trim() || !isAuthenticated) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Authentication error. Please log in again.');
+        navigate('/login');
+        return;
+      }
+
+      await axios.post(
+        `${API_BASE_URL}/messages/${selectedMessage.message_id}/flag`,
+        { reason: flagReason },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success('Message flagged successfully');
+      setShowFlagDialog(false);
+      setSelectedMessage(null);
+      setFlagReason("");
+    } catch (error: any) {
+      console.error('Error flagging message:', error);
+      toast.error(error.response?.data?.detail || 'Failed to flag message');
+    }
+  };
+
+  const formatMessageTime = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
   if (loading) {
     return (
       <AppTheme {...props}>
@@ -212,6 +320,16 @@ function FriendList(props: { disableCustomTheme?: boolean }) {
                     onClick={() => handleViewPortfolio(friend)}
                   >
                     View Portfolios
+                  </button>
+                  
+                  <button
+                    className="chat-button"
+                    onClick={() => {
+                      setSelectedFriend(friend);
+                      setShowChat(true);
+                    }}
+                  >
+                    Chat
                   </button>
                   
                   <button
@@ -318,6 +436,77 @@ function FriendList(props: { disableCustomTheme?: boolean }) {
                 ) : (
                   <div className="no-stocks">No stocks in this portfolio</div>
                 )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Chat Modal */}
+        {showChat && selectedFriend && (
+          <div className="chat-modal">
+            <div className="chat-modal-content">
+              <div className="chat-modal-header">
+                <h2>Chat with {selectedFriend.username}</h2>
+                <button className="close-button" onClick={() => setShowChat(false)}>×</button>
+              </div>
+              
+              <div className="chat-messages">
+                {messages.map((message) => (
+                  <div 
+                    key={message.message_id} 
+                    className={`message ${message.sender_id === currentUserId ? 'sent' : 'received'}`}
+                  >
+                    <div className="message-content">
+                      <p>{message.content}</p>
+                      <span className="message-time">{formatMessageTime(message.created_at)}</span>
+                    </div>
+                    {message.sender_id !== currentUserId && (
+                      <button 
+                        className="flag-button"
+                        onClick={() => {
+                          setSelectedMessage(message);
+                          setShowFlagDialog(true);
+                        }}
+                      >
+                        ...
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              
+              <div className="chat-input">
+                <input
+                  type="text"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="Type a message..."
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                />
+                <button onClick={handleSendMessage}>Send</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Flag Dialog */}
+        {showFlagDialog && selectedMessage && (
+          <div className="flag-dialog">
+            <div className="flag-dialog-content">
+              <h3>Flag Message</h3>
+              <p>Please provide a reason for flagging this message:</p>
+              <textarea
+                value={flagReason}
+                onChange={(e) => setFlagReason(e.target.value)}
+                placeholder="Enter reason..."
+              />
+              <div className="flag-dialog-buttons">
+                <button onClick={handleFlagMessage}>Submit</button>
+                <button onClick={() => {
+                  setShowFlagDialog(false);
+                  setSelectedMessage(null);
+                  setFlagReason("");
+                }}>Cancel</button>
               </div>
             </div>
           </div>

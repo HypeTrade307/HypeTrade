@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../stocks.css";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
 import CssBaseline from "@mui/material/CssBaseline";

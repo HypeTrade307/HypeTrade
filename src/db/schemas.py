@@ -252,3 +252,30 @@ class SentimentBase(BaseModel):
 class SentimentRequest(BaseModel):
     stock_id: int  # ID of the stock for which sentiment is analyzed
     ticker: str  # Keyword used for sentiment analysis
+
+# ------------------
+#  MESSAGE SCHEMAS
+# ------------------
+
+class MessageBase(BaseModel):
+    content: str
+
+class MessageCreate(MessageBase):
+    receiver_id: int
+
+class MessageResponse(MessageBase):
+    message_id: int
+    sender_id: int
+    receiver_id: int
+    created_at: datetime
+    is_flagged: bool
+    flagged_by: Optional[int] = None
+    flag_reason: Optional[str] = None
+    sender_username: str
+    receiver_username: str
+
+    class Config:
+        from_attributes = True
+
+class MessageFlag(BaseModel):
+    reason: str

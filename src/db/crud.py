@@ -1439,3 +1439,51 @@ def check_friendship_status(db: Session, user_id: int, other_user_id: int) -> st
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to check friendship status: {str(e)}"
         )
+
+# ------------------
+#  MESSAGE CRUD
+# ------------------
+
+def create_message(db: Session, sender_id: int, receiver_id: int, content: str) -> models.Message:
+    """
+    Create a new message between two users.
+    """
+    message = models.Message(
+        sender_id=sender_id,
+        receiver_id=receiver_id,
+        content=content
+    )
+    db.add(message)
+    db.commit()
+    db.refresh(message)
+    return message
+
+def get_messages_between_users(db: Session, user1_id: int, user2_id: int, skip: int = 0, limit: int = 100) -> list[models.Message]:
+    """
+    Get messages between two users, ordered by creation time.
+    """
+    return db.query(models.Message).filter(
+        ((models.Message.sender_id == user1_id) & (models.Message.receiver_id == user2_id)) |
+        ((models.Message.sender_id == user2_id) & (models.Message.receiver_id == user1_id))
+    ).order_by(models.Message.created_at.desc()).offset(skip).limit(limit).all()
+
+def flag_message(db: Session, message_id: int, flagger_id: int, reason: str) -> models.Message:
+    """
+    Flag a message for review.
+    """
+    message = db.query(models.Message).filter(models.Message.message_id == message_id).first()
+    if not message:
+        return None
+    
+    message.is_flagged = True
+    message.flagged_by = flagger_id
+    message.flag_reason = reason
+    db.commit()
+    db.refresh(message)
+    return message
+
+def get_message_by_id(db: Session, message_id: int) -> models.Message:
+    """
+    Get a specific message by its ID.
+    """
+    return db.query(models.Message).filter(models.Message.message_id == message_id).first()
