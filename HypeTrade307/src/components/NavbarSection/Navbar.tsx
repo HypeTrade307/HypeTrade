@@ -25,7 +25,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // used for t
 
 import { API_BASE_URL } from "../../config";
 
-const pages = ['Home', 'ViewStock', 'Portfolio', 'Profile', 'Search', 'Friends', 'Chat', 'Forum', 'Help'];
+const pages = ['Home', 'ViewStock', 'Portfolio', 'Profile', 'Search', 'Friends', 'Chat', 'Forum'];
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
     display: 'flex',
@@ -100,7 +100,6 @@ const Navbar = () => {
 
     const handleSignOut = () => {
         localStorage.removeItem('token');
-        localStorage.setItem("rememberMe", "false");
         setIsAuthenticated(false);
         setUsername('');
         toast.success('Signed out successfully');

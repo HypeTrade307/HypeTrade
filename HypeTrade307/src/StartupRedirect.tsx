@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_BASE_URL } from "./config";
 
 const StartupRedirect = () => {
     const navigate = useNavigate();
@@ -11,7 +12,7 @@ const StartupRedirect = () => {
 
         if (rememberMe && token) {
             axios
-                .get("http://localhost:8080/users/me", {
+                .get(`${API_BASE_URL}/users/me`, {
                     headers: { Authorization: `Bearer ${token}` },
                 })
                 .then((res) => {

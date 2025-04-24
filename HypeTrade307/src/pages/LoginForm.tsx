@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 //@ts-nocheck
+=======
+>>>>>>> parent of fdde531 (Added a "Remember Me?" feature to login page)
 import { useState } from "react";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
 import { useNavigate } from "react-router-dom";
@@ -129,12 +132,18 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
             );
             localStorage.setItem("token", response.data.access_token);
             toast.success("Login successful!");
+<<<<<<< HEAD
 
             // Now fetch user details to check admin status
             const profileRes = await axios.get(`${API_BASE_URL}/users/me`, {
+=======
+    
+            // Now fetch user details to check admin status
+            const profileRes = await axios.get("http://localhost:8080/users/me", {
+>>>>>>> parent of fdde531 (Added a "Remember Me?" feature to login page)
                 headers: { Authorization: `Bearer ${response.data.access_token}` },
             });
-
+    
             const isAdmin = profileRes.data?.is_admin;
             navigate(isAdmin ? "/admin" : "/profile");
         } catch (err) {
@@ -149,8 +158,12 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
                 <Navbar />
                 <div className="login-container">
                     <form onSubmit={handleLogin}>
+<<<<<<< HEAD
                         <div style={{ height: '15px' }} /> {/* adds white space */}
                         <h2 style={{ fontSize: '35px'}}>Welcome to</h2>
+=======
+                        <h2>Welcome to</h2>
+>>>>>>> parent of fdde531 (Added a "Remember Me?" feature to login page)
                         <h1>HypeTrade</h1>
                         <div className="form-group">
                             <input
@@ -171,6 +184,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
                                 value={loginUser.password}
                                 onChange={handleLoginChange}
                             />
+<<<<<<< HEAD
                             </div>
                               <div className="form-group remember-me">
                                 <label>
@@ -181,6 +195,8 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
                                   />{" "}
                                   Remember me?
                                 </label>
+=======
+>>>>>>> parent of fdde531 (Added a "Remember Me?" feature to login page)
                         </div>
                         <button type="submit" className="login-button">
                             Login
@@ -189,7 +205,11 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
 
                     <div className="signup-section">
                         <p>Don't have an account?</p>
+<<<<<<< HEAD
                         <button className="submit-button" onClick={() => setSignUp(true)}>
+=======
+                        <button className="signup-button" onClick={() => setSignUp(true)}>
+>>>>>>> parent of fdde531 (Added a "Remember Me?" feature to login page)
                             Sign Up
                         </button>
                     </div>
@@ -229,7 +249,10 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
                                     <div className="form-group">
                                         <input
                                             type="password"
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of fdde531 (Added a "Remember Me?" feature to login page)
                                             name="password"
                                             placeholder="Password"
                                             required
@@ -239,12 +262,19 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
                                     </div>
                                     <button
                                         type="button"
+<<<<<<< HEAD
                                         className="submit-button"
+=======
+                                        className="send-code-button"
+>>>>>>> parent of fdde531 (Added a "Remember Me?" feature to login page)
                                         onClick={sendConfirmationCode}
                                     >
                                         Send Confirmation Code
                                     </button>
+<<<<<<< HEAD
                                     <div style={{ height: '15px' }} /> {/* adds white space */}
+=======
+>>>>>>> parent of fdde531 (Added a "Remember Me?" feature to login page)
                                     <div className="form-group">
                                         <input
                                             type="text"
