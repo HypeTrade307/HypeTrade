@@ -24,9 +24,9 @@ class ChatMessageResponse(BaseModel):
 
 @router.post("/send", response_model=ChatMessageResponse)
 def send_chat_message(
-        message_data: ChatMessageRequest,
-        db: Session = Depends(get_db),
-        current_user: models.User = Depends(get_current_user)
+        message_data: ChatMessageRequest
+        # db: Session = Depends(get_db),
+        # current_user: models.User = Depends(get_current_user)
 ):
     """
     Send a message to the AI and get a response
@@ -42,7 +42,7 @@ def send_chat_message(
             )
 
         # Log the incoming message
-        logger.info(f"Received chat message from user {current_user.username}: {message_data.message}")
+        # logger.info(f"Received chat message from user {current_user.username}: {message_data.message}")
 
         # Generate AI response
         ai_response = generate_gemini_resp(message_data.message)
