@@ -4,11 +4,7 @@ import { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-<<<<<<< HEAD
 import axios from "axios";
-=======
-
->>>>>>> parent of fdde531 (Added a "Remember Me?" feature to login page)
 import Page_Not_found from "./pages/Page_Not_found.tsx";
 import Home from "./pages/home_page.tsx";
 import Profile_page from "./pages/Profile_Page.tsx";
@@ -28,36 +24,9 @@ import ViewStockPage from "./pages/ViewStockPage.tsx";
 import HelpPage from "./pages/HelpPage.tsx";
 import AdminPanel from './pages/AdminPanel.tsx';
 
-function AutoLoginRedirect() {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const rememberMe = localStorage.getItem("rememberMe") === "true";
-    const currentPath = window.location.pathname;
-    const shouldRedirect = currentPath === "/" || currentPath === "/login";
-
-    if (token && rememberMe && shouldRedirect) {
-      axios
-        .get("http://localhost:8080/users/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .catch(() => {
-          localStorage.removeItem("token");
-        });
-    }
-  }, [navigate]);
-
-  return null;
-}
-
 function App() {
     return (
         <Router>
-<<<<<<< HEAD
-            <AutoLoginRedirect />
-=======
->>>>>>> parent of fdde531 (Added a "Remember Me?" feature to login page)
             <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
             <Routes>
                 <Route path="/" element={<Home />} />
