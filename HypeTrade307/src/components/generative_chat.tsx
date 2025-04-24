@@ -11,10 +11,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
-import { API_BASE_URL } from "../config.ts";
+import { API_BASE_URL } from "../../config";
 
 // Chat Container Styling
 const ChatContainer = styled(Paper)(({ theme }) => ({
@@ -72,6 +74,7 @@ const Message = styled(Box, {
 // Input Container Styling
 const InputContainer = styled(Box)(({ theme }) => ({
     display: 'flex',
+    flexDirection: 'column',
     padding: '8px',
     borderTop: `1px solid ${theme.palette.divider}`,
 }));
@@ -101,12 +104,22 @@ const Disclaimer = styled(Typography)(({ theme }) => ({
     borderTop: `1px solid ${theme.palette.divider}`,
 }));
 
+// Word Counter Styling
+const WordCounter = styled(Typography)(({ theme, error }) => ({
+    fontSize: '0.75rem',
+    color: error ? theme.palette.error.main : theme.palette.text.secondary,
+    alignSelf: 'flex-end',
+    margin: '2px 8px',
+}));
+
 interface Message {
     id: number;
     content: string;
     isUser: boolean;
     timestamp: Date;
 }
+
+const WORD_LIMIT = 50;
 
 const ChatPopup: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -120,6 +133,9 @@ const ChatPopup: React.FC = () => {
     ]);
     const [inputMessage, setInputMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [wordCount, setWordCount] = useState(0);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showError, setShowError] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -130,12 +146,22 @@ const ChatPopup: React.FC = () => {
         }
     }, [messages]);
 
+    // Update word count when input changes
+    useEffect(() => {
+        const words = inputMessage.trim() ? inputMessage.trim().split(/\s+/) : [];
+        setWordCount(words.length);
+    }, [inputMessage]);
+
     const toggleChat = () => {
         setIsOpen(!isOpen);
+        // Clear any errors when toggling
+        setShowError(false);
     };
 
     const handleClose = () => {
         setIsOpen(false);
+        // Clear any errors when closing
+        setShowError(false);
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,6 +170,16 @@ const ChatPopup: React.FC = () => {
 
     const handleSendMessage = async () => {
         if (inputMessage.trim() === '') return;
+
+        // Check word count
+        if (wordCount > WORD_LIMIT) {
+            setErrorMessage(`Your message exceeds the ${WORD_LIMIT} word limit`);
+            setShowError(true);
+            return;
+        }
+
+        // Clear any previous errors
+        setShowError(false);
 
         const userMessage: Message = {
             id: messages.length + 1,
@@ -158,13 +194,13 @@ const ChatPopup: React.FC = () => {
 
         try {
             // Call your endpoint and get response
-            const response = await axios.post(`${API_BASE_URL}/chat_send`, {
+            const response = await axios.post(`${API_BASE_URL}/chat/send`, {
                 message: inputMessage
             });
 
             const botMessage: Message = {
                 id: messages.length + 2,
-                content: response.data,
+                content: response.data.response, // Updated to match the response schema
                 isUser: false,
                 timestamp: new Date()
             };
@@ -173,9 +209,16 @@ const ChatPopup: React.FC = () => {
         } catch (error) {
             console.error('Error sending message:', error);
 
+            let errorContent = "Sorry, I'm having trouble connecting. Please try again later.";
+
+            // Check if it's a word limit error from the server
+            if (axios.isAxiosError(error) && error.response?.status === 400) {
+                errorContent = error.response.data.detail || errorContent;
+            }
+
             const errorMessage: Message = {
                 id: messages.length + 2,
-                content: "Sorry, I'm having trouble connecting. Please try again later.",
+                content: errorContent,
                 isUser: false,
                 timestamp: new Date()
             };
@@ -196,6 +239,8 @@ const ChatPopup: React.FC = () => {
     const formatTime = (date: Date) => {
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
+
+    const isOverWordLimit = wordCount > WORD_LIMIT;
 
     return (
         <>
@@ -238,24 +283,36 @@ const ChatPopup: React.FC = () => {
                         <div ref={messagesEndRef} />
                     </MessagesContainer>
 
+                    <Collapse in={showError}>
+                        <Alert severity="error" onClose={() => setShowError(false)}>
+                            {errorMessage}
+                        </Alert>
+                    </Collapse>
+
                     <InputContainer>
-                        <TextField
-                            fullWidth
-                            size="small"
-                            placeholder="Type a message..."
-                            value={inputMessage}
-                            onChange={handleInputChange}
-                            onKeyDown={handleKeyDown}
-                            variant="outlined"
-                            sx={{ mr: 1 }}
-                        />
-                        <IconButton
-                            color="primary"
-                            onClick={handleSendMessage}
-                            disabled={isLoading || inputMessage.trim() === ''}
-                        >
-                            <SendIcon />
-                        </IconButton>
+                        <Box sx={{ display: 'flex', mb: 1 }}>
+                            <TextField
+                                fullWidth
+                                size="small"
+                                placeholder="Type a message..."
+                                value={inputMessage}
+                                onChange={handleInputChange}
+                                onKeyDown={handleKeyDown}
+                                variant="outlined"
+                                error={isOverWordLimit}
+                                sx={{ mr: 1 }}
+                            />
+                            <IconButton
+                                color="primary"
+                                onClick={handleSendMessage}
+                                disabled={isLoading || inputMessage.trim() === '' || isOverWordLimit}
+                            >
+                                <SendIcon />
+                            </IconButton>
+                        </Box>
+                        <WordCounter error={isOverWordLimit}>
+                            {wordCount}/{WORD_LIMIT} words
+                        </WordCounter>
                     </InputContainer>
 
                     <Disclaimer>
