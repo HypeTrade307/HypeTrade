@@ -137,7 +137,7 @@ class Stock(Base):
 
     # NEW relationship to scraped Reddit entries
     scraped_entries = relationship(
-        "ScrapedRedditEntry",
+        "scraped_reddit_entries",
         secondary="scrapedentry_stocks",
         back_populates="mentioned_stocks"
     )
@@ -291,10 +291,10 @@ class SentimentAnalysis(Base):
     stock = relationship("Stock", back_populates="sentiments")
 
     # OPTIONAL relationship to the entry
-    entry = relationship("ScrapedRedditEntry", backref="sentiment_entries")
+    entry = relationship("scraped_reddit_entries", backref="sentiment_entries")
 
 
-class ScrapedRedditEntry(Base):
+class scraped_reddit_entries(Base):
     """
     The 'scraped_reddit_entries' table. 
     Stores raw text from Reddit (posts or comments).

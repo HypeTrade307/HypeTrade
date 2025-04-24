@@ -15,6 +15,7 @@ from services.models_requests import get_financial_sentiment
 # Import your DB models and session
 from src.db.database import SessionLocal
 from src.db import models
+from src.db.models import scraped_reddit_entries
 # Example: from huggingface or your pipeline
 # from src.sentiment.finbert import run_finbert_sentiment
 
@@ -50,12 +51,12 @@ def scrape_subreddit_posts(db: Session, subreddit_name: str, keyword: str, stock
     search_res = subreddit.search(keyword, sort="new", limit=3)
     for submission in search_res:
         # Check if we already have this post in DB
-        existing = db.query(models.ScrapedRedditEntry).filter_by(reddit_id=f"t3_{submission.id}").first()
+        existing = db.query(scraped_reddit_entries).filter_by(reddit_id=f"t3_{submission.id}").first()
         if existing:
             continue
 
         # Create new ScrapedRedditEntry
-        new_entry = models.ScrapedRedditEntry(
+        new_entry = scraped_reddit_entries(
             reddit_id=f"t3_{submission.id}",
             is_comment=False,
             parent_reddit_id=None,
@@ -99,11 +100,11 @@ def scrape_comments_for_post(db: Session, submission_id: str, stock_id: int = No
     submission.comments.replace_more(limit=0)  # Flatten comment trees
     for comment in submission.comments.list():
         # Check if we have it
-        existing = db.query(models.ScrapedRedditEntry).filter_by(reddit_id=f"t1_{comment.id}").first()
+        existing = db.query(scraped_reddit_entries).filter_by(reddit_id=f"t1_{comment.id}").first()
         if existing:
             continue
 
-        new_entry = models.ScrapedRedditEntry(
+        new_entry = scraped_reddit_entries(
             reddit_id=f"t1_{comment.id}",
             is_comment=True,
             parent_reddit_id=f"t3_{submission_id}",  # or comment.parent_id
@@ -137,19 +138,24 @@ def process_unprocessed_entries(db: Session, stock_id: int):
     4) Marks them as processed
     """
     unprocessed_entries = (
-        db.query(models.ScrapedRedditEntry)
-        .join(models.scrapedentry_stocks, models.scrapedentry_stocks.c.entry_id == models.ScrapedRedditEntry.entry_id)
+        db.query(scraped_reddit_entries)
+        .join(models.scrapedentry_stocks, models.scrapedentry_stocks.c.entry_id == scraped_reddit_entries.entry_id)
         .filter(models.scrapedentry_stocks.c.stock_id == stock_id)
-        .filter(models.ScrapedRedditEntry.processed_at.is_(None))
+        # .filter(scraped_reddit_entries.processed_at.is_(None))
         .all()
     )
-    for entry in unprocessed_entries:
+    # print("length is {}".format(len(unprocessed_entries)))
+    texts = [entry for entry in unprocessed_entries]
+    values = get_financial_sentiment(texts) #call fn w texts as variable
+    for i in range(len(unprocessed_entries)):
+        entry = unprocessed_entries[i]
+    # for-loop through entry
         # Suppose we have a placeholder function that returns a sentiment float
         # sentiment_score = run_finbert_sentiment(entry.title + " " + (entry.content or ""))
-        print("Processing entry: ", entry.reddit_id)
-        print("Content: ", entry.content)
-        sentiment_score = fake_sentiment(entry)
-        print("Sentiment score: ", sentiment_score)
+        # print("Processing entry: ", entry.reddit_id)
+        # print("Content: ", entry.content)
+        sentiment_score = values[i]
+        # print("Sentiment score: ", sentiment_score)
         # Insert a row in 'sentiment_analysis'
         sentiment_row = models.SentimentAnalysis(
             stock_id=stock_id,
@@ -165,7 +171,7 @@ def process_unprocessed_entries(db: Session, stock_id: int):
     db.commit()
 
 # Just a stub for demonstration
-def fake_sentiment(entry: models.ScrapedRedditEntry) -> float:
+def fake_sentiment(entry: scraped_reddit_entries) -> float:
     """
     A fake function that returns a random sentiment in [-10, 10].
     Replace with your FinBERT pipeline or other real logic.
@@ -175,7 +181,7 @@ def fake_sentiment(entry: models.ScrapedRedditEntry) -> float:
     # import random
     # return round(random.uniform(-10.0, 10.0), 2)
 
-def test_reddit_connection():
+def check_reddit_connection():
     reddit = get_reddit_instance()
     me = reddit.read_only  # should be True
     print("PRAW connection is working. Read-only:", me)
@@ -185,20 +191,23 @@ def test_reddit_connection():
 # if __name__ == "__main__":
 #     # Start a DB session
 #     db = SessionLocal()
+#     print(1)
 
 #     # Suppose we have a Stock row for AMD with stock_id=42
 #     # 1) Scrape the 'stocks' subreddit for 'AMD' keyword
 #     scrape_subreddit_posts(db, "stocks", "AMD", stock_id=42)
+    # print(2)
 
 #     # 2) For each new post, also scrape comments if you want
 #     # You can find the new posts in the DB or from PRAW
 #     # Example: comment out or adapt
-#     # scrape_comments_for_post(db, "abc123", stock_id=42)
+    # scrape_comments_for_post(db, "abc123", stock_id=42)
 
 #     # 3) Now run the processing function to mark them as processed & store sentiment
 #     process_unprocessed_entries(db, stock_id=42)
+#     print(3)
 
-#     db.close()
+    # db.close()
 
 def parse_timeframe(timeframe: str) -> datetime:
     """

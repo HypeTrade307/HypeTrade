@@ -42,7 +42,7 @@ app = FastAPI()
 Base.metadata.create_all(bind=engine)
 
 # Run Reddit connection test
-sc.test_reddit_connection()
+sc.check_reddit_connection()
 
 # Seed stock data
 seed_stocks(db=SessionLocal())
