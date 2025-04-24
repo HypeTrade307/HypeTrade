@@ -85,3 +85,15 @@ def search_stocks(
     ).all()
     
     return stocks
+
+
+
+@router.get("/{ticker}/id")
+def get_stock_id_by_ticker(ticker: str, db: Session = Depends(get_db)):
+    """
+    Returns the stock_id given a ticker symbol (case-insensitive).
+    """
+    stock = db.query(models.Stock).filter(models.Stock.ticker.ilike(ticker)).first()
+    if not stock:
+        raise HTTPException(status_code=404, detail=f"Stock with ticker '{ticker}' not found.")
+    return {"stock_id": stock.stock_id}

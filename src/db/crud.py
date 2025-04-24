@@ -611,6 +611,11 @@ def mark_all_notifications_as_read(db: Session, user_id: int):
         )
 
 # top stocks function
+
+def get_stock_id_by_ticker(db: Session, ticker: str) -> int | None:
+    stock = db.query(stock).filter(stock.ticker == ticker.upper()).first()
+    return stock.stock_id if stock else None
+
 def get_top_stocks(db: Session, limit: int = 20) -> list[models.Stock]:
     """
     Gets the top stocks with auto analysis mode, optionally limited to a specific count.
