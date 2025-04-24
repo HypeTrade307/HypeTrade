@@ -25,15 +25,23 @@ def get_threads(
     return crud.get_threads(db)
 
 # Get thread metadata by ID
-@router.get("/{thread_id}/metadata", response_model=schemas.ThreadResponse)
+@router.get("/{thread_id}/metadata", response_model=schemas.ThreadResponseWithCreator)
 def get_thread(thread_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    print("Called")
     thread = crud.get_thread_by_id(db, thread_id)
+    username = crud.get_user_by_id(db, thread.creator_id).username
     if not thread:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Thread with ID {thread_id} not found"
         )
-    return thread
+    return {
+        "thread_id":    thread.thread_id,
+        "title":        thread.title,
+        "stock_id":     thread.stock_id,
+        "created_at":   thread.created_at,
+        "creator_username": username,
+    }
 
 # Get all posts for a thread
 @router.get("/{thread_id}/posts", response_model=List[schemas.PostResponse])

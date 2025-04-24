@@ -1,3 +1,4 @@
+// src/pages/PostViewer.tsx
 //@ts-nocheck
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -25,6 +26,7 @@ interface Comment {
     author?: {
         username: string;
     };
+    // liked_by removed from UI, but kept here if your API still returns it
     liked_by?: { user_id: number }[];
 }
 
@@ -50,8 +52,9 @@ interface Post {
 }
 
 function PostViewer() {
-    const { threadId, postId } = useParams();
+    const { threadId, postId } = useParams<{ threadId: string; postId: string }>();
     const navigate = useNavigate();
+
     const [post, setPost] = useState<Post | null>(null);
     const [comments, setComments] = useState<Comment[]>([]);
     const [loading, setLoading] = useState(true);
@@ -63,56 +66,58 @@ function PostViewer() {
     const [showCommentForm, setShowCommentForm] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
-  // Tutorial state
-  const [tutorialOpen, setTutorialOpen] = useState(false);
-  const [step, setStep] = useState(0);
+    // Tutorial state
+    const [tutorialOpen, setTutorialOpen] = useState(false);
+    const [step, setStep] = useState(0);
 
-  const tutorialSteps = [
-    { title: "Welcome to the Post Page", description: "Here you can view a post and all its comments." },
-    { title: "Interacting", description: "You can like posts and comments, and add your own." },
-    { title: "Navigation", description: "Use the back button to return to the thread at any time." },
-    { title: "You're Ready!", description: "Start exploring and engaging in discussions." }
-  ];
+    const tutorialSteps = [
+        { title: "Welcome to the Post Page", description: "Here you can view a post and all its comments." },
+        { title: "Interacting", description: "You can like the post and add your own comments." },
+        { title: "Navigation", description: "Use the back button to return to the thread at any time." },
+        { title: "You're Ready!", description: "Start exploring and engaging in discussions." }
+    ];
 
-  const nextStep = () => {
-    if (step < tutorialSteps.length - 1) {
-      setStep(step + 1);
-    } else {
-      setTutorialOpen(false);
-    }
-  };
+    const nextStep = () => {
+        if (step < tutorialSteps.length - 1) {
+            setStep(step + 1);
+        } else {
+            setTutorialOpen(false);
+        }
+    };
 
-  // Fetch user ID from local storage
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      try {
-        const parsedUser = JSON.parse(userData);
-        setUserId(parsedUser.user_id);
-      } catch (err) {
-        console.error("Error parsing user data:", err);
+    // Fetch user ID from local storage
+    useEffect(() => {
+      async function loadMe() {
+        try {
+          const token = localStorage.getItem("token");
+          if (!token) return;
+          const resp = await axios.get<{ user_id: number }>(
+            `${API_BASE_URL}/users/me`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          setUserId(resp.data.user_id);
+        } catch (err) {
+          console.error("couldn't load current user", err);
+        }
       }
-    }
-  }, []);
+      loadMe();
+    }, []);
 
     // Fetch post details
     useEffect(() => {
         async function fetchPost() {
+            if (!postId) return;
             try {
                 const token = localStorage.getItem("token");
-                if (!postId) return;
-
-                const response = await axios.get(`${API_BASE_URL}/post/${postId}`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                const response = await axios.get<Post>(`${API_BASE_URL}/post/${postId}`, {
+                    headers: token ? { Authorization: `Bearer ${token}` } : undefined
                 });
-
                 setPost(response.data);
             } catch (err: any) {
                 console.error("Error fetching post:", err);
                 setError(err.response?.data?.detail || "Failed to load post");
             }
         }
-
         fetchPost();
     }, [postId]);
 
@@ -120,39 +125,59 @@ function PostViewer() {
     useEffect(() => {
         async function fetchComments() {
             if (!postId) return;
-
             try {
                 const token = localStorage.getItem("token");
-
-                const response = await axios.get(`${API_BASE_URL}/post/${postId}/comments`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                const response = await axios.get<Comment[]>(`${API_BASE_URL}/post/${postId}/comments`, {
+                    headers: token ? { Authorization: `Bearer ${token}` } : undefined
                 });
-                console.log("recd Comments:", response);
                 setComments(response.data);
             } catch (err: any) {
                 console.error("Error fetching comments:", err);
-                setError(err.response?.data?.detail || "Failed to load comments");
+                // comments are non‐critical, so we just log
             } finally {
                 setLoading(false);
             }
         }
-
         fetchComments();
     }, [postId]);
 
-  // Tutorial trigger
-  useEffect(() => {
-    const tutorialMode = JSON.parse(localStorage.getItem("tutorialMode") || "false");
-    if (tutorialMode) {
-      setTutorialOpen(true);
-    }
-  }, []);
+    // Tutorial trigger
+    useEffect(() => {
+        const tutorialMode = JSON.parse(localStorage.getItem("tutorialMode") || "false");
+        if (tutorialMode) {
+            setTutorialOpen(true);
+        }
+    }, []);
 
-  // Create comment
-  const handleCreateComment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!commentContent.trim()) return;
+    // Like/unlike the post
+    const handleLikePost = async () => {
+      if (!post) return;   // guard
+      const token = localStorage.getItem("token");
+      if (!token) { setError("Not authenticated"); return; }
+    
+      const already = post.liked_by?.some(l => l.user_id === userId);
+      try {
+        await axios.post(
+          `${API_BASE_URL}/post/${post.post_id}/${already ? "unlike" : "like"}`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        // re-fetch to pick up the new liked_by list:
+        const { data } = await axios.get<Post>(
+          `${API_BASE_URL}/post/${post.post_id}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setPost(data);
+      } catch (err: any) {
+        console.error(err);
+        setError(err.response?.data?.detail || "Failed to update like status");
+      }
+    };
 
+    // Create comment
+    const handleCreateComment = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!commentContent.trim()) return;
         setSubmitting(true);
         try {
             const token = localStorage.getItem("token");
@@ -160,19 +185,15 @@ function PostViewer() {
                 setError("Not authenticated");
                 return;
             }
-
             await axios.post(
                 `${API_BASE_URL}/post/${postId}/comments`,
                 { content: commentContent },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            console.log("sent a comment:", commentContent);
-
-            // Refresh comments
-            const response = await axios.get(`${API_BASE_URL}/post/${postId}/comments`, {
+            // refresh comments
+            const response = await axios.get<Comment[]>(`${API_BASE_URL}/post/${postId}/comments`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-
             setComments(response.data);
             setCommentContent("");
             setShowCommentForm(false);
@@ -183,93 +204,22 @@ function PostViewer() {
             setSubmitting(false);
         }
     };
-    function myFunction() {
-        handleDeletePost();
-        navigate(`/thread/${threadId}`);
-    }
 
     // Handle post deletion
-    const handleDeletePost = async() => {
+    const handleDeletePost = async () => {
         try {
             const token = localStorage.getItem("token");
             if (!token) {
                 setError("Not authenticated");
                 return;
             }
-
-            await axios.delete(
-                `${API_BASE_URL}/post/${postId}`,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            console.log("sent a comment:", commentContent);
-
-            // delete
-            await axios.get(`${API_BASE_URL}/post/${postId}/comments`, {
+            await axios.delete(`${API_BASE_URL}/post/${postId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             navigate(`/thread/${threadId}`);
         } catch (err: any) {
-            console.error("Error creating comment:", err);
+            console.error("Error deleting post:", err);
             setError(err.response?.data?.detail || "Failed to delete post");
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    // Handle post like/unlike
-    const handleLikePost = async () => {
-        if (!post || !userId) return;
-
-        try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                setError("Not authenticated");
-                return;
-            }
-
-            const isLiked = post.liked_by?.some(like => like.user_id === userId);
-            const endpoint = `${API_BASE_URL}/post/${postId}/${isLiked ? 'unlike' : 'like'}`;
-
-            await axios.post(endpoint, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            // Update post with new like status
-            const response = await axios.get(`${API_BASE_URL}/post/${postId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            setPost(response.data);
-        } catch (err: any) {
-            console.error("Error updating like status:", err);
-            setError(err.response?.data?.detail || "Failed to update like status");
-        }
-    };
-
-    // Handle comment like/unlike
-    const handleLikeComment = async (commentId: number, isLiked: boolean) => {
-        try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                setError("Not authenticated");
-                return;
-            }
-
-            const endpoint = `${API_BASE_URL}/comment/${commentId}/${isLiked ? 'unlike' : 'like'}`;
-
-            await axios.post(endpoint, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            // Refresh comments
-            const response = await axios.get(`${API_BASE_URL}/post/${postId}/comments`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            setComments(response.data);
-        } catch (err: any) {
-            console.error("Error updating comment like status:", err);
-            setError(err.response?.data?.detail || "Failed to update comment like status");
         }
     };
 
@@ -333,7 +283,8 @@ function PostViewer() {
                   <div className="post-actions">
                     <button
                       className={`like-button ${
-                        post.liked_by?.some((like) => like.user_id === userId) ? "liked" : ""
+                        post.liked_by?.some((like) => like.user_id === userId)
+                          ? "liked" : ""
                       }`}
                       onClick={handleLikePost}
                     >
@@ -345,7 +296,7 @@ function PostViewer() {
                     >
                       Add Comment
                     </button>
-                    <button className="delete-button" onClick={() => myFunction()}>
+                    <button className="delete-button" onClick={handleDeletePost}>
                       Delete Post
                     </button>
                   </div>
@@ -396,30 +347,14 @@ function PostViewer() {
                     <div className="comments-list">
                       {comments.map((comment) => (
                         <div key={comment.comment_id} className="comment-item">
-                          {/* Flag button on each comment */}
                           <FlagButton flag_type="comment" target_id={comment.comment_id} />
-      
                           <div className="comment-content">{comment.content}</div>
                           <div className="comment-footer">
                             <div className="comment-meta">
                               <span className="comment-author">{comment.author?.username}</span>
                               <span className="comment-date">{formatDate(comment.created_at)}</span>
                             </div>
-                            <button
-                              className={`comment-like-button ${
-                                comment.liked_by?.some((like) => like.user_id === userId)
-                                  ? "liked"
-                                  : ""
-                              }`}
-                              onClick={() =>
-                                handleLikeComment(
-                                  comment.comment_id,
-                                  !!comment.liked_by?.some((like) => like.user_id === userId)
-                                )
-                              }
-                            >
-                              {comment.liked_by?.length || 0} Likes
-                            </button>
+                            {/* no comment-like-button */}
                           </div>
                         </div>
                       ))}
@@ -464,8 +399,7 @@ function PostViewer() {
             </Box>
           )}
         </AppTheme>
-      );
-      
+    );
 }
 
 export default PostViewer;

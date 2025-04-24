@@ -92,14 +92,13 @@ function SpecificStockRequest() {
         
         try {
             const res = await axios.get(`${API_BASE_URL}/specific-stock/${stock.stock_id}?n=5`);
-            if (res.data && Array.isArray(res.data)) {
+            if (res.data.length === 0) {
+                setSentimentData([]);
+                setUpdateStatus("No sentiment data available for this stock yet.");
+            } else {
                 setSentimentData(res.data);
                 setLastUpdated("Fetched just now");
                 setUpdateStatus("Live data loaded.");
-            } else {
-                console.error("Unexpected data format", res.data);
-                setStockError("Received unexpected data format from server");
-                setSentimentData([]);
             }
         } catch (err: any) {
             console.error("Failed to load sentiment data", err);

@@ -265,3 +265,17 @@
         text-align: left;
     }
 }
+
+.last-updated {
+    font-size: 0.9rem;
+    color: #999;
+    margin-top: 1rem;
+    text-align: middle;
+    font-style: italic;
+}
+
+.update-status {
+    font-size: 0.9rem;
+    color: #666;;
+    text-align: center;
+}
