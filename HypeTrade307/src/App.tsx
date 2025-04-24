@@ -1,8 +1,9 @@
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import StartupRedirect from "./StartupRedirect";
+import axios from "axios";
 import Page_Not_found from "./pages/Page_Not_found.tsx";
 import Home from "./pages/home_page.tsx";
 import Profile_page from "./pages/Profile_Page.tsx";
@@ -21,9 +22,33 @@ import Specific_Stock from './pages/specific_stock_request.tsx'
 import ViewStockPage from "@/pages/ViewStockPage.tsx";
 import HelpPage from "@/pages/HelpPage.tsx";
 
+function AutoLoginRedirect() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const rememberMe = localStorage.getItem("rememberMe") === "true";
+    const currentPath = window.location.pathname;
+    const shouldRedirect = currentPath === "/" || currentPath === "/login";
+
+    if (token && rememberMe && shouldRedirect) {
+      axios
+        .get("http://localhost:8080/users/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .catch(() => {
+          localStorage.removeItem("token");
+        });
+    }
+  }, [navigate]);
+
+  return null;
+}
+
 function App() {
     return (
         <Router>
+            <AutoLoginRedirect />
             <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
             <Routes>
                 <Route path="/" element={<Home />} />

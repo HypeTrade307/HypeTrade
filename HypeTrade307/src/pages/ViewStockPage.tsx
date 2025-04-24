@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import MarketValue from "../assets/basic_Graph.tsx";
+import AreaGraph from "@/assets/area_Graph.tsx";
+import { API_BASE_URL } from "../config";
 import "../stocks.css";
-
-const API_BASE_URL = "http://127.0.0.1:8000";
 
 export default function ViewStockPopupPage() {
   const { tkr } = useParams();
@@ -11,6 +12,7 @@ export default function ViewStockPopupPage() {
   const [stock, setStock] = useState<any | null>(null);
   const [sentimentData, setSentimentData] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingSentiment, setLoadingSentiment] = useState(false);
   const [timeButton, setTimeButton] = useState<"Day" | "Week" | "Month">("Day");
 
   const portfolioId = localStorage.getItem("currentPortfolioId");
@@ -41,6 +43,7 @@ export default function ViewStockPopupPage() {
       if (!stock) return;
 
       try {
+        setLoadingSentiment(true);
         const token = localStorage.getItem("token");
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
         const interval = timeButton === "Day" ? 1 : timeButton === "Week" ? 7 : 30;
@@ -53,6 +56,8 @@ export default function ViewStockPopupPage() {
         setSentimentData(res.data);
       } catch (e) {
         console.error("Error fetching sentiment", e);
+      } finally {
+        setLoadingSentiment(false);
       }
     };
 
@@ -70,6 +75,7 @@ export default function ViewStockPopupPage() {
 
   const getGraphTitle = () => {
     if (!stock) return "No stock selected";
+    if (loadingSentiment) return `Loading ${stock.stock_name}'s data...`;
     return `${stock.stock_name}'s performance over the last ${timeButton}`;
   };
 
@@ -101,7 +107,6 @@ export default function ViewStockPopupPage() {
 
       <div className="hud-container">
         <div className="hud-box">
-
           <div className="stock-detail-header">
             <h2>{stock.stock_name} ({stock.ticker})</h2>
             <div className="detail-change">${stock.value?.toLocaleString()}</div>
@@ -140,13 +145,8 @@ export default function ViewStockPopupPage() {
 
           <div className="chart-container">
             <h3 className="chart-title">{getGraphTitle()}</h3>
-            {sentimentData.length > 0 ? (
-              <div className="chart-placeholder">
-                Sentiment data: {sentimentData.join(", ")}
-              </div>
-            ) : (
-              <div className="chart-placeholder">No sentiment data available</div>
-            )}
+            <MarketValue file={stock.ticker} />
+            <AreaGraph file={stock.ticker} />
           </div>
         </div>
       </div>
