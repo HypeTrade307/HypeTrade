@@ -1,19 +1,42 @@
 .help-container {
-  margin-top: 20px;
+  margin-top: 30px;
   padding: 16px;
 }
 
 .help-header {
-  margin-top: 10px;
-  font-size: 5rem;
-  font-weight: bold;
+  font-weight: 700;
+  font-size: 400px;
+  text-align: center;
+  fontWeight: 'bold'
+}
+
+.help-box {
+  padding: 32px;
+  background-color: #fafafa;
+  border-radius: 16px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .help-list {
-  padding-left: 20px;
-  margin-bottom: 16px;
+  padding-left: 24px;
+  margin-bottom: 24px;
 }
 
 .help-list li {
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.toggle-section {
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+.disclaimer {
+  display: block;
+  margin-top: 32px;
+  color: #666;
+  font-style: italic;
+  line-height: 1.5;
 }

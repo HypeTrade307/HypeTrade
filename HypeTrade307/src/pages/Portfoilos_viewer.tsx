@@ -65,6 +65,7 @@ export default function PortfolioPage(props: { disableCustomTheme?: boolean }) {
     async function fetchPortfolio() {
       try {
         const token = localStorage.getItem("token");
+        console.log("Token in PortfolioPage:", token);
         if (!token) {
           setError("Not authenticated");
           setLoading(false);

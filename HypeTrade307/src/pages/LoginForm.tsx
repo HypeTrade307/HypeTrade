@@ -144,13 +144,12 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
     };
     return (
         <>
-            
             <AppTheme {...props}>
                 <CssBaseline enableColorScheme />
                 <Navbar />
                 <div className="login-container">
                     <form onSubmit={handleLogin}>
-                    <div style={{ height: '15px' }} /> {/* adds white space */}                
+                        <div style={{ height: '15px' }} /> {/* adds white space */}
                         <h2 style={{ fontSize: '35px'}}>Welcome to</h2>
                         <h1>HypeTrade</h1>
                         <div className="form-group">
@@ -172,8 +171,18 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
                                 value={loginUser.password}
                                 onChange={handleLoginChange}
                             />
+                            </div>
+                              <div className="form-group remember-me">
+                                <label>
+                                  <input
+                                    type="checkbox"
+                                    checked={rememberMe}
+                                    onChange={toggleRememberMe}
+                                  />{" "}
+                                  Remember me?
+                                </label>
                         </div>
-                        <button type="submit" className="submit-button">
+                        <button type="submit" className="login-button">
                             Login
                         </button>
                     </form>
@@ -220,7 +229,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
                                     <div className="form-group">
                                         <input
                                             type="password"
-                                            
+
                                             name="password"
                                             placeholder="Password"
                                             required
@@ -228,7 +237,7 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
                                             onChange={handleSignupChange}
                                         />
                                     </div>
-                                    <button 
+                                    <button
                                         type="button"
                                         className="submit-button"
                                         onClick={sendConfirmationCode}

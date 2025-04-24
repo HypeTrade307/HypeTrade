@@ -99,6 +99,7 @@ const Navbar = () => {
 
     const handleSignOut = () => {
         localStorage.removeItem('token');
+        localStorage.setItem("rememberMe", "false");
         setIsAuthenticated(false);
         setUsername('');
         toast.success('Signed out successfully');
@@ -153,7 +154,7 @@ const Navbar = () => {
             <Container maxWidth="xl">
                 <StyledToolbar variant="dense" disableGutters>
                     <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0 }}>
-                        <Sitemark />
+                        <img src="/HypeTradeNAVBAR.png" alt="HypeTrade logo" width={170} height={36} style={{ borderRadius: '16px' }}/>
                         <UserSearchBar />
                         <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                             {pages.map((page) => (

@@ -13,6 +13,7 @@ import { API_BASE_URL } from "../config";
 import { toast } from "react-toastify";
 import SpecificStockRequest from "./specific_stock_request.tsx";
 
+import "./ViewStock.css";
 interface Stock {
     stock_id: number;
     stock_name: string;
@@ -289,7 +290,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                 // Mark notification as read
                 markAsRead(notificationId);
                 
-                
+
                 // Remove the notification from the list after a short delay
                 setTimeout(() => {
                     setNotifications(notifications.filter(notification => 
@@ -833,7 +834,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                 <CssBaseline enableColorScheme />
                 <Navbar />
                 <ChatPopup />
-                
+
 
                 <div className="stock-page-container">
                     {/* Notification Button */}
@@ -1005,26 +1006,28 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                     {!loading && !error && (
                         <div className="stocks-section">
                             <h2 className="section-title">S&P 500 Top Stocks</h2>
-                            <div className="stocks-grid">
-                                {stockList.map((stock) => (
-                                    <div 
-                                        className="stock-card" 
-                                        key={`top-${stock.ticker}`}
-                                        onClick={() => setPickStock(stock)}
-                                    >
-                                        <div className="stock-header">
-                                            <span className="stock-abbr">{stock.ticker}</span>
-                                            <span 
-                                                className="stock-sentiment"
-                                                style={{ backgroundColor: getSentimentColor(stock.sentiment) }}
-                                            >
-                                                {stock.sentiment}
-                                            </span>
+                            <div className="stocks-section-scrollable">
+                                <div className="stocks-grid">
+                                    {stockList.map((stock) => (
+                                        <div
+                                            className="stock-card"
+                                            key={`top-${stock.ticker}`}
+                                            onClick={() => setPickStock(stock)}
+                                        >
+                                            <div className="stock-header">
+                                                <span className="stock-abbr">{stock.ticker}</span>
+                                                <span
+                                                    className="stock-sentiment"
+                                                    style={{ backgroundColor: getSentimentColor(stock.sentiment) }}
+                                                >
+                                                    {stock.sentiment}
+                                                </span>
+                                            </div>
+                                            <div className="stock-name">{stock.stock_name}</div>
+                                            <div className="stock-value">${stock.value?.toLocaleString()}</div>
                                         </div>
-                                        <div className="stock-name">{stock.stock_name}</div>
-                                        <div className="stock-value">${stock.value?.toLocaleString()}</div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     )}
