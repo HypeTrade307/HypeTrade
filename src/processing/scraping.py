@@ -11,7 +11,7 @@ from flask.cli import load_dotenv
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from services.finbert_request import get_financial_sentiment
+from services.models_requests import get_financial_sentiment
 # Import your DB models and session
 from src.db.database import SessionLocal
 from src.db import models

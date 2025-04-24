@@ -99,8 +99,12 @@ class UserResponse(BaseModel):
     username: str
     email: str
     created_at: datetime
+    is_admin: bool  # Default to False
 
     model_config = ConfigDict(from_attributes=True)
+
+class UserResponseAdmin(BaseModel):
+    is_admin: bool
 
 class UserPasswordUpdate(BaseModel):
     old_password: str
@@ -120,12 +124,29 @@ class PostCreate(PostBase):
 class PostUpdate(PostBase):
     pass  # For partial updates
 
+
+class LikeResponse(BaseModel):
+    user_id: int
+    class Config:
+        from_attributes = True
+
+class UserBasic(BaseModel):
+    user_id: int
+    username: str
+    class Config:
+        from_attributes = True
+
 class PostResponse(BaseModel):
     post_id: int
     title: str
     content: str
+    author_id: int
+    thread_id: int
     created_at: datetime
-
+    updated_at: datetime
+    author: Optional[UserBasic] = None
+    liked_by: List[LikeResponse] = []            # ← add this
+    thread: Optional['ThreadResponse'] = None
     class Config:
         from_attributes = True
 
@@ -212,6 +233,15 @@ class ThreadResponse(BaseModel):
     stock_id: int
     created_at: datetime
 
+class ThreadResponseWithCreator(BaseModel):
+    thread_id: int
+    title: str
+    stock_id: int
+    created_at: datetime
+    creator_username: str  # Assuming you have a way to get the username from the creator_id
+
+    class Config:
+        from_attributes = True  # If using SQLAlchemy, this will allow Pydantic to read from ORM models
 # ----------------------------
 # NOTIFICATION
 # ----------------------------

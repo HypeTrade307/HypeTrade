@@ -1,14 +1,17 @@
+//@ts-nocheck
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import "../stocks.css";
 import Navbar from "../components/NavbarSection/Navbar.tsx";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../components/shared-theme/AppTheme.tsx";
+import ChatPopup from '../components/generative_chat.tsx'; // Import the new component
 import axios from "axios";
 import MarketValue from "../assets/basic_Graph.tsx";
 import AreaGraph from "../assets/area_Graph.tsx";
 import { API_BASE_URL } from "../config";
 import { toast } from "react-toastify";
+import SpecificStockRequest from "./specific_stock_request.tsx";
 
 interface Stock {
     stock_id: number;
@@ -829,6 +832,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
             <AppTheme {...props}>
                 <CssBaseline enableColorScheme />
                 <Navbar />
+                <ChatPopup />
                 
 
                 <div className="stock-page-container">
@@ -930,6 +934,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                     {isAuthenticated && (
                         <div className="portfolio-section">
                             <div className="portfolio-selection">
+                                <SpecificStockRequest stock={pickStock} setPickStock={setPickStock} />
                                 <label htmlFor="portfolio-select">Select Portfolio:</label>
                                 <select 
                                     id="portfolio-select"

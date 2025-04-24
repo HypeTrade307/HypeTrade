@@ -18,7 +18,6 @@ ERROR_MESSAGES = {
 ####################################
 #  Current User Endpoints (No user_id path)
 ####################################
-
 @router.get("/me", response_model=schemas.UserResponse)
 def read_current_user(
     current_user: models.User = Depends(get_current_user)
@@ -28,6 +27,11 @@ def read_current_user(
     Useful if the front-end wants to fetch the user’s own profile.
     """
     return current_user
+
+
+@router.get("/me/is_admin", response_model=schemas.UserResponseAdmin)
+def read_current_user_is_admin(current_user: models.User = Depends(get_current_user)):
+    return {"is_admin": current_user.is_admin}
 
 @router.put("/me", response_model=schemas.UserResponse)
 def update_user(

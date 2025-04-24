@@ -68,7 +68,7 @@ def get_last_n_sentiment(stock_id: int, n: int,db: Session = Depends(get_db)):
     Fetch sentiment analysis for a given stock ID.
     """
     sentiment_data = crud.get_last_n_sentiments_by_stock_id(db, stock_id, n)
-    if not sentiment_data:
-        raise HTTPException(status_code=404, detail="No sentiment data found for this stock.")
+    # if not sentiment_data:
+    #     raise HTTPException(status_code=404, detail="No sentiment data found for this stock.")
     
     return sentiment_data
