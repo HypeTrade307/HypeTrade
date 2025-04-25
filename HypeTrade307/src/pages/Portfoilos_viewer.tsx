@@ -22,6 +22,15 @@ interface Portfolio {
   name: string;
   stocks: StockBase[];  // an array of objects
 }
+const downloadFile = (content: string, filename: string, mimeType: string) => {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+};
 
 export default function PortfolioPage(props: { disableCustomTheme?: boolean }) {
   const { id } = useParams<{ id: string }>();
@@ -199,7 +208,31 @@ export default function PortfolioPage(props: { disableCustomTheme?: boolean }) {
       console.log(error);
     }
   }
-
+  const formatTimestamp = () => {
+    const now = new Date();
+    return now.toISOString().replace(/[:.]/g, "-");
+  };
+  
+  const downloadCSV = () => {
+    if (!portfolio) return;
+    const csvContent = portfolio.stocks
+      .map(stock => `${stock.ticker},${stock.stock_name}`)
+      .join("\n");
+    const timestamp = formatTimestamp();
+    const filename = `portfolio_myport_${timestamp}.csv`;
+    downloadFile(csvContent, filename, "text/csv");
+  };
+  
+  const downloadText = () => {
+    if (!portfolio) return;
+    const txtContent = portfolio.stocks
+      .map(stock => `${stock.ticker} - ${stock.stock_name}`)
+      .join("\n");
+    const timestamp = formatTimestamp();
+    const filename = `portfolio_myport_${timestamp}.txt`;
+    downloadFile(txtContent, filename, "text/plain");
+  };
+  
 
   if (loading) return <div>Loading...</div>;
   if (error) return <Page_Not_found />;
@@ -270,6 +303,14 @@ export default function PortfolioPage(props: { disableCustomTheme?: boolean }) {
           )}
         </ul>
 
+        <div style={{ marginBottom: "15px" }}>
+                <button onClick={downloadCSV} type="submit" className="submit-button">
+                    Download CSV
+                </button>
+                <button onClick={downloadText} type="submit" className="submit-button">
+                    Download Text
+                </button>
+        </div>
         <div>
           <label>Import existing portfolio from csv file:</label>
           <form onChange={importPortfolioFromCSV}>
