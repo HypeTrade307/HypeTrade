@@ -48,36 +48,36 @@ function Profile_page(props: { disableCustomTheme?: boolean }) {
     // Check authentication
     useEffect(() => {
         const checkAuth = async () => {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                setIsAuthenticated(false);
-                setLoading(false);
-                navigate('/login');
-                return;
+          const token = localStorage.getItem("token");
+          if (!token) {
+            setIsAuthenticated(false);
+            setLoading(false);
+            navigate("/login");
+            return;
+          }
+      
+          try {
+            const response = await axios.get(`${API_BASE_URL}/users/me`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+      
+            if (response.data && response.data.user_id) {
+              setIsAuthenticated(true);
+            } else {
+              setIsAuthenticated(false);
+              navigate("/login");
             }
-
-            try {
-                const response = await axios.get(`${API_BASE_URL}/notifications/user/`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-
-                if (response.data && response.data.length > 0 && response.data[0].receiver_id) {
-                    setIsAuthenticated(true);
-                } else {
-                    setIsAuthenticated(false);
-                    navigate('/login');
-                }
-            } catch (error) {
-                console.error('Error checking authentication:', error);
-                setIsAuthenticated(false);
-                navigate('/login');
-            } finally {
-                setLoading(false);
-            }
+          } catch (error) {
+            console.error("Error checking authentication:", error);
+            setIsAuthenticated(false);
+            navigate("/login");
+          } finally {
+            setLoading(false);
+          }
         };
-
+      
         checkAuth();
-    }, [navigate]);
+      }, [navigate]);
 
     useEffect(() => {
     const tutorialMode = localStorage.getItem("tutorialMode");
