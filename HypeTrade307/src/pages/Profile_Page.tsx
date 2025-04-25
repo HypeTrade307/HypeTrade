@@ -1,93 +1,102 @@
 //@ts-nocheck
-import {useEffect, useState} from "react";
-import Home_page_button from "./Home_page_button.tsx";
-import Navbar from "../components/NavbarSection/Navbar.tsx";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { Box, Button, Container, Grid, Stack } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
+
+// Components
+import Navbar from "../components/NavbarSection/Navbar.tsx";
 import AppTheme from "../components/shared-theme/AppTheme.tsx";
+import Home_page_button from "./Home_page_button.tsx";
 import FriendList from "./FriendList.tsx";
 import Portfolios_creation from "./Portfolios_creation.tsx";
 import SettingsMenu from "./SettingsMenu.tsx";
 import PortfolioViewer from "./Portfoilos_viewer.tsx";
+
+// Styles
 import "./Profile_Page.css";
-import {Box, Button, Container, Link, Stack } from "@mui/material";
-// import Grid from "@mui/material/Grid2";
-import Grid from "@mui/material/Grid";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { toast } from "react-toastify";
 import { API_BASE_URL } from "../config";
 
+// Tutorial step definitions
+const TUTORIAL_STEPS_LEFT = [
+    { title: "Friends List", description: "Here is the friends list. You can add friends by going to the 'Search' page" },
+    { title: "Friend Actions", description: "You can remove friends, view their profiles, and view there portfolios (if you have access)" },
+    { title: "You're all set", description: "You can now interact with the friends list" },
+];
+
+const TUTORIAL_STEPS_RIGHT = [
+    { title: "Managing Portfolios", description: "Here is the portfolio page. You can add portfolios and access them." },
+    { title: "Adding a portfolio", description: "Type the name of the portfolio you wish to add, then click 'Create Portfolio' to add it to the list of portfolios." },
+    { title: "Removing a portfolio", description: "Click on the trash icon to remove a portfolio from your list." },
+    { title: "Adding stocks to a portfolio", description: "Click on a portfolio. This will take you to a page where you can add stocks to them." },
+    { title: "You're all set", description: "Now you can manage your portfolios!" },
+];
+
 function Profile_page(props: { disableCustomTheme?: boolean }) {
+    // Navigation and state hooks
     const navigate = useNavigate();
-    const [showPortfolioViewer, setShowPortfolioViewer] = useState<boolean>(false);
-    const [showSettings, setShowSettings] = useState<boolean>(false);
-    const [profilePic, setProfilePic] = useState("");
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
 
-    // Tutorial Left
+    // UI state hooks
+    const [showPortfolioViewer, setShowPortfolioViewer] = useState<boolean>(false);
+    const [showSettings, setShowSettings] = useState<boolean>(false);
+    const [profilePic] = useState("");
+
+    // Tutorial state hooks
     const [showTutorialLeft, setShowTutorialLeft] = useState(false);
     const [stepLeft, setStepLeft] = useState(0);
-    const tutorialStepsLeft = [
-        { title: "Friends List", description: "Here is the friends list. You can add friends by going to the 'Search' page" },
-        { title: "Friend Actions", description: "You can remove friends, view their profiles, and view there portfolios (if you have access)" },
-        { title: "You're all set", description: "You can now interact with the friends list" },
-    ];
-
-    // Tutorial Right
     const [showTutorialRight, setShowTutorialRight] = useState(false);
     const [stepRight, setStepRight] = useState(0);
-    const tutorialStepsRight = [
-        { title: "Managing Portfolios", description: "Here is the portfolio page. You can add portfolios and access them." },
-        { title: "Adding a portfolio", description: "Type the name of the portfolio you wish to add, then click 'Create Portfolio' to add it to the list of portfolios." },
-        { title: "Removing a portfolio", description: "Click on the trash icon to remove a portfolio from your list." },
-        { title: "Adding stocks to a portfolio", description: "Click on a portfolio. This will take you to a page where you can add stocks to them." },
-        { title: "You're all set", description: "Now you can manage your portfolios!" },
-    ];
 
-    // Check authentication
+    // Check authentication on component mount
     useEffect(() => {
         const checkAuth = async () => {
-          const token = localStorage.getItem("token");
-          if (!token) {
-            setIsAuthenticated(false);
-            setLoading(false);
-            navigate("/login");
-            return;
-          }
-      
-          try {
-            const response = await axios.get(`${API_BASE_URL}/users/me`, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-      
-            if (response.data && response.data.user_id) {
-              setIsAuthenticated(true);
-            } else {
-              setIsAuthenticated(false);
-              navigate("/login");
+            const token = localStorage.getItem("token");
+            if (!token) {
+                setIsAuthenticated(false);
+                setLoading(false);
+                navigate("/login");
+                return;
             }
-          } catch (error) {
-            console.error("Error checking authentication:", error);
-            setIsAuthenticated(false);
-            navigate("/login");
-          } finally {
-            setLoading(false);
-          }
-        };
-      
-        checkAuth();
-      }, [navigate]);
 
+            try {
+                const response = await axios.get(`${API_BASE_URL}/users/me`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                if (response.data && response.data.user_id) {
+                    setIsAuthenticated(true);
+                } else {
+                    setIsAuthenticated(false);
+                    navigate("/login");
+                }
+            } catch (error) {
+                console.error("Error checking authentication:", error);
+                setIsAuthenticated(false);
+                navigate("/login");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        checkAuth();
+    }, [navigate]);
+
+    // Load tutorial settings from local storage
     useEffect(() => {
-    const tutorialMode = localStorage.getItem("tutorialMode");
-    if (tutorialMode === "true") {
-        setShowTutorialLeft(true);
-        setShowTutorialRight(true);
-    }
-}, []);
+        const tutorialMode = localStorage.getItem("tutorialMode");
+        if (tutorialMode === "true") {
+            setShowTutorialLeft(true);
+            setShowTutorialRight(true);
+        }
+    }, []);
+
+    // Tutorial navigation functions
     const nextStepLeft = () => {
-        if (stepLeft < tutorialStepsLeft.length - 1) {
+        if (stepLeft < TUTORIAL_STEPS_LEFT.length - 1) {
             setStepLeft(stepLeft + 1);
         } else {
             setShowTutorialLeft(false);
@@ -95,13 +104,14 @@ function Profile_page(props: { disableCustomTheme?: boolean }) {
     };
 
     const nextStepRight = () => {
-        if (stepRight < tutorialStepsRight.length - 1) {
+        if (stepRight < TUTORIAL_STEPS_RIGHT.length - 1) {
             setStepRight(stepRight + 1);
         } else {
             setShowTutorialRight(false);
         }
     };
 
+    // UI toggle functions
     const togglePortfolioViewer = () => {
         setShowPortfolioViewer(!showPortfolioViewer);
     };
@@ -116,6 +126,7 @@ function Profile_page(props: { disableCustomTheme?: boolean }) {
         }
     };
 
+    // Loading state
     if (loading) {
         return (
             <AppTheme {...props}>
@@ -128,99 +139,105 @@ function Profile_page(props: { disableCustomTheme?: boolean }) {
         );
     }
 
+    // Redirect if not authenticated
     if (!isAuthenticated) {
-        return null; // Will redirect to login page
+        return null;
     }
 
     return (
-        <>
-            <AppTheme {...props}>
-                <CssBaseline enableColorScheme />
-                <Navbar />
+        <AppTheme {...props}>
+            <CssBaseline enableColorScheme />
+            <Navbar />
 
-                <div className="profile-container2">
-                    <Container
-                        fixed
+            {/* User Info Banner */}
+            <div className="profile-container2">
+                <Container
+                    fixed
+                    sx={{
+                        '@media screen and (max-width: 768px)': {
+                            padding: "0",
+                            marginY: "10px"
+                        },
+                    }}
+                >
+                    <Grid
+                        container
+                        direction="row"
+                        justifyContent="center"
+                        alignItems="flex-start"
+                        spacing={2}
                         sx={{
                             '@media screen and (max-width: 768px)': {
-                                padding: "0",
-                                marginY: "10px"
+                                alignItems: "center",
+                                margin: "0",
+                                spacing: 0,
+                                width: "100%",
                             },
                         }}
                     >
+                        {/* Left Column - Profile Picture */}
                         <Grid
                             container
-                            direction="row"
-                            justifyContent="center"
-                            alignItems="flex-start"
-                            spacing={2}
+                            item
+                            direction="column"
+                            justifyContent="flex-start"
+                        >
+                            <Grid item xs={12} sm={4}>
+                                <Stack
+                                    direction="column"
+                                    alignItems="flex-start"
+                                    spacing={2}
+                                >
+                                    <Box
+                                        component="img"
+                                        sx={{
+                                            height: 233,
+                                            width: 350,
+                                            maxHeight: { xs: 233, md: 167 },
+                                            maxWidth: { xs: 350, md: 250 },
+                                            borderRadius: '10px',
+                                        }}
+                                        alt="Profile image"
+                                        src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&w=350&dpr=2"
+                                    />
+                                </Stack>
+                            </Grid>
+                        </Grid>
+
+                        {/* Right Column - Username and Follow Button */}
+                        <Grid
+                            container
+                            item
+                            direction="column"
+                            justifyContent="flex-start"
+                            alignItems="stretch"
                             sx={{
                                 '@media screen and (max-width: 768px)': {
                                     alignItems: "center",
-                                    margin: "0",
-                                    spacing: 0,
-                                    width: "100%",
+                                    margin: "auto",
                                 },
                             }}
                         >
                             <Grid
-                                // LHS Column
                                 container
                                 item
                                 direction="column"
                                 justifyContent="flex-start"
-                                // alignItems="center"
-                                // xs={12} sm={4}
-                            >
-                                {/*profile section*/}
-                                <Grid
-                                    item
-                                    xs={12} sm={4}
-                                >
-                                    <Stack direction="column"
-                                           // justifyContent="center"
-                                           alignItems="flex-start"
-                                           spacing={2}
-                                    >
-                                        <Box
-                                            component="img"
-                                            sx={{
-                                                height: 233,
-                                                width: 350,
-                                                maxHeight: { xs: 233, md: 167 },
-                                                maxWidth: { xs: 350, md: 250 },
-                                                borderRadius: '10px',
-                                                // display: flex;
-                                                // flex-direction: column;
-                                                // align-items: stretch;
-                                                // justify-content: flex-start;
-                                                // height: 20vh;
-                                            }}
-                                            alt="The house from the offer."
-                                            src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&w=350&dpr=2"
-                                            // src={profilePic}
-                                        />
-                                        {/*<ProfilePic src={profilePic}/>*/}
-                                    </Stack>
-                                </Grid>
-                            </Grid>
-                            <Grid
-                                // RHS Column
-                                container
-                                item
-                                direction="column"
-                                justifyContent="flex-start"
-                                alignItems="stretch"
-                                // xs={12} sm={8}
+                                alignItems="flex-start"
                                 sx={{
                                     '@media screen and (max-width: 768px)': {
                                         alignItems: "center",
-                                        margin: "auto",
+                                        marginY: "10px"
                                     },
                                 }}
                             >
+                                <div className="NameStatusIconContainer">
+                                    <div className="userName">
+                                        My Profile
+                                    </div>
+                                </div>
+
                                 <Grid
-                                    // Name and Follow Button
                                     container
                                     item
                                     direction="column"
@@ -229,164 +246,123 @@ function Profile_page(props: { disableCustomTheme?: boolean }) {
                                     sx={{
                                         '@media screen and (max-width: 768px)': {
                                             alignItems: "center",
-                                            marginY: "10px"
+                                            marginTop: "10px"
                                         },
                                     }}
                                 >
-                                    <div className="NameStatusIconContainer">
-                                        <div className="userName">
-                                            My Profile
-                                            {/*{nickName}*/}
-                                        </div>
-                                    </div>
-
-                                    <Grid
-                                        // Follow Button container
-                                        container
-                                        item
-                                        direction="column"
-                                        justifyContent="flex-start"
-                                        alignItems="flex-start"
-                                        sx={{
-                                            '@media screen and (max-width: 768px)': {
-                                                alignItems: "center",
-                                                marginTop: "10px"
-                                            },
-                                        }}
-                                    >
-
-                                        <Grid
-                                            // Follow Button container
-                                            container
-                                            direction="column"
-                                            justifyContent="flex-start"
-                                            alignItems="flex-start"
-                                            sx={{
-                                                '@media screen and (max-width: 768px)': {
-                                                    alignItems: "center",
-                                                    marginTop: "10px"
-                                                },
-                                            }}
+                                    <div>
+                                        <Button
+                                            disableRipple
+                                            variant="outlined"
+                                            style={{color:'lightblue'}}
                                         >
-                                            <div>
-                                                <Button
-                                                    disableRipple
-                                                    container
-                                                    direction="column"
-                                                    justifyContent="center"
-                                                    alignItems="center"
-                                                    // fullWidth={true}
-
-                                                    variant="outlined"
-                                                    style={{color:'lightblue'}}
-                                                    // onClick={followUser}
-                                                >
-                                                    Follow
-                                                </Button>
-                                            </div>
-
-                                        </Grid>
-
-                                    </Grid>
+                                            Follow
+                                        </Button>
+                                    </div>
                                 </Grid>
                             </Grid>
                         </Grid>
-                    </Container>
+                    </Grid>
+                </Container>
+            </div>
+
+            {/* Main Content Container */}
+            <div className="profile-container">
+                {/* Top Navigation Bar */}
+                <div className="top-navigation">
+                    <Home_page_button />
+                    <h1 className="profile-title">My Profile</h1>
+                    <button className="settings-button" onClick={toggleSettings}>
+                        ⚙️ Settings
+                    </button>
                 </div>
 
-                <div className="profile-container">
-                    <div className="top-navigation">
-                        <Home_page_button />
-                        <h1 className="profile-title">My Profile</h1>
-                        <button className="settings-button" onClick={toggleSettings}>
-                            ⚙️ Settings
-                        </button>
+                {/* Main Content Layout */}
+                <div className="profile-content">
+                    {/* Friends Sidebar */}
+                    <div className="friends-sidebar">
+                        <h2>Friends</h2>
+                        <FriendList />
                     </div>
 
-                    <div className="profile-content">
-                        <div className="friends-sidebar">
-                            <h2>Friends</h2>
-                            <FriendList />
-                        </div>
-
-                        <div className="main-content">
-                            {showPortfolioViewer ? (
-                                <PortfolioViewer />
-                            ) : (
-                                <>
-                                    <div className="portfolio-header">
-                                        <h2>My Portfolios</h2>
-                                        <button className="view-portfolio-button" onClick={togglePortfolioViewer}>
-                                            View All Portfolios
-                                        </button>
-                                    </div>
-                                    <Portfolios_creation />
-                                </>
-                            )}
-                        </div>
+                    {/* Portfolio Content */}
+                    <div className="main-content">
+                        {showPortfolioViewer ? (
+                            <PortfolioViewer />
+                        ) : (
+                            <>
+                                <div className="portfolio-header">
+                                    <h2>My Portfolios</h2>
+                                    <button className="view-portfolio-button" onClick={togglePortfolioViewer}>
+                                        View All Portfolios
+                                    </button>
+                                </div>
+                                <Portfolios_creation />
+                            </>
+                        )}
                     </div>
-
-                    {showSettings && (
-                        <div className="settings-overlay" onClick={handleClickOff}>
-                            <div className="settings-modal">
-                                <button className="close-button" onClick={toggleSettings}>
-                                    ×
-                                </button>
-                                <SettingsMenu />
-                            </div>
-                        </div>
-                    )}
                 </div>
 
-                {/* Left Tutorial Popup */}
-                {showTutorialLeft && (
-                    <div
-                        style={{
-                            position: "fixed",
-                            top: "45%",
-                            left: "40px",
-                            background: "white",
-                            color: "black",
-                            padding: "1rem",
-                            borderRadius: "8px",
-                            boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-                            width: "300px",
-                            zIndex: 9999
-                        }}
-                    >
-                        <h3>{tutorialStepsLeft[stepLeft].title}</h3>
-                        <p>{tutorialStepsLeft[stepLeft].description}</p>
-                        <button onClick={nextStepLeft} style={{ marginTop: "0.5rem", width: "100%" }}>
-                            {stepLeft < tutorialStepsLeft.length - 1 ? "Next" : "Finish"}
-                        </button>
+                {/* Settings Modal */}
+                {showSettings && (
+                    <div className="settings-overlay" onClick={handleClickOff}>
+                        <div className="settings-modal">
+                            <button className="close-button" onClick={toggleSettings}>
+                                ×
+                            </button>
+                            <SettingsMenu />
+                        </div>
                     </div>
                 )}
+            </div>
 
-                {/* Right Tutorial Popup */}
-                {showTutorialRight && (
-                    <div
-                        style={{
-                            position: "fixed",
-                            top: "45%",
-                            right: "40px",
-                            background: "white",
-                            color: "black",
-                            padding: "1rem",
-                            borderRadius: "8px",
-                            boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-                            width: "300px",
-                            zIndex: 9999
-                        }}
-                    >
-                        <h3>{tutorialStepsRight[stepRight].title}</h3>
-                        <p>{tutorialStepsRight[stepRight].description}</p>
-                        <button onClick={nextStepRight} style={{ marginTop: "0.5rem", width: "100%" }}>
-                            {stepRight < tutorialStepsRight.length - 1 ? "Next" : "Finish"}
-                        </button>
-                    </div>
-                )}
-            </AppTheme>
-        </>
+            {/* Tutorial Popups */}
+            {showTutorialLeft && (
+                <div
+                    style={{
+                        position: "fixed",
+                        top: "45%",
+                        left: "40px",
+                        background: "white",
+                        color: "black",
+                        padding: "1rem",
+                        borderRadius: "8px",
+                        boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+                        width: "300px",
+                        zIndex: 9999
+                    }}
+                >
+                    <h3>{TUTORIAL_STEPS_LEFT[stepLeft].title}</h3>
+                    <p>{TUTORIAL_STEPS_LEFT[stepLeft].description}</p>
+                    <button onClick={nextStepLeft} style={{ marginTop: "0.5rem", width: "100%" }}>
+                        {stepLeft < TUTORIAL_STEPS_LEFT.length - 1 ? "Next" : "Finish"}
+                    </button>
+                </div>
+            )}
+
+            {showTutorialRight && (
+                <div
+                    style={{
+                        position: "fixed",
+                        top: "45%",
+                        right: "40px",
+                        background: "white",
+                        color: "black",
+                        padding: "1rem",
+                        borderRadius: "8px",
+                        boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+                        width: "300px",
+                        zIndex: 9999
+                    }}
+                >
+                    <h3>{TUTORIAL_STEPS_RIGHT[stepRight].title}</h3>
+                    <p>{TUTORIAL_STEPS_RIGHT[stepRight].description}</p>
+                    <button onClick={nextStepRight} style={{ marginTop: "0.5rem", width: "100%" }}>
+                        {stepRight < TUTORIAL_STEPS_RIGHT.length - 1 ? "Next" : "Finish"}
+                    </button>
+                </div>
+            )}
+        </AppTheme>
     );
 }
 
