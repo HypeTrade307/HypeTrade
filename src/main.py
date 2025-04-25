@@ -34,7 +34,7 @@ from src.api.routes.flagging import router as flagging_router
 from src.api.routes.tasks import router as tasks_router
 from src.api.routes.friends import router as friends_router
 from src.api.routes.messages import router as message_router
-
+from src.processing.sentiment_analysis import router as scraping_router
 from src.api.routes.genchat import router as genchat_router
 app = FastAPI()
 
@@ -80,6 +80,7 @@ app.include_router(flagging_router, prefix="/api")
 app.include_router(friends_router, prefix="/api")
 app.include_router(message_router, prefix="/api")
 app.include_router(genchat_router, prefix="/api")
+app.include_router(scraping_router, prefix="/api")
 
 # Health check
 @app.get("/api/health")
