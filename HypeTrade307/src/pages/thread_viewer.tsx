@@ -61,6 +61,7 @@ export default function ThreadViewer() {
         { title: "Welcome to the Thread", description: "Here you can see all posts in this thread." },
         { title: "Viewing Posts", description: "Click on any post to view or reply to it." },
         { title: "Posting", description: "Click 'Create Post' to contribute to the discussion." },
+        { title: "Reporting", description: "If a thread contains content that is inappropriate, you can click that 'Flag' button. An admin will be on that shortly!" },
         { title: "You're Ready!", description: "That's it! Start participating in the conversation." }
     ];
     const nextStep = () => {
