@@ -16,7 +16,8 @@ import AppTheme from '../components/shared-theme/AppTheme';
 // import Testimonials from './components/Testimonials';
 // import FAQ from './components/FAQ';
 // import Footer from './components/Footer';
-
+import HeatMap from "../assets/heatmap_Graph.tsx";
+import HeatMapend from "../assets/heat_backend.tsx";
 import ButtonToPortfolio from "./button_to_Portfolio_Creation.tsx";
 import ThemeToggle from '../assets/theme_handler.tsx';
 
@@ -48,20 +49,12 @@ function Home(props: {disableCustomTheme?: boolean }) {
                 <div>
                     
                 </div>
-                <h1>Vite + React</h1>
+                <div style={{ height: '20px' }} /> {/* adds white space */}
+                <h1>HYPETRADE Mainpage</h1>
                 <div className="card">
-                    <ButtonToPortfolio></ButtonToPortfolio>
-                    <button onClick={() => setCount((count) => count + 1)}>
-                        count is {count}
-                    </button>
-                    <p>
-                        Edit <code>src/App.tsx</code> and save to test HMR. this sources from repo
-                    </p>
-                    <ThemeToggle/>
+                              <HeatMapend/>
+                              <HeatMap/>
                 </div>
-                <p className="read-the-docs">
-                    Click on the Vite || React logos to learn more
-                </p>
             </AppTheme>
         </>
     )

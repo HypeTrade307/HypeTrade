@@ -38,12 +38,10 @@ const AreaGraph: React.FC<AreaGraphProps> = ({ ticker }) => {
 
     const fetchStockIdAndData = async (n: number) => {
         try {
-            // Step 1: Get stock ID from ticker
             const idRes = await fetch(`/api/stocks/${ticker}/id`);
             if (!idRes.ok) throw new Error("Failed to fetch stock ID");
             const { stock_id } = await idRes.json();
 
-            // Step 2: Fetch sentiment data
             const dataRes = await fetch(`/api/specific-stock/${stock_id}?n=${n}`);
             if (!dataRes.ok) throw new Error("Failed to fetch sentiment data");
             const data = await dataRes.json();
@@ -70,10 +68,34 @@ const AreaGraph: React.FC<AreaGraphProps> = ({ ticker }) => {
         return dataMax / (dataMax - dataMin);
     };
 
+    const downloadCSV = () => {
+        const header = "timestamp,value\n";
+        const rows = chartData.map(d => `${d.timestamp},${d.value}`).join("\n");
+        const blob = new Blob([header + rows], { type: "text/csv" });
+        downloadBlob(blob, `${ticker}_sentiment.csv`);
+    };
+
+    const downloadText = () => {
+        const textContent = chartData.map(d => JSON.stringify(d)).join("\n");
+        const blob = new Blob([textContent], { type: "text/plain" });
+        downloadBlob(blob, `${ticker}_sentiment.txt`);
+    };
+
+    const downloadBlob = (blob: Blob, filename: string) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
     const off = calculateGradientOffset(chartData);
 
     if (error) {
-        return <p style={{ color: "white" }}>No sentiment data found for ticker: {ticker}</p>;
+        return <p style={{ color: "crimson" }}>No sentiment data found for ticker: {ticker}</p>;
     }
 
     return (
@@ -87,13 +109,23 @@ const AreaGraph: React.FC<AreaGraphProps> = ({ ticker }) => {
                     onChange={(e) => setLastN(Number(e.target.value))}
                     style={{ width: "75px", marginRight: "10px" }}
                 />
-                <button onClick={() => fetchStockIdAndData(lastN)} style={{ padding: "8px 16px", cursor: "pointer" }}>
+                <button onClick={() => fetchStockIdAndData(lastN)} type="submit" className="submit-button">
                     Fetch Data
                 </button>
-                <button onClick={() => fetchStockIdAndData(999)} style={{ padding: "8px 16px", marginLeft: "10px" }}>
+                <button onClick={() => fetchStockIdAndData(999)} type="submit" className="submit-button">
                     Reset Data
                 </button>
             </div>
+
+            <div style={{ marginBottom: "15px" }}>
+                <button onClick={downloadCSV} type="submit" className="submit-button">
+                    Download CSV
+                </button>
+                <button onClick={downloadText} type="submit" className="submit-button">
+                    Download Text
+                </button>
+            </div>
+
             <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={chartData}>
                     <CartesianGrid vertical={false} strokeDasharray="2" />

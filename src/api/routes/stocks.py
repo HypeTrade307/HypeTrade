@@ -1,10 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 from sqlalchemy.orm import Session
 from typing import List
 import random
+import os
+import json
 from src.db.database import get_db
 from src.db import models
+from pathlib import Path 
 from src.db.schemas import StockCreate, StockUpdate, StockResponse
 from src.db.crud import (
     create_stock,
@@ -15,6 +18,68 @@ from src.db.crud import (
 )
 
 router = APIRouter(prefix="/stocks", tags=["Stocks"])
+
+
+
+
+@router.get("/top-sentiment")
+def get_top_sentiment_stocks(limit: int = 100, db: Session = Depends(get_db)):
+    """
+    Returns the top stocks sorted by absolute latest_sentiment_value.
+    Used for the heatmap.
+    """
+    stocks = (
+        db.query(models.Stock)
+        .filter(models.Stock.latest_sentiment_value.isnot(None))
+        .order_by(func.abs(models.Stock.latest_sentiment_value).desc())
+        .limit(limit)
+        .all()
+    )
+
+    return [
+        {
+            "name": stock.ticker,  # or stock.name, depending on your UI
+            "size": stock.latest_sentiment_value
+        }
+        for stock in stocks
+    ]
+
+@router.post("/refresh-static")
+def refresh_static_data(db: Session = Depends(get_db)):
+    # 1) Pull top 6 sentiments
+    try:
+        stocks = (
+            db.query(models.Stock)
+              .filter(models.Stock.latest_sentiment_value.isnot(None))
+              .order_by(func.abs(models.Stock.latest_sentiment_value).desc())
+              .limit(6)
+              .all()
+        )
+    except Exception as e:
+        raise HTTPException(500, f"DB query failed: {e}")
+
+    payload = [{"name": s.ticker, "size": s.latest_sentiment_value} for s in stocks]
+
+    # 2) Build the path to Hypetrade307/public/data2.json
+    project_root = Path(__file__).resolve().parents[3]
+    public_dir   = project_root / "Hypetrade307" / "public"
+    outpath      = public_dir / "data2.json"
+
+    os.makedirs(public_dir, exist_ok=True)
+    to_dump = [{**item, "value": abs(item["size"])} for item in payload]
+    outpath.write_text(json.dumps(to_dump, indent=2), encoding="utf-8")
+
+
+    try:
+        public_dir.mkdir(parents=True, exist_ok=True)
+        # include value if your frontend expects it:
+        to_dump = [{**item, "value": abs(item["size"])} for item in payload]
+        outpath.write_text(json.dumps(to_dump, indent=2), encoding="utf-8")
+    except Exception as e:
+        raise HTTPException(500, f"Failed writing {outpath}: {e}")
+
+    return {"status": "ok", "written": len(payload), "path": str(outpath)}
+
 
 @router.post("/", response_model=StockResponse)
 def create_new_stock(stock_data: StockCreate, db: Session = Depends(get_db)):
@@ -97,3 +162,4 @@ def get_stock_id_by_ticker(ticker: str, db: Session = Depends(get_db)):
     if not stock:
         raise HTTPException(status_code=404, detail=f"Stock with ticker '{ticker}' not found.")
     return {"stock_id": stock.stock_id}
+

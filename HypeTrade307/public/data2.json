@@ -1,7 +1,32 @@
 [
-  { "name": "Jan", "size": 400 },
-  { "name": "Feb", "size": -300 },
-  { "name": "Mar", "size": 500 },
-  { "name": "Apr", "size": -700 },
-  { "name": "May", "size": 600 }
+  {
+    "name": "SPGI",
+    "size": -0.998,
+    "value": 0.998
+  },
+  {
+    "name": "DVN",
+    "size": 0.993,
+    "value": 0.993
+  },
+  {
+    "name": "HUM",
+    "size": -0.992,
+    "value": 0.992
+  },
+  {
+    "name": "TT",
+    "size": -0.991,
+    "value": 0.991
+  },
+  {
+    "name": "OMC",
+    "size": 0.983,
+    "value": 0.983
+  },
+  {
+    "name": "PLTR",
+    "size": 0.983,
+    "value": 0.983
+  }
 ]

@@ -149,7 +149,8 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
                 <Navbar />
                 <div className="login-container">
                     <form onSubmit={handleLogin}>
-                        <h2>Welcome to</h2>
+                        <div style={{ height: '15px' }} /> {/* adds white space */}
+                        <h2 style={{ fontSize: '35px'}}>Welcome to</h2>
                         <h1>HypeTrade</h1>
                         <div className="form-group">
                             <input
@@ -171,14 +172,14 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
                                 onChange={handleLoginChange}
                             />
                         </div>
-                        <button type="submit" className="login-button">
+                        <button type="submit" className="submit-button">
                             Login
                         </button>
                     </form>
 
                     <div className="signup-section">
                         <p>Don't have an account?</p>
-                        <button className="signup-button" onClick={() => setSignUp(true)}>
+                        <button type="submit" className="submit-button" onClick={() => setSignUp(true)}>
                             Sign Up
                         </button>
                     </div>
@@ -225,9 +226,8 @@ const LoginForm = (props: { disableCustomTheme?: boolean }) => {
                                             onChange={handleSignupChange}
                                         />
                                     </div>
-                                    <button
-                                        type="button"
-                                        className="send-code-button"
+                                    <button type="submit" className="submit-button"
+                                        
                                         onClick={sendConfirmationCode}
                                     >
                                         Send Confirmation Code

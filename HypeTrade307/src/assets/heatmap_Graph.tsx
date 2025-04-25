@@ -5,9 +5,9 @@ import { Treemap, ResponsiveContainer } from "recharts";
 // Function to determine color based on value
 const getColor = (value: number) => {
     if (value > 0) {
-        return `rgb(0, ${Math.min(255, 50 + value * 5)}, 0)`; // Green for positive values
+        return `rgb(0, 255, 0)`; // Green for positive values
     } else {
-        return `rgb(${Math.min(255, 50 + Math.abs(value) * 5)}, 0, 0)`; // Red for negative values
+        return `rgb(255, 0, 0)`; // Red for negative values
     }
 };
 

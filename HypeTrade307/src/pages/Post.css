@@ -197,7 +197,7 @@
 }
 
 .submit-button:disabled, .cancel-button:disabled {
-    background-color: #cccccc;
+    background-color: #4caf50;
     cursor: not-allowed;
 }
 
@@ -206,7 +206,7 @@
 }
 
 .cancel-button:not(:disabled):hover {
-    background-color: #e5e5e5;
+    background-color: #4caf50;
 }
 
 /* Comments Section */

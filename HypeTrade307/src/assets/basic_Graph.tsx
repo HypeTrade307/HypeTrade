@@ -82,12 +82,12 @@ const MarketValue: React.FC<MarketValueProps> = ({ file }) => {
                     onChange={(e) => setLastN(Number(e.target.value))}
                     style={{ width: "75px", marginRight: "10px" }}
                 />
-                <button onClick={handleFetchData} style={{ padding: "8px 16px", cursor: "pointer" }}>
+                <button onClick={handleFetchData} type="submit" className="submit-button">
                     Fetch Data
                 </button>
                 <button
                     onClick={handleResetData}
-                    style={{ padding: "8px 16px", cursor: "pointer", marginLeft: "10px" }}
+                    type="submit" className="submit-button"
                 >
                     Reset Data
                 </button>

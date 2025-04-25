@@ -168,7 +168,20 @@ def process_unprocessed_entries(db: Session, stock_id: int):
         # Mark the entry as processed
         entry.processed_at = datetime.datetime.utcnow()
 
-    db.commit()
+    db.commit() 
+    latest_sentiment = (
+        db.query(models.SentimentAnalysis)
+        .filter(models.SentimentAnalysis.stock_id == stock_id)
+        .order_by(models.SentimentAnalysis.created_at.desc())
+        .first()
+    )
+
+    if latest_sentiment:
+        stock = db.query(models.Stock).filter(models.Stock.stock_id == stock_id).first()
+        if stock:
+            stock.latest_sentiment_value = latest_sentiment.sentiment_value
+            stock.updated_at = datetime.datetime.utcnow()
+            db.commit()
 
 # Just a stub for demonstration
 def fake_sentiment(entry: scraped_reddit_entries) -> float:
@@ -209,11 +222,11 @@ def check_reddit_connection():
 
     # db.close()
 
-def parse_timeframe(timeframe: str) -> datetime:
+def parse_timeframe(timeframe: str) -> datetime.datetime:
     """
     Converts a timeframe string (like '24h', '7d') into a datetime object.
     """
-    now = datetime.utcnow()
+    now = datetime.datetime.utcnow()
     if timeframe.endswith("h"):
         return now - datetime.timedelta(hours=int(timeframe[:-1]))
     elif timeframe.endswith("d"):

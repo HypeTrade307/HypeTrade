@@ -253,7 +253,7 @@ body {
 }
 
 .time-button {
-    background-color: #333;
+    background-color: #4caf50;
     border: none;
     color: white;
     padding: 0.5rem;
@@ -262,7 +262,7 @@ body {
 }
 
 .time-button.active {
-    background-color: #2196f3;
+    background-color: #4caf50;
 }
 
 .chart-container {
