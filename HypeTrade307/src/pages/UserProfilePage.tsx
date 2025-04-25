@@ -58,7 +58,7 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
         console.log('Checking authentication with token');
         // Use a more reliable endpoint to check authentication
         // Similar to ViewStock.tsx which uses notifications/user/
-        const response = await axios.get(`${API_BASE_URL}/notifications/user/`, {
+        const response = await axios.get(`${API_BASE_URL}/users/me`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 

@@ -87,34 +87,39 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
       setTutorialOpen(false);
     }
   };
-    // Fetch authenticated user from API
+    // Check authentication
     useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                if (!token) {
-                    setIsAuthenticated(false);
-                    return;
-                }
-
-                // below basically checks if there is a current user, if not, notis and portfolios are not
-                const response = await axios.get(`${API_BASE_URL}/notifications/user/`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-
-                if (response.data) {
-                    setIsAuthenticated(true);
-                } else {
-                    setIsAuthenticated(false);
-                }
-            } catch (error) {
-                console.error("Error fetching user data:", error);
-                setIsAuthenticated(false);
+        const checkAuth = async () => {
+          const token = localStorage.getItem("token");
+          if (!token) {
+            setIsAuthenticated(false);
+            setLoading(false);
+            navigate("/login");
+            return;
+          }
+      
+          try {
+            const response = await axios.get(`${API_BASE_URL}/users/me`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+      
+            if (response.data && response.data.user_id) {
+              setIsAuthenticated(true);
+            } else {
+              setIsAuthenticated(false);
+              navigate("/login");
             }
+          } catch (error) {
+            console.error("Error checking authentication:", error);
+            setIsAuthenticated(false);
+            navigate("/login");
+          } finally {
+            setLoading(false);
+          }
         };
-
-        fetchUser();
-    }, []);
+      
+        checkAuth();
+      }, [navigate]);
 
     // Load saved portfolio selection from localStorage
     useEffect(() => {

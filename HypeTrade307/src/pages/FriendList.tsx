@@ -50,32 +50,39 @@ function FriendList(props: { disableCustomTheme?: boolean }) {
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [flagReason, setFlagReason] = useState<string>("");
 
-  // Check authentication and get current user ID
+  // Check authentication
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
         setIsAuthenticated(false);
+        setLoading(false);
+        navigate("/login");
         return;
       }
-
+  
       try {
-        const response = await axios.get(`${API_BASE_URL}/notifications/user/`, {
-          headers: { Authorization: `Bearer ${token}` }
+        const response = await axios.get(`${API_BASE_URL}/users/me`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
-
-        if (response.data && response.data.length > 0 && response.data[0].receiver_id) {
+  
+        if (response.data && response.data.user_id) {
           setIsAuthenticated(true);
-          setCurrentUserId(response.data[0].receiver_id);
+        } else {
+          setIsAuthenticated(false);
+          navigate("/login");
         }
       } catch (error) {
-        console.error('Error checking authentication:', error);
+        console.error("Error checking authentication:", error);
         setIsAuthenticated(false);
+        navigate("/login");
+      } finally {
+        setLoading(false);
       }
     };
-
+  
     checkAuth();
-  }, []);
+  }, [navigate]);
 
   // Fetch friends list
   useEffect(() => {

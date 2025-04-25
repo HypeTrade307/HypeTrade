@@ -85,23 +85,39 @@ function PostViewer() {
         }
     };
 
-    // Fetch user ID from local storage
+    // Check authentication
     useEffect(() => {
-      async function loadMe() {
-        try {
-          const token = localStorage.getItem("token");
-          if (!token) return;
-          const resp = await axios.get<{ user_id: number }>(
-            `${API_BASE_URL}/users/me`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
-          setUserId(resp.data.user_id);
-        } catch (err) {
-          console.error("couldn't load current user", err);
+      const checkAuth = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setIsAuthenticated(false);
+          setLoading(false);
+          navigate("/login");
+          return;
         }
-      }
-      loadMe();
-    }, []);
+    
+        try {
+          const response = await axios.get(`${API_BASE_URL}/users/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+    
+          if (response.data && response.data.user_id) {
+            setIsAuthenticated(true);
+          } else {
+            setIsAuthenticated(false);
+            navigate("/login");
+          }
+        } catch (error) {
+          console.error("Error checking authentication:", error);
+          setIsAuthenticated(false);
+          navigate("/login");
+        } finally {
+          setLoading(false);
+        }
+      };
+    
+      checkAuth();
+    }, [navigate]);
 
     // Fetch post details
     useEffect(() => {
