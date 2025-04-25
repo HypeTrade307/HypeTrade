@@ -206,7 +206,7 @@ function Forum() {
                     <h1>Forum</h1>
                     <button
                         onClick={() => setShowCreateModal(true)}
-                        className="create-thread-button"
+                        type="submit" className="submit-button"
                     >
                         Create Thread
                     </button>

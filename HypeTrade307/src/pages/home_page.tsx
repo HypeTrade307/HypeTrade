@@ -50,7 +50,9 @@ function Home(props: {disableCustomTheme?: boolean }) {
                     
                 </div>
                 <div style={{ height: '20px' }} /> {/* adds white space */}
-                <h1>HYPETRADE Mainpage</h1>
+                <h1>HYPETRADE</h1>
+                <h1> Mainpage</h1>
+                <p color='black'>________________________________________________________________________________________________________________________________________________________________________</p>
                 <div className="card">
                               <HeatMapend/>
                               <HeatMap/>

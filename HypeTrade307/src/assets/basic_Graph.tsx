@@ -53,6 +53,27 @@ const MarketValue: React.FC<MarketValueProps> = ({ file }) => {
         }
     };
 
+    const downloadFile = (content: string, filename: string, mimeType: string) => {
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+    const downloadCSV = () => {
+        const csvContent = data.map(d => `${d.date},${d.value}`).join("\n");
+        downloadFile(csvContent, `${file}_market_value.csv`, "text/csv");
+    };
+    
+    const downloadText = () => {
+        const txtContent = data.map(d => `${d.date} ${d.value}`).join("\n");
+        downloadFile(txtContent, `${file}_market_value.txt`, "text/plain");
+    };
+    
+
+
     useEffect(() => {
         fetchData().then(setChartData);
     }, [filePath]); // Re-fetch data when filePath changes
@@ -92,6 +113,14 @@ const MarketValue: React.FC<MarketValueProps> = ({ file }) => {
                     Reset Data
                 </button>
             </div>
+            <div style={{ marginBottom: "15px" }}>
+                <button onClick={downloadCSV} type="submit" className="submit-button">
+                    Download CSV
+                </button>
+                <button onClick={downloadText} type="submit" className="submit-button">
+                    Download Text
+                </button>
+            </div>
             <ResponsiveContainer width="102%" height={300}>
                 <LineChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                     <XAxis dataKey="date" />
@@ -104,7 +133,7 @@ const MarketValue: React.FC<MarketValueProps> = ({ file }) => {
                         dataKey="value"
                         stroke="#fa8fd8"
                         strokeWidth={2}
-                        dot={{ stroke: "#fa8fd8", strokeWidth: 2 }} // Pink dots
+                        dot={{ stroke: "#fa8fd8", strokeWidth: 2 }}
                         isAnimationActive={false}
                         data={data.map((point) => (point.value ? point : { ...point, value: null }))}
                     />

@@ -125,6 +125,7 @@ class Stock(Base):
     weight_data = Column(Float, default=0.0)
     created_at = Column(TIMESTAMP, default=datetime.datetime.utcnow)
     updated_at = Column(TIMESTAMP, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+    latest_sentiment_value = Column(Float, nullable=True)
 
     # Existing relationships
     threads = relationship("Thread", back_populates="stock_ref", cascade="all, delete-orphan")

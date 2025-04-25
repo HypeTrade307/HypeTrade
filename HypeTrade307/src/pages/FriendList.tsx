@@ -300,7 +300,7 @@ function FriendList(props: { disableCustomTheme?: boolean }) {
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <Navbar />
-      
+      <div style={{ height: '20px' }} /> {/* adds white space */}
       <div className="friend-list-container">
         <h1>Friends List</h1>
         
