@@ -41,6 +41,14 @@ def get_all_flags(db: Session = Depends(get_db), current_user: models.User = Dep
             if comment:
                 flag.thread_id = comment.post.thread_id
                 flag.post_id = comment.post_id
+        elif flag.flag_type == "message":
+            message = db.query(models.Message).filter(models.Message.message_id == flag.target_id).first()
+            if message:
+                sender = db.query(models.User).filter(models.User.user_id == message.sender_id).first()
+                if sender:
+                    flag.sender_username = sender.username
+                    flag.content = message.content
+                    flag.created_at = message.created_at
     return flags
 
 @router.delete("/{flag_id}", status_code=status.HTTP_204_NO_CONTENT)

@@ -7,7 +7,7 @@ import { API_BASE_URL } from '../config';
 
 interface FlagButtonProps {
   target_id: number;
-  flag_type: "user" | "post" | "comment" | "thread";
+  flag_type: "user" | "post" | "comment" | "thread" | "message";
 }
 
 const FlagButton: React.FC<FlagButtonProps> = ({ target_id, flag_type }) => {

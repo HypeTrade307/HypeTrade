@@ -265,7 +265,9 @@ function FriendList(props: { disableCustomTheme?: boolean }) {
 
       await axios.post(
         `${API_BASE_URL}/messages/${selectedMessage.message_id}/flag`,
-        { reason: flagReason },
+        {
+          reason: flagReason
+        },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -512,7 +514,7 @@ function FriendList(props: { disableCustomTheme?: boolean }) {
                 <button onClick={handleFlagMessage}>Submit</button>
                 <button onClick={() => {
                   setShowFlagDialog(false);
-                  setSelectedMessage(null);
+                  setSelectedMessage("");
                   setFlagReason("");
                 }}>Cancel</button>
               </div>

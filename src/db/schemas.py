@@ -31,6 +31,8 @@ class FlagResponse(BaseModel):
     created_at: datetime
     thread_id: Optional[int] = None
     post_id: Optional[int] = None
+    sender_username: Optional[str] = None
+    content: Optional[str] = None
 
     class Config:
         orm_mode = True

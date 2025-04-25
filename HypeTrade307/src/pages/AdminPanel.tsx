@@ -136,14 +136,10 @@ export default function AdminPanel() {
         }
         case "message": {
           try {
-            const res = await axios.get(
-              `${API_BASE_URL}/messages/${flag.target_id}`,
-              { headers: { Authorization: `Bearer ${token}` } }
-            );
             flaggedContent = {
-              content: res.data.content || "No content",
-              author: res.data.sender_username || "Unknown sender",
-              created_at: res.data.created_at,
+              content: flag.content || "No content",
+              author: flag.sender_username || "Unknown sender",
+              created_at: flag.created_at,
             };
           } catch {
             flaggedContent = {

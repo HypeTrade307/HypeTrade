@@ -40,7 +40,7 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
         ? `rgba(${theme.vars.palette.background.defaultChannel} / 0.4)`
         : alpha(theme.palette.background.default, 0.4),
     boxShadow: (theme.vars || theme).shadows[1],
-    padding: '8px 12px',
+    padding: '4px 12px',
 }));
 
 // Styled username display
@@ -150,7 +150,7 @@ const Navbar = () => {
                 width: '100%',
             }}
         >
-            <div style={{ height: '15px' }} /> {/* adds white space */}
+            <div style={{ height: '0px' }} /> {/* adds white space */}
             <Container maxWidth="xl">
                 <StyledToolbar variant="dense" disableGutters>
                     <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0 }}>
