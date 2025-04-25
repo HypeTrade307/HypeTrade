@@ -68,6 +68,7 @@ function FriendList(props: { disableCustomTheme?: boolean }) {
   
         if (response.data && response.data.user_id) {
           setIsAuthenticated(true);
+          setCurrentUserId(response.data.user_id);
         } else {
           setIsAuthenticated(false);
           navigate("/login");
