@@ -13,6 +13,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import MarketValue from "@/assets/basic_Graph.tsx";
 import AreaGraph from "@/assets/area_Graph.tsx";
 // import ViewStockPage from "@/pages/ViewStockPage.tsx";
+import CombinedSentGraph from "@/assets/combined_sentiment_graph.tsx";
 
 interface StockBase {
   stock_id: number;
@@ -36,6 +37,14 @@ interface Stock {
   previousSentiment?: number; // Added to track sentiment changes
 }
 
+interface SentimentData {
+  stock_id: number;
+  ticker: string;
+  timestamp: string;
+  sentiment_score: number;
+  article_count: number;
+}
+
 export default function StockComparisonPage(props: { disableCustomTheme?: boolean }) {
   const { tkr } = useParams();
   // const navigate = useNavigate();
@@ -55,6 +64,8 @@ export default function StockComparisonPage(props: { disableCustomTheme?: boolea
 
   const [chartNumber, setChartNumber] = useState(0);
 
+
+
   function handleDataFromChild(stock: Stock, chartNumber: number) {
 
     console.log("handleDataFromChild");
@@ -71,8 +82,16 @@ export default function StockComparisonPage(props: { disableCustomTheme?: boolea
 
     console.log("chartNumber:", chartNumber);
     setChartNumber(chartNumber);
+    console.log("stock:", stock);
     console.log("chartNumber after setting:", chartNumber);
   }
+
+  // const time = async (stock: Stock, timePeriod: any) => {
+  //   if (stock) {
+  //     setStock(null);
+  //   }
+  //   setTimeButton(timePeriod);
+  // }
 
   useEffect(() => {
     const fetchStock = async (chartNumber: number) => {
@@ -107,9 +126,7 @@ export default function StockComparisonPage(props: { disableCustomTheme?: boolea
 
   useEffect(() => {
     const fetchSentiment = async () => {
-
       console.log("inside compPage fetchSentiment");
-
       console.log("chartNumber:", chartNumber);
 
       if (chartNumber == 1) {
@@ -121,16 +138,18 @@ export default function StockComparisonPage(props: { disableCustomTheme?: boolea
       }
 
       if (!stock) return;
-
       console.log("stock:", stock);
 
       try {
         const token = localStorage.getItem("token");
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
-        const interval = timeButton === "Day" ? 1 : timeButton === "Week" ? 7 : 30;
+        // const interval = timeButton === "Day" ? 1 : timeButton === "Week" ? 7 : 30;
 
+        // TODO: Replace with real request
         const res = await axios.get(
-          `${API_BASE_URL}/stocks/sentiment/${stock.stock_id}?interval=${interval}`,
+          // `${API_BASE_URL}/stocks/sentiment/${stock.stock_id}?interval=${interval}`,
+          // `${API_BASE_URL}/specific-stock/summary/?interval=${interval}/${stock.stock_id}`,
+          `${API_BASE_URL}/specific-stock/summary/${stock.stock_id}`,
           { headers }
         );
 
@@ -151,14 +170,30 @@ export default function StockComparisonPage(props: { disableCustomTheme?: boolea
       }
     };
 
-    fetchSentiment();
-  }, [stock, stock1, stock2, stock3, timeButton]);
+  }, []);
 
-  const getGraph = (chartNumber: number): string => {
+  const getGraph  = (chartNumber: number) => {
 
-    if (!stock1 && !stock2 && !stock3) {
+    console.log("inside getGraph");
+    console.log("chartNumber", chartNumber);
+
+    if (!stock1 && !stock2) {
       return "No stock selected";
     }
+
+    // if (loadingSentiment) {
+    //   if (stock1) {
+    //     return `Loading ${stock1.stock_name}'s data...`;
+    //   } else if (stock2) {
+    //     return `Loading ${stock2.stock_name}'s data...`;
+    //   }
+    // } else {
+    //   if (stock1) {
+    //     return `${stock1.stock_name}'s performance over the last ${timeButton}`;
+    //   } else if (stock2) {
+    //     return `${stock2.stock_name}'s performance over the last ${timeButton}`;
+    //   }
+    // }
 
     if (loadingSentiment) {
       switch (chartNumber) {
@@ -183,16 +218,71 @@ export default function StockComparisonPage(props: { disableCustomTheme?: boolea
       default:
         if (stock3) return `${stock3.stock_name}'s performance over the last ${timeButton}`;
     }
+
+    // if (loadingSentiment) {
+    //   switch (chartNumber) {
+    //     case 1:
+    //       if (stock1) return `Loading ${stock1.stock_name}'s data...`;
+    //       break;
+    //     case 2:
+    //       if (stock2) return `Loading ${stock2.stock_name}'s data...`;
+    //       break;
+    //     default:
+    //       if (stock3) return `Loading ${stock3.stock_name}'s data...`;
+    //   }
+    // } else {
+    //   switch (chartNumber) {
+    //     case 1:
+    //       if (stock1) return `${stock1.stock_name}'s performance over the last ${timeButton}`;
+    //       break;
+    //     case 2:
+    //       if (stock2) return `${stock2.stock_name}'s performance over the last ${timeButton}`;
+    //       break;
+    //     default:
+    //       if (stock3) return `${stock3.stock_name}'s performance over the last ${timeButton}`;
+    //   }
+    // }
+
+    // console.log("end of switch blocks");
   };
 
+  // Function to determine sentiment color based on value
   const getSentimentColor = (sentiment: number | undefined): string => {
-    if (sentiment === undefined) return "#888888";
-    if (sentiment > 5) return "#4CAF50";
-    if (sentiment > 0) return "#8BC34A";
-    if (sentiment === 0) return "#9E9E9E";
-    if (sentiment > -5) return "#FF9800";
-    return "#F44336";
+    if (sentiment === undefined) return "#888888"; // gray if no sentiment
+    if (sentiment > 5) return "#4CAF50"; // Strong positive - green
+    if (sentiment > 0) return "#8BC34A"; // Positive - light green
+    if (sentiment === 0) return "#9E9E9E"; // Neutral - gray
+    if (sentiment > -5) return "#FF9800"; // Negative - orange
+    return "#F44336"; // Strong negative - red
   };
+
+
+  // const getGraphTitle = (chartNumber: number) => {
+  //
+  //   console.log("inside getGraphTitle");
+  //   console.log("chartNumber", chartNumber);
+  //
+  //   if (chartNumber == 1) {
+  //     if (!stock1) {
+  //       console.log("No stock selected for stock1");
+  //       return "No stock1 selected";
+  //     } else {
+  //       return `${stock1.stock_name}'s performance over the last ${timeButton}`;
+  //     }
+  //   } else if (chartNumber == 2) {
+  //     if (!stock2) {
+  //       console.log("No stock selected for stock2");
+  //       return "No stock2 selected";
+  //     } else {
+  //       return `${stock2.stock_name}'s performance over the last ${timeButton}`;
+  //     }
+  //   } else {
+  //     if (!stock3) {
+  //       console.log("No stock selected for stock3");
+  //       return "No stock3 selected";
+  //     }
+  //   }
+  // };
 
   const getGraphTitle = (chartNumber: number) => {
 
@@ -291,54 +381,38 @@ export default function StockComparisonPage(props: { disableCustomTheme?: boolea
                               <span
                                   className="sentiment-badge"
                                   // style={{backgroundColor: getSentimentColor(stock1.sentiment)}}
-                                  style={{backgroundColor: getSentimentColor(stock1.sentimentData1)}}
+                                  style={{backgroundColor: getSentimentColor(stock1.sentiment)}}
                               >
                                 {stock1.sentiment}
                               </span>
                             </div>
                           </div>
 
-                          <div className="time-controls">
-                            <div className="time-label">Time Period</div>
-                            <div className="time-buttons-container">
-                              <button
-                                  className={`time-button ${timeButton === "Day" ? "active" : ""}`}
-                                  onClick={() => setTimeButton("Day")}
-                              >
-                                Day
-                              </button>
-                              <button
-                                  className={`time-button ${timeButton === "Week" ? "active" : ""}`}
-                                  onClick={() => setTimeButton("Week")}
-                              >
-                                Week
-                              </button>
-                              <button
-                                  className={`time-button ${timeButton === "Month" ? "active" : ""}`}
-                                  onClick={() => setTimeButton("Month")}
-                              >
-                                Month
-                              </button>
-                            </div>
+                        <div className="time-controls">
+                          <div className="time-label">Time Period</div>
+                          <div className="time-buttons-container">
+                            {["Day", "Week", "Month"].map((period) => (
+                                <button
+                                    key={period}
+                                    className={`time-button ${timeButton === period ? "active" : ""}`}
+                                    onClick={() => setTimeButton(period as any)}
+                                >
+                                  {period}
+                                </button>
+                            ))}
                           </div>
-
-                        {/*<div className="time-controls">*/}
-                        {/*  <div className="time-label">Time Period</div>*/}
-                        {/*  <div className="time-buttons-container">*/}
-                        {/*    {["Day", "Week", "Month"].map((period) => (*/}
-                        {/*        <button*/}
-                        {/*            key={period}*/}
-                        {/*            className={`time-button ${timeButton === period ? "active" : ""}`}*/}
-                        {/*            onClick={() => setTimeButton(period as any)}*/}
-                        {/*        >*/}
-                        {/*          {period}*/}
-                        {/*        </button>*/}
-                        {/*    ))}*/}
-                        {/*  </div>*/}
-                        {/*</div>*/}
+                        </div>
 
                           <div className="chart-container">
                             <h3 className="chart-title">{getGraph(1)}</h3>
+                            {sentimentData1.length > 0 ? (
+                                <div className="chart-placeholder">
+                                  Sentiment data: {sentimentData1.join(", ")}
+                                </div>
+                            ) : (
+                                <div className="chart-placeholder">No sentiment data available</div>
+                            )}
+
                             <MarketValue file={stock1.ticker}/>
                             <AreaGraph file={stock1.ticker}/>
                           </div>
@@ -347,7 +421,7 @@ export default function StockComparisonPage(props: { disableCustomTheme?: boolea
                     </>
 
                 ) : (
-                    <div className="not-found">Post not found</div>
+                    <div className="chart-placeholder">Please select a stock</div>
                 )}
 
                 {/*)}*/}
@@ -372,7 +446,7 @@ export default function StockComparisonPage(props: { disableCustomTheme?: boolea
                           <button
                               className="cancel"
                               onClick={() => {
-                                setStock1(null);
+                                setStock2(null);
                                 setTimeButton("Day");
                               }}
                           >
@@ -407,53 +481,38 @@ export default function StockComparisonPage(props: { disableCustomTheme?: boolea
                           <div className="time-controls">
                             <div className="time-label">Time Period</div>
                             <div className="time-buttons-container">
-                              <button
-                                  className={`time-button ${timeButton === "Day" ? "active" : ""}`}
-                                  onClick={() => setTimeButton("Day")}
-                              >
-                                Day
-                              </button>
-                              <button
-                                  className={`time-button ${timeButton === "Week" ? "active" : ""}`}
-                                  onClick={() => setTimeButton("Week")}
-                              >
-                                Week
-                              </button>
-                              <button
-                                  className={`time-button ${timeButton === "Month" ? "active" : ""}`}
-                                  onClick={() => setTimeButton("Month")}
-                              >
-                                Month
-                              </button>
+                              {["Day", "Week", "Month"].map((period) => (
+                                  <button
+                                      key={period}
+                                      className={`time-button ${timeButton === period ? "active" : ""}`}
+                                      onClick={() => setTimeButton(period as any)}
+                                  >
+                                    {period}
+                                  </button>
+                              ))}
                             </div>
                           </div>
 
-                          {/*<div className="time-controls">*/}
-                          {/*  <div className="time-label">Time Period</div>*/}
-                          {/*  <div className="time-buttons-container">*/}
-                          {/*    {["Day", "Week", "Month"].map((period) => (*/}
-                          {/*        <button*/}
-                          {/*            key={period}*/}
-                          {/*            className={`time-button ${timeButton === period ? "active" : ""}`}*/}
-                          {/*            onClick={() => setTimeButton(period as any)}*/}
-                          {/*        >*/}
-                          {/*          {period}*/}
-                          {/*        </button>*/}
-                          {/*    ))}*/}
-                          {/*  </div>*/}
-                          {/*</div>*/}
-
                           <div className="chart-container">
                             <h3 className="chart-title">{getGraph(2)}</h3>
+                            {sentimentData2.length > 0 ? (
+                                <div className="chart-placeholder">
+                                  Sentiment data: {sentimentData2.join(", ")}
+                                </div>
+                            ) : (
+                                <div className="chart-placeholder">No sentiment data available</div>
+                            )}
+
                             <MarketValue file={stock2.ticker}/>
                             <AreaGraph file={stock2.ticker}/>
                           </div>
+
                         </div>
                       </div>
                     </>
 
                 ) : (
-                    <div className="not-found">Post not found</div>
+                    <div className="chart-placeholder">Please select a stock</div>
                 )}
               </Grid>
 
@@ -469,7 +528,7 @@ export default function StockComparisonPage(props: { disableCustomTheme?: boolea
                 {/*Spot for the combined chart*/}
                 <h2>Combined Chart:</h2>
 
-                {stock3 ? (
+                {(stock1 && stock2) ? (
 
                     <>
                       <div className="sc-small-hud-container">
@@ -480,7 +539,7 @@ export default function StockComparisonPage(props: { disableCustomTheme?: boolea
                           <button
                               className="cancel"
                               onClick={() => {
-                                setStock1(null);
+                                setStock3(null);
                                 setTimeButton("Day");
                               }}
                           >
@@ -489,25 +548,29 @@ export default function StockComparisonPage(props: { disableCustomTheme?: boolea
 
                           <div className="stock-detail-header">
                             <h2>
-                              {stock3.stock_name} ({stock3.ticker})
+                              Combined Chart:
+                              {/*{stock1.stock_name} ({stock1.ticker})*/}
+                              {/*{stock2.stock_name} ({stock2.ticker})*/}
                             </h2>
                             <div className="detail-change">
-                              ${stock3.value?.toLocaleString()}
+                              {/*${stock1.value?.toLocaleString()}*/}
+                              {/*${stock2.value?.toLocaleString()}*/}
                             </div>
                           </div>
 
                           <div className="stock-info-grid">
                             <div className="info-item">
                               <span className="info-label">Analysis Mode</span>
-                              <span className="info-value">{stock3.analysis_mode}</span>
+                              {/*<span className="info-value">{stock1.analysis_mode}</span>*/}
+                              {/*<span className="info-value">{stock2.analysis_mode}</span>*/}
                             </div>
                             <div className="info-item">
                               <span className="info-label">Sentiment</span>
                               <span
                                   className="sentiment-badge"
-                                  style={{backgroundColor: getSentimentColor(stock3.sentiment)}}
+
                               >
-                                {stock3.sentiment}
+
                               </span>
                             </div>
                           </div>
@@ -515,52 +578,37 @@ export default function StockComparisonPage(props: { disableCustomTheme?: boolea
                           <div className="time-controls">
                             <div className="time-label">Time Period</div>
                             <div className="time-buttons-container">
-                              <button
-                                  className={`time-button ${timeButton === "Day" ? "active" : ""}`}
-                                  onClick={() => setTimeButton("Day")}
-                              >
-                                Day
-                              </button>
-                              <button
-                                  className={`time-button ${timeButton === "Week" ? "active" : ""}`}
-                                  onClick={() => setTimeButton("Week")}
-                              >
-                                Week
-                              </button>
-                              <button
-                                  className={`time-button ${timeButton === "Month" ? "active" : ""}`}
-                                  onClick={() => setTimeButton("Month")}
-                              >
-                                Month
-                              </button>
+                              {["Day", "Week", "Month"].map((period) => (
+                                  <button
+                                      key={period}
+                                      className={`time-button ${timeButton === period ? "active" : ""}`}
+                                      onClick={() => setTimeButton(period as any)}
+
+                                  >
+                                    {period}
+                                  </button>
+                              ))}
                             </div>
                           </div>
 
-                          {/*<div className="time-controls">*/}
-                          {/*  <div className="time-label">Time Period</div>*/}
-                          {/*  <div className="time-buttons-container">*/}
-                          {/*    {["Day", "Week", "Month"].map((period) => (*/}
-                          {/*        <button*/}
-                          {/*            key={period}*/}
-                          {/*            className={`time-button ${timeButton === period ? "active" : ""}`}*/}
-                          {/*            onClick={() => setTimeButton(period as any)}*/}
-                          {/*        >*/}
-                          {/*          {period}*/}
-                          {/*        </button>*/}
-                          {/*    ))}*/}
-                          {/*  </div>*/}
-                          {/*</div>*/}
-
                           <div className="chart-container">
-                            <h3 className="chart-title">{getGraph(3)}</h3>
-                            <MarketValue file={stock3.ticker}/>
-                            <AreaGraph file={stock3.ticker}/>
+
+                            {sentimentData3.length > 0 ? (
+                                <div className="chart-placeholder">
+                                  Sentiment data: {sentimentData3.join(", ")}
+                                </div>
+                            ) : (
+                                <div className="chart-placeholder">No sentiment data available</div>
+                            )}
+
+                            <CombinedSentGraph file1={stock1.ticker} file2={stock2.ticker}/>
                           </div>
+
                         </div>
                       </div>
                     </>
                 ) : (
-                    <div className="not-found">Post not found</div>
+                    <div className="chart-placeholder">Please select two stocks</div>
                 )}
               </Grid>
             </Grid>

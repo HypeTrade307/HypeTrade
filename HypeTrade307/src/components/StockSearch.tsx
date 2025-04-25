@@ -40,42 +40,23 @@ export default function StockSearch({sendDataToParent, setChartNumber: number}) 
     const [chartNumber, setChartNumber] = useState(0);
 
 
-    // // Handle portfolio selection
-    // const handlePortfolioSelect = useCallback((portfolio: Portfolio) => {
-    //     setSelectedPortfolio(portfolio);
-    //     localStorage.setItem("selectedPortfolioId", portfolio.portfolio_id.toString());
-    //     fetchPortfolioStocks(portfolio.portfolio_id);
-    // }, [fetchPortfolioStocks]);
-    //
-    // // Initial stock fetch
-    // useEffect(() => {
-    //     fetchTopStocks();
-    //
-    //     // If authenticated, fetch portfolios
-    //     if (isAuthenticated) {
-    //         fetchPortfolios();
-    //     }
-    // }, [fetchTopStocks, fetchPortfolios, isAuthenticated]);
-    //
-    // // Fetch portfolio stocks when a portfolio is selected
-    // useEffect(() => {
-    //     if (selectedPortfolio) {
-    //         fetchPortfolioStocks(selectedPortfolio.portfolio_id);
-    //     }
-    // }, [selectedPortfolio, fetchPortfolioStocks]);
-
-
     const handleStockClick = useCallback((pickStock: Stock) => {
         // sendDataToParent(data);
 
         setPickStock(pickStock);
         console.log("pickStock", pickStock);
-        setChartNumber(chartNumber + number);
-        console.log("chartNumber", chartNumber);
-        console.log("number", number);
+        // console.log("chartNumber", chartNumber);
+        // setChartNumber(chartNumber);
+        // console.log("chartNumber", chartNumber);
 
+        // console.log("number", number);
+        // setChartNumber(number);
+        // console.log("number", number);
 
-        console.log("chartNumber", chartNumber);
+        console.log("chartNumber", number);
+        setChartNumber(number);
+        console.log("chartNumber", number);
+
 
         sendDataToParent(pickStock, number);
 
@@ -84,31 +65,25 @@ export default function StockSearch({sendDataToParent, setChartNumber: number}) 
         setFilteredStocks([]);
     }, [setPickStock, setChartNumber]);
 
-    // //1. Fetch the portfolio
-    // useEffect(() => {
-    //   async function fetchPortfolio() {
-    //     try {
-    //       const token = localStorage.getItem("token");
-    //       if (!token) {
-    //         setError("Not authenticated");
-    //         return;
-    //       }
-    //       const response = await axios.get(`${API_BASE_URL}/portfolios/${id}`, {
-    //         headers: { Authorization: `Bearer ${token}` }
-    //       });
-    //       setPortfolio(response.data);
-    //     } catch (err: any) {
-    //       console.error(err);
-    //       setError(err.response?.data?.detail || "Portfolio not found");
-    //     }
-    //   }
-    //   fetchPortfolio();
-    // }, [id]);
-    // useEffect(() => {
-    //   if (id) {
-    //     localStorage.setItem("currentPortfolioId", id);
-    //   }
-    // }, [id]);
+
+    // function handleStockClick(pickStock: Stock) {
+    //     // sendDataToParent(data);
+    //
+    //     setPickStock(pickStock);
+    //     console.log("pickStock", pickStock);
+    //     console.log("chartNumber", chartNumber);
+    //     console.log("number", number);
+    //
+    //     setChartNumber(number);
+    //     console.log("chartNumber", chartNumber);
+    //
+    //     // sendDataToParent(pickStock, chartNumber);
+    //     sendDataToParent(pickStock, number);
+    //
+    //     setChartNumber(0);
+    //     setStockSearch("");
+    //     setFilteredStocks([]);
+    // }
 
     // 2. Fetch all stocks for the typeahead
     useEffect(() => {
@@ -148,43 +123,28 @@ export default function StockSearch({sendDataToParent, setChartNumber: number}) 
     }, [stockSearch, availableStocks]);
 
 
-    // TODO: Replace this with just adding the stocks to a temporary selection. Don't need to save via api
-    // 4. Add Stock to Portfolio
-    async function addStockToPortfolio(stock_id: number) {
-        try {
-            const token = localStorage.getItem("token");
-            if (!token || !portfolio) return;
-
-            const response = await axios.post(
-                `${API_BASE_URL}/portfolios/${portfolio.portfolio_id}/stocks/${stock_id}`,
-                {},
-                {headers: {Authorization: `Bearer ${token}`}}
-            );
-
-            setPortfolio(response.data);
-            setStockSearch("");
-            setFilteredStocks([]);
-
-        } catch (error) {
-            console.error("Error adding stock:", error);
-        }
-    }
-
-    // // 5. Remove Stock
-    // async function removeStock(stock_id: number) {
-    //   try {
-    //     const token = localStorage.getItem("token");
-    //     if (!token || !portfolio) return;
+    // // TODO: Replace this with just adding the stocks to a temporary selection. Don't need to save via api
+    // // 4. Add Stock to Portfolio
+    // async function addStockToPortfolio(stock_id: number) {
+    //     try {
+    //         const token = localStorage.getItem("token");
+    //         if (!token || !portfolio) return;
     //
-    //     const response = await axios.delete(
-    //       `${API_BASE_URL}/portfolios/${portfolio.portfolio_id}/stocks/${stock_id}`,
-    //       { headers: { Authorization: `Bearer ${token}` } }
-    //     );
-    //     setPortfolio(response.data);
-    //   } catch (error) {
-    //     console.error("Error removing stock:", error);
-    //   }
+    //         const response = await axios.post(
+    //             `${API_BASE_URL}/portfolios/${portfolio.portfolio_id}/stocks/${stock_id}`,
+    //             {},
+    //             {headers: {Authorization: `Bearer ${token}`}}
+    //         );
+    //
+    //         setPortfolio(response.data);
+    //         setStockSearch("");
+    //         setFilteredStocks([]);
+    //
+    //     } catch (error) {
+    //         console.error("Error adding stock:", error);
+    //     }
     // }
+
 
 
     return (
