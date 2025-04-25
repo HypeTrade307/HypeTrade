@@ -51,13 +51,12 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
       if (!token) {
         console.log('No token found, user is not authenticated');
         setIsAuthenticated(false);
+        setCurrentUserId(null);
         return;
       }
 
       try {
         console.log('Checking authentication with token');
-        // Use a more reliable endpoint to check authentication
-        // Similar to ViewStock.tsx which uses notifications/user/
         const response = await axios.get(`${API_BASE_URL}/users/me`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -69,34 +68,27 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
           setIsAuthenticated(true);
           
           // Get current user ID from the response
-          // This assumes the notifications endpoint returns user data
-          // If not, we'll need to extract it from another endpoint
-          if (response.data.length > 0 && response.data[0].receiver_id) {
-            const receiverId = response.data[0].receiver_id;
-            console.log('Current user ID from notifications:', receiverId);
-            setCurrentUserId(receiverId);
+          if (response.data.user_id) {
+            console.log('Current user ID from /users/me:', response.data.user_id);
+            setCurrentUserId(response.data.user_id);
             
             // Check if viewing own profile
-            if (userId && parseInt(userId) === receiverId) {
+            if (userId && parseInt(userId) === response.data.user_id) {
               console.log('User is viewing their own profile');
               setIsCurrentUser(true);
             }
           } else {
-            // If we can't get the user ID from notifications, try portfolios
-            console.log('No receiver_id in notifications, trying portfolios');
+            console.log('No user_id in response, trying portfolios');
             try {
               const portfoliosResponse = await axios.get(`${API_BASE_URL}/portfolios/`, {
                 headers: { Authorization: `Bearer ${token}` }
               });
-              
-              console.log('Portfolios response:', portfoliosResponse);
               
               if (portfoliosResponse.data && portfoliosResponse.data.length > 0) {
                 const userPortfolio = portfoliosResponse.data[0];
                 console.log('Current user ID from portfolios:', userPortfolio.user_id);
                 setCurrentUserId(userPortfolio.user_id);
                 
-                // Check if viewing own profile
                 if (userId && parseInt(userId) === userPortfolio.user_id) {
                   console.log('User is viewing their own profile');
                   setIsCurrentUser(true);
@@ -109,27 +101,74 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
         } else {
           console.log('No data in response, user is not authenticated');
           setIsAuthenticated(false);
+          setCurrentUserId(null);
         }
       } catch (error: any) {
         console.error('Error checking authentication:', error);
-        console.error('Error details:', error.response?.data);
-        
-        // Don't clear the token on every error
-        // Only clear it if it's a 401 Unauthorized error
         if (error.response && error.response.status === 401) {
           console.log('Authentication error detected, clearing token');
           localStorage.removeItem('token');
           setIsAuthenticated(false);
+          setCurrentUserId(null);
         } else {
-          // For other errors, keep the token but mark as not authenticated for this session
           console.log('Non-401 error, keeping token but marking as not authenticated');
           setIsAuthenticated(false);
+          setCurrentUserId(null);
         }
       }
     };
 
     checkAuth();
   }, [userId]);
+
+  // Moved  check for friendship status because it was buggy
+  useEffect(() => {
+    const checkFriendship = async () => {
+      if (!isAuthenticated || !currentUserId || !userId) {
+        console.log('Skipping friendship check:', {
+          isAuthenticated,
+          currentUserId,
+          userId
+        });
+        setIsFriend(false);
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.log('No token found for friendship check');
+          setIsFriend(false);
+          return;
+        }
+
+        console.log('Checking friendship status with:', {
+          currentUserId,
+          userId,
+          userIdType: typeof userId,
+          currentUserIdType: typeof currentUserId
+        });
+        
+        const friendsResponse = await axios.get(
+          `${API_BASE_URL}/friendship_status/${userId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        
+        console.log('Raw friendship status response:', friendsResponse.data);
+        console.log('Friendship status:', friendsResponse.data.status);
+        
+        const isFriends = String(friendsResponse.data.status).toLowerCase() === "friends";
+        console.log('Setting isFriend to:', isFriends);
+        setIsFriend(isFriends);
+      } catch (error: any) {
+        console.error('Error checking friendship:', error);
+        console.error('Error response:', error.response?.data);
+        setIsFriend(false);
+      }
+    };
+
+    checkFriendship();
+  }, [isAuthenticated, currentUserId, userId]);
 
   // Fetch user data
   useEffect(() => {
@@ -145,23 +184,7 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
         const userResponse = await axios.get(`${API_BASE_URL}/users/${userId}`, { headers });
         setUser(userResponse.data);
 
-        // Check if users are friends - using the available endpoint
-        if (isAuthenticated && currentUserId) {
-          try {
-            const friendsResponse = await axios.get(
-              `${API_BASE_URL}/friendship_status/${userId}`,
-              { headers }
-            );
-            console.log('Friendship status response:', friendsResponse.data);
-            setIsFriend(friendsResponse.data.status === "friends");
-            console.log('Setting isFriend to:', friendsResponse.data.status === "friends");
-          } catch (friendsError: any) {
-            console.error('Error checking friendship:', friendsError);
-            // Don't set error here, just log it and continue
-          }
-        }
-
-        // Fetch user's portfolios - make sure to pass the headers
+        // Fetch user's portfolios
         if (isAuthenticated) {
           await fetchUserPortfolios(userId, headers);
         } else {
@@ -182,7 +205,7 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
     };
 
     fetchUserData();
-  }, [userId, isAuthenticated, currentUserId]);
+  }, [userId, isAuthenticated]);
 
   // Separate function to fetch user portfolios
   const fetchUserPortfolios = async (userId: string, headers: any) => {
