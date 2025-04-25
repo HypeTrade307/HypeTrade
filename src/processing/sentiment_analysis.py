@@ -10,15 +10,14 @@ from src.db.database import get_db
 
 router = APIRouter(prefix="/scraping", tags=["Scraping"])
 
-
-db = src.db.database.SessionLocal()
 SUBREDDITS = ["stocks", "investing", "wallstreetbets", "stockmarket", "investor"]
-STOCKS = crud.get_top_stocks(db)  # returns a list of models.Stock, which have attributes stock_id
+ # returns a list of models.Stock, which have attributes stock_id
 
 def periodical_update(db: Session):
     """
     Periodically updates the database with new Reddit posts.
     """
+    STOCKS = crud.get_top_stocks(db)
     for STOCK in STOCKS:
         stock_id = STOCK.stock_id
         keyword = STOCK.ticker
