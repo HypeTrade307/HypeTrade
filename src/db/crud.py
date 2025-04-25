@@ -109,18 +109,36 @@ def create_comment(db: Session, content: str, author_id: int, post_id: int):
     """
     Create a new comment.
     """
-    comment = {
-        "content": content,  # Ensure this field exists
-        "post_id": post_id,
-        "author_id": author_id,
-        "created_at": datetime.datetime.now()
-    }
-    comment = models.Comment(content=content,
-    post_id= post_id,
-    author_id= author_id)
+
+    # Get original author(user) of comment
+    author = db.query(models.User).filter(models.User.user_id == author_id).first()
+
+    # comment = {
+    #     "content": content,  # Ensure this field exists
+    #     "post_id": post_id,
+    #     "author_id": author_id,
+    #     "created_at": datetime.datetime.now()
+    # }
+    comment = models.Comment(
+        content = content,
+        post_id = post_id,
+        author_id = author_id
+    )
     db.add(comment)
+
+    # Add +1 to original author(user)'s reputation
+    print("comment_author: ", author.username)
+    print("reputation: ", author.reputation)
+
+    if not author.reputation:
+        author.reputation = 0
+
+    author.reputation = author.reputation + 1
+    print("updated reputation: ", author.reputation)
+
     db.commit()
     db.refresh(comment)
+    db.refresh(author)
 
     # Format the author and liked_by information for the response
     comment.liked_by = []
@@ -182,9 +200,24 @@ def add_post_like(db: Session, post_id: int, user_id: int):
 
     post.liked_by.append(user)
     # This only adds the user to the post's list of people who like it.
-    # It does not add anything to the user's information
+
+    # Get original author(user) of post
+    # Add +1 to original author(user)'s reputation
+    author_id = post.author_id
+    author = db.query(models.User).filter(models.User.user_id == author_id).first()
+
+    print("post_author: ", author.username)
+    print("reputation: ", author.reputation)
+
+    if not author.reputation:
+        author.reputation = 0
+
+    author.reputation = author.reputation + 1
+
+    print("updated reputation: ", author.reputation)
 
     db.commit()
+    db.refresh(author)
     return True
 
 def remove_post_like(db: Session, post_id: int, user_id: int):
@@ -203,6 +236,27 @@ def remove_post_like(db: Session, post_id: int, user_id: int):
         return False
 
     post.liked_by.remove(user)
+
+    # Get original author(user) of post
+    # Add -1 to original author(user)'s reputation
+    author_id = post.author_id
+    print("post.author_id: ", author_id)
+    author = db.query(models.User).filter(models.User.user_id == author_id).first()
+    print("post.author: ", author.username)
+    print("post.author.reputation: ", author.reputation)
+
+    if not author.reputation:
+        author.reputation = 0
+
+    author.reputation = author.reputation - 1
+
+    print("post.author.unliked - updated reputation: ", author.reputation)
+
+    if author.reputation < 0:
+        print("prevent negative rep score")
+        author.reputation = 0
+
+    db.refresh(author)
     db.commit()
     return True
 
@@ -230,6 +284,23 @@ def add_comment_like(db: Session, comment_id: int, user_id: int):
 
     comment.liked_by.append(user)
     print("comment.liked_by.append(user)", comment.liked_by)
+
+    # Get original author(user) of post
+    # Add +1 to original author(user)'s reputation
+    author_id = comment.author_id
+    author = db.query(models.User).filter(models.User.user_id == author_id).first()
+
+    print("comment_author: ", author.username)
+    print("reputation: ", author.reputation)
+
+    if not author.reputation:
+        author.reputation = 0
+
+    author.reputation = author.reputation + 1
+
+    print("updated reputation: ", author.reputation)
+
+    db.refresh(author)
     db.commit()
     return True
 
@@ -249,17 +320,64 @@ def remove_comment_like(db: Session, comment_id: int, user_id: int):
         return False
 
     comment.liked_by.remove(user)
+
+    # Get original author(user) of post
+    # Add +1 to original author(user)'s reputation
+    author_id = comment.author_id
+    author = db.query(models.User).filter(models.User.user_id == author_id).first()
+    print("comment_author: ", author.username)
+    print("reputation: ", author.reputation)
+
+    if not author.reputation:
+        author.reputation = 0
+        # return False
+
+    author.reputation = author.reputation - 1
+
+    print("updated reputation: ", author.reputation)
+
+    if author.reputation < 0:
+        print("prevent negative rep score")
+        author.reputation = 0
+
+    print("updated reputation after neg rep check: ", author.reputation)
+
+    db.refresh(author)
     db.commit()
     return True
 
 # ----------------------------
 #  POST CRUD
 # ----------------------------
-def create_post(db: Session, thread_id: int, title: str = None, content: str = None, created_by: int = None):
-    db_post = models.Post(title=title, content=content, author_id=created_by, thread_id=thread_id)
+# def create_post(db: Session, thread_id: int, title: str = None, content: str = None, created_by: int = None):
+def create_post(db: Session, thread_id: int, title: str, content: str, created_by: int):
+
+    # Get original author(user) of post
+    post_author = db.query(models.User).filter(models.User.user_id == created_by).first()
+
+    db_post = models.Post(
+        title = title,
+        content = content,
+        author_id = created_by,
+        thread_id = thread_id,
+        author = post_author.username,
+    )
+
+    print("post created by: ", post_author.username)
+    print("user_reputation: ", post_author.reputation)
+
+    if not post_author.reputation:
+        post_author.reputation = 0
+
+    post_author.reputation = post_author.reputation + 1
+    print("updated reputation: ", post_author.reputation)
+
     db.add(db_post)
     db.commit()
     db.refresh(db_post)
+    db.refresh(post_author)
+
+    print("before return db_post")
     return db_post
 
 # def get_post_by_id(db: Session, post_id: int) -> models.Post:
