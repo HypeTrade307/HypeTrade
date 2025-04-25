@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 load_dotenv()
-# os.environ["DATABASE_URL"] = f"mysql+mysqlconnector://root:{os.getenv('DB_PW')}@localhost/test"
+# DATABASE_URL = f"mysql+mysqlconnector://root:{os.getenv('DB_PW')}@localhost/hypetrade-db"
 DATABASE_URL=os.getenv("DATABASE_URL")
 print("DB URL IS", DATABASE_URL)
 engine = create_engine(DATABASE_URL)

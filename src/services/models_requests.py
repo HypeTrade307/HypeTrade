@@ -1,21 +1,29 @@
 from google.cloud import aiplatform
+from numpy.ma.extras import average
+
 pid = "basic-formula-451520-c0"
 loc = "us-central1"
 from transformers import BertTokenizer
 tokenizer = BertTokenizer.from_pretrained('yiyanghkust/finbert-tone')
+from transformers import BertTokenizer
 
-def process_texts(text_list: list[str]) -> list[str]:
+def process_texts(text_list: str) -> list[str]:
     """
     for each string in text_list, truncate it to max 512 tokens
     (including special tokens) and decode back to plain text.
     """
     output_texts = []
-    for txt in text_list:
-        # tokenize & truncate
+    # tokenize & truncate
+    decoded = text_list
+    i = 0
+    while len(tokenizer.tokenize(decoded)) > 480:
+        if i > 10: # if it runs 10 times, it may be inf looping. abandon.
+            decoded = "no news about this stock."
+            break
         encoded_ids = tokenizer.encode(
-            txt,
+            decoded,
             add_special_tokens=True,
-            max_length=512,
+            max_length=480,
             truncation=True
         )
         # decode back to string without special tokens
@@ -24,10 +32,15 @@ def process_texts(text_list: list[str]) -> list[str]:
             skip_special_tokens=True,
             clean_up_tokenization_spaces=True
         )
-        output_texts.append(decoded)
+    if decoded != "":
+        if len(decoded) > 200: # approximation bc a tokens like 1.3 of a word
+            decoded = decoded[:200]
+    else:
+        decoded = "no news about this stock."
+    output_texts.append(decoded)
     return output_texts
 
-def get_financial_sentiment(input_texts: list[str]) -> list[float]:
+def get_financial_sentiment(input_text: str) -> float:
     # Initialize Vertex AI
     aiplatform.init(
         project=pid,
@@ -36,17 +49,16 @@ def get_financial_sentiment(input_texts: list[str]) -> list[float]:
     
     # Get your endpoint
     endpoint = aiplatform.Endpoint("projects/basic-formula-451520-c0/locations/us-central1/endpoints/7711258775151181824")
-    prompts = process_texts(input_texts)
+    prompts = process_texts(input_text)
     # Make prediction
     predictions = endpoint.predict(instances=prompts)[0]
     values = []
-    i = 0
     for p in predictions:
         raw_value = p[0]['score']
         values.append(round((raw_value * 10), 2))
-        i += 1
     print(values)
-    return values
+    avg: float = float(sum(values)) / float(len(values))
+    return avg
 
 # Example usage
 # text = "The company reported a 25% increase in quarterly revenue"
@@ -160,4 +172,4 @@ def generate_gemini_resp(text):
 
 # get_financial_sentiment(["aapl is up"])
 # get_financial_sentiment(["msft is up"])
-get_financial_sentiment(["everyone loves fiso now", "google recently shut down all of their offices and declared bankruptcy, as mozilla and meta took over their audience, and google fell out of the s&p 500"])
+# get_financial_sentiment(["everyone loves fiso now", "google recently shut down all of their offices and declared bankruptcy, as mozilla and meta took over their audience, and google fell out of the s&p 500"])

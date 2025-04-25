@@ -145,16 +145,16 @@ def process_unprocessed_entries(db: Session, stock_id: int):
         .all()
     )
     # print("length is {}".format(len(unprocessed_entries)))
-    texts = [entry for entry in unprocessed_entries]
-    values = get_financial_sentiment(texts) #call fn w texts as variable
-    for i in range(len(unprocessed_entries)):
+    texts:list[str] = [(entry.title + " " + (entry.content or "")) for entry in unprocessed_entries]
+    # values = get_financial_sentiment(texts) #call fn w texts as variable
+    for i in range(len(unprocessed_entries) - 1):
         entry = unprocessed_entries[i]
     # for-loop through entry
         # Suppose we have a placeholder function that returns a sentiment float
         # sentiment_score = run_finbert_sentiment(entry.title + " " + (entry.content or ""))
         # print("Processing entry: ", entry.reddit_id)
         # print("Content: ", entry.content)
-        sentiment_score = values[i]
+        sentiment_score = get_financial_sentiment(entry.content)
         # print("Sentiment score: ", sentiment_score)
         # Insert a row in 'sentiment_analysis'
         sentiment_row = models.SentimentAnalysis(
