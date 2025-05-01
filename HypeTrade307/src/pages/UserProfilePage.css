@@ -71,7 +71,7 @@
 .user-portfolios-section h2 {
   margin-top: 0;
   margin-bottom: 20px;
-  font-size: 20px;
+  font-size: 24px;
   color: var(--mui-palette-text-primary);
 }
 
@@ -80,14 +80,18 @@
   margin-bottom: 15px;
 }
 
-.info-label {
-  font-weight: 500;
+.user-profile-info-label {
+  font-weight: 600;
+  font-size: 18px;
   width: 100px;
   color: var(--mui-palette-text-secondary);
 }
 
-.info-value {
-  color: lightgreen;
+.user-profile-info-value {
+  color: #4CAF50;
+  font-size: 18px;
+  font-weight: 600;
+  margin-left: 10px;
 }
 
 .portfolios-grid {
@@ -192,6 +196,7 @@
   justify-content: center;
   border-radius: 50%;
   transition: background-color 0.2s;
+  margin-top: 50px;
 }
 
 .close-button:hover {

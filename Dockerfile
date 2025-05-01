@@ -16,6 +16,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy backend code
 COPY src/ ./src/
+COPY tokenizer/ /app/tokenizer/
 COPY alembic/ ./alembic/
 COPY alembic.ini ./
 

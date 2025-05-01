@@ -4,7 +4,7 @@ from numpy.ma.extras import average
 pid = "basic-formula-451520-c0"
 loc = "us-central1"
 from transformers import BertTokenizer
-tokenizer = BertTokenizer.from_pretrained('yiyanghkust/finbert-tone')
+tokenizer = BertTokenizer.from_pretrained('/app/tokenizer')
 from transformers import BertTokenizer
 
 def process_texts(text_list: str) -> list[str]:

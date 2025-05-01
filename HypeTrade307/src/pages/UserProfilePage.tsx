@@ -468,8 +468,8 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
           <div className="user-info-section">
             <h2>User Information</h2>
             <div className="user-info-item">
-              <span className="info-label">Username:</span>
-              <span className="info-value">{user.username}</span>
+              <span className="user-profile-info-label">Username:</span>
+              <span className="user-profile-info-value">{user.username}</span>
             </div>
           </div>
           
