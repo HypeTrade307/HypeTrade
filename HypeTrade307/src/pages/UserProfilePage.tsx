@@ -416,15 +416,15 @@ export default function UserProfilePage(props: { disableCustomTheme?: boolean })
           )}
           
           {isAuthenticated && !isCurrentUser && isFriend && (
-            <div className="friend-actions">
-              <div className="friend-status">Friends</div>
-              <button 
-                className="remove-friend-button"
-                onClick={() => setShowRemoveConfirm(true)}
-              >
-                Remove Friend
-              </button>
+            <div className="friend-actions-container">
+            <div className="friend-status">Friends</div>
+            <button className="remove-friend-button" onClick={() => setShowRemoveConfirm(true)}>
+              Remove Friend
+            </button>
+            <div className="actions">
+              <FlagButton target_id={user.user_id} flag_type="user" />
             </div>
+          </div>
           )}
           
           {!isAuthenticated && (

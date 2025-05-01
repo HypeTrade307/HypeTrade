@@ -404,3 +404,20 @@
   font-size: 16px;
   transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
 }
+
+.friend-actions-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.friend-actions-container .friend-status {
+  margin-right: 8px;
+}
+
+.friend-actions-container .actions {
+  margin-left: 0; /* override default button layout */
+  gap: 12px;
+}
