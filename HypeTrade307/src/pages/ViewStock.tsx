@@ -1153,7 +1153,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                                 <div className="chart-container">
                                     <h3 className="chart-title">{getGraph()}</h3>
                                         <MarketValue file={pickStock.ticker} />
-                                        <AreaGraph file={pickStock.ticker}/>
+                                        <AreaGraph ticker={pickStock.ticker}/>
                                 </div>
                             </div>
                         </div>
