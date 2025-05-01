@@ -25,7 +25,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // used for t
 
 import { API_BASE_URL } from "../../config";
 
-const pages = ['Home', 'ViewStock', 'Portfolio', 'Profile', 'Search', 'Friends', 'Chat', 'Forum', 'Help'];
+const pages = ['Home', 'ViewStock', 'Profile', 'Search', 'Friends', 'Chat', 'Forum', 'Help'];
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
     display: 'flex',
@@ -110,8 +110,7 @@ const Navbar = () => {
     async function handleMenuClick(pageName: string) {
         if (pageName === "Home") {
             window.location.href = `/`;
-        } else if (pageName === "Portfolio") {
-            window.location.href = `/portfolio`;
+         
         } else if (pageName === "Profile") {
             window.location.href = `/profile`;
         } else if (pageName === "Login") {

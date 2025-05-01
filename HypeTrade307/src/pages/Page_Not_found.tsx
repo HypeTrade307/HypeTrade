@@ -16,8 +16,7 @@ function Page_Not_found(props: {disableCustomTheme?: boolean }){
         
           <h1>PageNotfound<br /></h1>
           <p>A error has occured, please return to the main page<br /> <br /> </p>
-          <AreaGraph ticker="AAPL" />
-         <ProfileDownloader/>
+
       </div>
       </AppTheme>
   );
