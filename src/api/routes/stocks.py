@@ -97,3 +97,13 @@ def get_stock_id_by_ticker(ticker: str, db: Session = Depends(get_db)):
     if not stock:
         raise HTTPException(status_code=404, detail=f"Stock with ticker '{ticker}' not found.")
     return {"stock_id": stock.stock_id}
+
+@router.get("/{stock_id}/ticker")
+def get_ticker_by_stock_id(stock_id: int, db: Session = Depends(get_db)):
+    """
+    Returns the ticker symbol given a stock_id.
+    """
+    stock = db.query(models.Stock).filter(models.Stock.stock_id == stock_id).first()
+    if not stock:
+        raise HTTPException(status_code=404, detail=f"Stock with ID '{stock_id}' not found.")
+    return {"ticker": stock.ticker}

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from src.db import crud, schemas
 from src.db.database import get_db
 from src.processing import scraping, sentiment_analysis
-
+from src.db import models
 router = APIRouter(prefix="/specific-stock", tags=["Sentiment"])
 
 @router.post("/request")
@@ -72,3 +72,41 @@ def get_last_n_sentiment(stock_id: int, n: int,db: Session = Depends(get_db)):
     #     raise HTTPException(status_code=404, detail="No sentiment data found for this stock.")
     
     return sentiment_data
+
+
+@router.get("/{stock_id}/ticker")
+def get_ticker_by_stock_id(stock_id: int, db: Session = Depends(get_db)):
+    """
+    Returns the ticker symbol given a stock_id.
+    """
+    stock = db.query(models.Stock).filter(models.Stock.stock_id == stock_id).first()
+    if not stock:
+        raise HTTPException(status_code=404, detail=f"Stock with ID '{stock_id}' not found.")
+    return {"ticker": stock.ticker}
+
+@router.get("/heatmap/summary", response_model=list[dict])
+def get_sentiment_for_heatmap(db: Session = Depends(get_db)):
+    """
+    Fetch the most recent sentiment value for stock IDs 1–20 for heatmap visualization.
+    """
+    
+    heatmap_data = []
+    for stock_id in range(1, 21):
+        sentiments = crud.get_last_n_sentiments_by_stock_id(db, stock_id, 1)
+        if sentiments:
+            # Ensure that we are accessing the correct sentiment data
+            sentiment = sentiments[0]
+            
+            # Fetch the stock ticker for the given stock_id
+            stock = db.query(models.Stock).filter(models.Stock.stock_id == stock_id).first()
+            if stock:
+                ticker = stock.ticker
+            else:
+                ticker = f"Stock {stock_id}"  # Fallback if no stock found
+            
+            heatmap_data.append({
+                "name": ticker,
+                "size": sentiment["value"],  # Assuming `value` exists
+                "value": abs(sentiment["value"])  # Absolute value for heatmap sizing
+            })
+    return heatmap_data

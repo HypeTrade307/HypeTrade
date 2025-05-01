@@ -5,9 +5,9 @@ import { Treemap, ResponsiveContainer } from "recharts";
 // Function to determine color based on value
 const getColor = (value: number) => {
     if (value > 0) {
-        return `rgb(0, ${Math.min(255, 50 + value * 5)}, 0)`; // Green for positive values
+        return `rgb(0, 255, 0)`; // Green for positive values
     } else {
-        return `rgb(${Math.min(255, 50 + Math.abs(value) * 5)}, 0, 0)`; // Red for negative values
+        return `rgb(255, 0, 0)`; // Red for negative values
     }
 };
 
@@ -30,22 +30,27 @@ const HeatMap = () => {
     const [data, setData] = useState([]);
 
     useEffect(() => {
-        fetch("/data2.json")
-            .then((response) => response.json())
+        fetch("api/specific-stock/heatmap/summary")
+            .then((res) => res.json())
             .then((jsonData) => {
-                const processedData = jsonData.map((item) => ({
-                    ...item,
-                    value: Math.abs(item.size),
-                }));
-                setData(processedData);
+
+                const processed = jsonData
+                    .map((item) => ({
+                        ...item,
+                        value: Math.abs(item.size),
+                    }))
+                    .sort((a, b) => b.value - a.value) // Sort in descending order by absolute value
+                    .slice(0, 6); // Take the top 6 entries
+
+                setData(processed);
             })
-            .catch((error) => console.error("Error fetching data:", error));
+            .catch((err) => console.error("Fetch error:", err));
     }, []);
+    
 
     return (
         <div style={{ width: "100%", height: 400 }}>
             <ResponsiveContainer>
-
                 <Treemap data={data} dataKey="value" stroke="#fff" isAnimationActive={false} content={CustomizedContent} />
             </ResponsiveContainer>
         </div>
@@ -53,3 +58,4 @@ const HeatMap = () => {
 };
 
 export default HeatMap;
+
