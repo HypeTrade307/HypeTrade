@@ -148,7 +148,7 @@ export default function ViewStockPopupPage() {
           <div className="chart-container">
             <h3 className="chart-title">{getGraphTitle()}</h3>
             <MarketValue file={stock.ticker} />
-            <AreaGraph file={stock.ticker} />
+            <AreaGraph ticker={stock.ticker} />
           </div>
         </div>
       </div>
