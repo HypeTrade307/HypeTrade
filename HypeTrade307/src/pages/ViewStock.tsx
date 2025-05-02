@@ -164,7 +164,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
             if (!dataRes.ok) throw new Error("Failed to fetch sentiment data");
             const sentimentData = await dataRes.json();
 
-            return sentimentData[sentimentData.length - 1].value; // last sentiment value
+            return sentimentData[0].value; // last sentiment value
         } catch (err) {
             console.error("Sentiment value fetch error:", err);
             return null;
