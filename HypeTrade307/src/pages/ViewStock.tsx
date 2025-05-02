@@ -1029,7 +1029,6 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                                                 </span>
                                             </div>
                                             <div className="stock-name">{stock.stock_name}</div>
-                                            <div className="stock-value">${stock.value?.toLocaleString()}</div>
                                         </div>
                                     ))}
                                 </div>
