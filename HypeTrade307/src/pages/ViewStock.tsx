@@ -155,10 +155,16 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
     
     const fetchLatestSentimentValue = async (ticker: string): Promise<number | null> => {
         try {
-            const res = await fetch(`/sentiment_json/${ticker}_sentiment.json`);
-            const data = await res.json();
-            if (data.length === 0) return null;
-            return data[data.length - 1].value; // last sentiment value
+            const res = await fetch(`/api/stocks/${ticker}/id`);
+            if (!res.ok) throw new Error("Failed to fetch stock ID");
+            const data = await res.json(); // data is stockId here
+            //if (data.length === 0) return null;
+
+            const dataRes = await fetch(`/api/specific-stock/${data.stock_id}?n=1`);
+            if (!dataRes.ok) throw new Error("Failed to fetch sentiment data");
+            const sentimentData = await dataRes.json();
+
+            return sentimentData[sentimentData.length - 1].value; // last sentiment value
         } catch (err) {
             console.error("Sentiment value fetch error:", err);
             return null;
