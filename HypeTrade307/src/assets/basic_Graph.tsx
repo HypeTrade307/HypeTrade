@@ -74,7 +74,7 @@ const MarketValue: React.FC<MarketValueProps> = ({ file }) => {
     return (
         <div style={{ textAlign: "center" }}>
             <div style={{ marginBottom: "10px" }}>
-                <label htmlFor="lastNInput">Fetch last n values: </label>
+                <label style={{color:"white"}} htmlFor="lastNInput">Fetch last n values: </label>
                 <input
                     id="lastNInput"
                     type="number"

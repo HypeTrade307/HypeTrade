@@ -32,8 +32,8 @@ function Home(props: {disableCustomTheme?: boolean }) {
                 <Navbar />
                
                 <div style={{ height: '20px' }} /> {/* adds white space */}
-                <h1 color='black' >HYPETRADE</h1>
-                <h1 color='black'> Mainpage</h1>
+                <h1 style={{color:"white"}} >HYPETRADE</h1>
+                <h1 style={{color:"white"}}> Mainpage</h1>
                 <p >________________________________________________________________________________________________________________________________________________________________________</p>
                       
 

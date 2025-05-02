@@ -79,7 +79,7 @@ const AreaGraph: React.FC<AreaGraphProps> = ({ ticker }) => {
     return (
         <div style={{ textAlign: "center" }}>
             <div style={{ marginBottom: "10px" }}>
-                <label htmlFor="lastNInput">Fetch last n values: </label>
+                <label style={{ color: "black"}} htmlFor="lastNInput">Fetch last n values: </label>
                 <input
                     id="lastNInput"
                     type="number"
