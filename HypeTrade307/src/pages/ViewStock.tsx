@@ -141,6 +141,31 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
         }
     }, [isAuthenticated]);
 
+    const fetchLatestMarketValue = async (ticker: string): Promise<number | null> => {
+        try {
+            const res = await fetch(`/market_value/${ticker}_history.json`);
+            const data = await res.json();
+            if (data.length === 0) return null;
+            return data[data.length - 1].value; // last market value
+        } catch (err) {
+            console.error("Market value fetch error:", err);
+            return null;
+        }
+    };
+    
+    const fetchLatestSentimentValue = async (ticker: string): Promise<number | null> => {
+        try {
+            const res = await fetch(`/sentiment_json/${ticker}_sentiment.json`);
+            const data = await res.json();
+            if (data.length === 0) return null;
+            return data[data.length - 1].value; // last sentiment value
+        } catch (err) {
+            console.error("Sentiment value fetch error:", err);
+            return null;
+        }
+    };
+    
+
     //tutorial mode check
     useEffect(() => {
         const tutorialMode = localStorage.getItem("tutorialMode");
@@ -458,11 +483,24 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
             setLoading(true);
             const token = localStorage.getItem("token");
             const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-            
+    
             const response = await axios.get(`${API_BASE_URL}/stocks/top/?limit=20`, { headers });
-            
+    
             if (response.status === 200) {
-                setStockList(response.data);
+                const stockData: Stock[] = response.data;
+    
+                // Add market/sentiment values from JSON
+                const updatedStocks = await Promise.all(
+                    stockData.map(async (stock) => {
+                        const [value, sentiment] = await Promise.all([
+                            fetchLatestMarketValue(stock.ticker),
+                            fetchLatestSentimentValue(stock.ticker),
+                        ]);
+                        return { ...stock, value, sentiment };
+                    })
+                );
+    
+                setStockList(updatedStocks);
                 setLastStockFetch(new Date());
             }
         } catch (err) {
@@ -472,6 +510,7 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
             setLoading(false);
         }
     }, []);
+    
 
     // Fetch user portfolios
     const fetchPortfolios = useCallback(async () => {
@@ -1014,22 +1053,18 @@ function ViewStock(props: { disableCustomTheme?: boolean }) {
                             <div className="stocks-section-scrollable">
                                 <div className="stocks-grid">
                                     {stockList.map((stock) => (
-                                        <div
-                                            className="stock-card"
-                                            key={`top-${stock.ticker}`}
-                                            onClick={() => setPickStock(stock)}
-                                        >
-                                            <div className="stock-header">
-                                                <span className="stock-abbr">{stock.ticker}</span>
-                                                <span
-                                                    className="stock-sentiment"
-                                                    style={{ backgroundColor: getSentimentColor(stock.sentiment) }}
-                                                >
-                                                    {stock.sentiment}
-                                                </span>
-                                            </div>
-                                            <div className="stock-name">{stock.stock_name}</div>
+                                        <div className="stock-card" key={`top-${stock.ticker}`} onClick={() => setPickStock(stock)}>
+                                        <div className="stock-header">
+                                            <span className="stock-abbr">{stock.ticker}</span>
+                                            <span className="stock-sentiment" style={{ backgroundColor: getSentimentColor(stock.sentiment) }}>
+                                                {stock.sentiment?.toFixed(2) ?? "N/A"}
+                                            </span>
                                         </div>
+                                        <div className="stock-name">{stock.stock_name}</div>
+                                        <div className="stock-value">
+                                            ${stock.value?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? "N/A"}
+                                        </div>
+                                    </div>
                                     ))}
                                 </div>
                             </div>
