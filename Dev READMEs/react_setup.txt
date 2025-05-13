@@ -1,4 +1,6 @@
-first make sure you have node and npm install 
+-------------DEVS--------------
+
+first make sure you have node and npm install
 https://nodejs.org/en/download
 once installed 
 check node -v works if not pray
