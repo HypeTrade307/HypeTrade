@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://hypet-145797464141.us-central1.run.app/api/:path*"
+    }
+  ]
+}
